@@ -39,10 +39,9 @@ class ClientTest {
         client.setLastName("Dole");
 
         clientRepository.save(client);
-        Long clientId = clientRepository.findAll().get(0).getClientID();
 
         // when
-        clientRepository.deleteById(clientId);
+        clientRepository.deleteAll();
 
         // then
         assertEquals(0,clientRepository.count());
