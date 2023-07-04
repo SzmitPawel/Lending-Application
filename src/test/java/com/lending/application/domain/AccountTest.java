@@ -19,6 +19,20 @@ class AccountTest {
     AccountRepository accountRepository;
 
     @Test
+    void deleteOneAccount_ShouldReturn0() {
+        //given
+        Account account = new Account();
+
+        accountRepository.save(account);
+
+        // when
+        accountRepository.deleteAll();
+
+        // then
+        assertEquals(0, accountRepository.count());
+    }
+
+    @Test
     void createOneAccount_ShouldReturn1() {
         // given
         Account account = new Account();
