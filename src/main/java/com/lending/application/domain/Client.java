@@ -2,6 +2,7 @@ package com.lending.application.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -9,52 +10,24 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
+@Getter
 @Table(name = "CLIENT")
 public class Client {
-    private Long clientID;
-    private String name;
-    private String lastName;
-    private String address;
-    private String emailAddress;
-    private String phoneNumber;
-
-    private Account account;
-
     @Id
-    @Column(name = "ID", unique = true, nullable = false)
+    @Column(name = "ID", unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long getClientID() {
-        return clientID;
-    }
-
+    private Long clientID;
     @Column(name = "NAME", nullable = false)
-    public String getName() {
-        return name;
-    }
-
+    private String name;
     @Column(name = "LAST_NAME", nullable = false)
-    public String getLastName() {
-        return lastName;
-    }
-
+    private String lastName;
     @Column(name = "ADDRESS")
-    public String getAddress() {
-        return address;
-    }
-
+    private String address;
     @Column(name = "EMAIL_ADDRESS")
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
+    private String emailAddress;
     @Column(name = "PHONE_NUMBER")
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
+    private String phoneNumber;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "ACCOUNT_ID")
-    public Account getAccount() {
-        return account;
-    }
+    private Account account;
 }
