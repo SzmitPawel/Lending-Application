@@ -1,30 +1,21 @@
 package com.lending.application.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
 @Setter
 @Table(name = "ACCOUNT")
 public class Account {
-    private Long accountId;
-    private BigDecimal balance;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", unique = true, nullable = false)
-    public Long getAccountId() {
-        return accountId;
-    }
-
+    @Column(name = "ID", unique = true)
+    private Long accountId;
     @Column(name = "BALANCE")
-    public BigDecimal getBalance() {
-        return balance;
-    }
+    private BigDecimal balance;
 }
