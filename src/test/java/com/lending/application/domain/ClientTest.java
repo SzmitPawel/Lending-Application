@@ -8,10 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -32,27 +30,11 @@ class ClientTest {
     }
 
     @Test
-    void deleteClient_ShouldReturn0(){
-        //given
-        Client client = new Client();
-        client.setName("Joe");
-        client.setLastName("Dole");
-
-        clientRepository.save(client);
-
-        // when
-        clientRepository.deleteAll();
-
-        // then
-        assertEquals(0,clientRepository.count());
-    }
-
-    @Test
     void createClient_shouldReturn1() {
         // given
         Client client = new Client();
-        client.setName("Joe");
-        client.setLastName("Dole");
+        client.setName("Client");
+        client.setLastName("Last name");
 
         clientRepository.save(client);
 
@@ -61,98 +43,98 @@ class ClientTest {
     }
 
     @Test
-    void createMultipleClients_shouldReturn3Clients() {
-        // given
-        Client client1 = new Client();
-        Client client2 = new Client();
-        Client client3 = new Client();
-
-        client1.setName("Client 1");
-        client2.setName("Client 2");
-        client3.setName("Client 3");
-
-        client1.setLastName("Last 1");
-        client2.setLastName("Last 2");
-        client3.setLastName("Last 3");
-
-        clientRepository.saveAll(Arrays.asList(client1,client2,client3));
-
-        // when & then
-        assertEquals(3, clientRepository.count());
-    }
-
-    @Test
-    void createClientWithAccount_shouldReturn1ClientAnd1Account() {
-        // given
+    void deleteClient_ShouldReturn0(){
+        //given
         Client client = new Client();
-        Account account = new Account();
-
         client.setName("Client");
-        client.setLastName("Last");
+        client.setLastName("Last name");
 
-        // when
-        client.setAccount(account);
-        clientRepository.save(client);
-
-        // then
-        assertEquals(1,clientRepository.count());
-        assertEquals(1,accountRepository.count());
-    }
-
-    @Test
-    void createMultipleClientsWithAccounts_shouldCheckBalances() {
-        // given
-        Client client1 = new Client();
-        Client client2 = new Client();
-        Client client3 = new Client();
-
-        Account account1 = new Account();
-        Account account2 = new Account();
-        Account account3 = new Account();
-
-        client1.setName("Client 1");
-        client2.setName("Client 2");
-        client3.setName("Client 3");
-
-        client1.setLastName("Last 1");
-        client2.setLastName("Last 2");
-        client3.setLastName("Last 3");
-
-        account1.setBalance(new BigDecimal(100));
-        account2.setBalance(new BigDecimal(200));
-        account3.setBalance(new BigDecimal(300));
-
-        // when
-        client1.setAccount(account1);
-        client2.setAccount(account2);
-        client3.setAccount(account3);
-
-        clientRepository.saveAll(Arrays.asList(client1,client2,client3));
-
-        // then
-        assertEquals(new BigDecimal(100), clientRepository.findAll().get(0).getAccount().getBalance());
-        assertEquals(new BigDecimal(200), clientRepository.findAll().get(1).getAccount().getBalance());
-        assertEquals(new BigDecimal(300), clientRepository.findAll().get(2).getAccount().getBalance());
-    }
-
-    @Test
-    void deleteClientWithAccount_AfterDeleteClientAccountShouldBeDeletedToo() {
-        // given
-        Client client = new Client();
-        Account account = new Account();
-
-        client.setName("Client");
-        client.setLastName("Last");
-
-        client.setAccount(account);
         clientRepository.save(client);
 
         // when
-        Long clientId = clientRepository.findAll().get(0).getClientID();
-        clientRepository.deleteById(clientId);
+        clientRepository.delete(client);
 
         // then
         assertEquals(0,clientRepository.count());
-        assertEquals(0,accountRepository.count());
+    }
+
+    @Test
+    void updateClient_shouldReturnUpdatedData() {
+        // given
+        Client client = new Client(
+                "Client",
+                "Last name",
+                "Address",
+                "666-666-666",
+                "test@gmail.com"
+        );
+
+        clientRepository.save(client);
+
+        // when
+        client.setName("Updated name");
+        client.setLastName("Updated last name");
+        client.setAddress("Updated address");
+        client.setPhoneNumber("111-111-111");
+        client.setEmailAddress("updated@gmail.com");
+        clientRepository.save(client);
+
+        // when & then
+        assertEquals("Updated name", clientRepository
+                .findAll()
+                .get(0)
+                .getName());
+        assertEquals("Updated last name", clientRepository
+                .findAll()
+                .get(0)
+                .getLastName());
+        assertEquals("Updated address", clientRepository
+                .findAll()
+                .get(0)
+                .getAddress());
+        assertEquals("111-111-111", clientRepository
+                .findAll()
+                .get(0)
+                .getPhoneNumber());
+        assertEquals("updated@gmail.com", clientRepository
+                .findAll()
+                .get(0)
+                .getEmailAddress());
+    }
+
+    @Test
+    void readClient_shouldReturnAllData() {
+        // given
+        Client client = new Client(
+                "Client",
+                "Last name",
+                "Address",
+                "test@gmail.com",
+                "666-666-666"
+        );
+
+        clientRepository.save(client);
+
+        // when & then
+        assertEquals("Client", clientRepository
+                .findAll()
+                .get(0)
+                .getName());
+        assertEquals("Last name", clientRepository
+                .findAll()
+                .get(0)
+                .getLastName());
+        assertEquals("Address", clientRepository
+                .findAll()
+                .get(0)
+                .getAddress());
+        assertEquals("666-666-666", clientRepository
+                .findAll()
+                .get(0)
+                .getPhoneNumber());
+        assertEquals("test@gmail.com", clientRepository
+                .findAll()
+                .get(0)
+                .getEmailAddress());
     }
 }

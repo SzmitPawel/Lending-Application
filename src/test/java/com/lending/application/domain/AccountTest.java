@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,21 +18,7 @@ class AccountTest {
     AccountRepository accountRepository;
 
     @Test
-    void deleteOneAccount_ShouldReturn0() {
-        //given
-        Account account = new Account();
-
-        accountRepository.save(account);
-
-        // when
-        accountRepository.deleteAll();
-
-        // then
-        assertEquals(0, accountRepository.count());
-    }
-
-    @Test
-    void createOneAccount_ShouldReturn1() {
+    void createAccount_shouldReturn1() {
         // given
         Account account = new Account();
 
@@ -44,49 +29,47 @@ class AccountTest {
     }
 
     @Test
-    void createMultipleAccounts_ShouldReturn3() {
-        // given
-        Account account1 = new Account();
-        Account account2 = new Account();
-        Account account3 = new Account();
+    void deleteOneAccount_shouldReturn0() {
+        //given
+        Account account = new Account();
 
-        accountRepository.saveAll(Arrays.asList(account1,account2,account3));
+        accountRepository.save(account);
 
-        // when & then
-        assertEquals(3,accountRepository.count());
+        // when
+        accountRepository.delete(account);
+
+        // then
+        assertEquals(0, accountRepository.count());
     }
 
     @Test
-    void createAccountAndAddBalance_ShouldReturn1AccountAndCheckBalance(){
+    void updateAccount_shouldReturnUpdatedData() {
         // given
-        Account account = new Account();
-        account.setBalance(new BigDecimal(100));
+        Account account = new Account(new BigDecimal(100));
+
+        accountRepository.save(account);
+
+        // when
+        account.setBalance(new BigDecimal(200));
+        accountRepository.save(account);
+
+        // then
+        assertEquals(new BigDecimal(200),accountRepository
+                .findAll()
+                .get(0)
+                .getBalance());
+    }
+    @Test
+    void readAccount_shouldReturnAllData() {
+        // given
+        Account account = new Account(new BigDecimal(100));
 
         accountRepository.save(account);
 
         // when & then
-
-        assertEquals(1, accountRepository.count());
-        assertEquals(new BigDecimal(100), accountRepository.findAll().get(0).getBalance());
-    }
-
-    @Test
-    void createMultipleAccountsAndBalances_ShouldReturnAllAccountsAndBalances() {
-        // given
-        Account account1 = new Account();
-        Account account2 = new Account();
-        Account account3 = new Account();
-
-        account1.setBalance(new BigDecimal(100));
-        account2.setBalance(new BigDecimal(200));
-        account3.setBalance(new BigDecimal(300));
-
-        accountRepository.saveAll(Arrays.asList(account1,account2,account3));
-
-        // when & then
-        assertEquals(3,accountRepository.count());
-        assertEquals(new BigDecimal(100), accountRepository.findAll().get(0).getBalance());
-        assertEquals(new BigDecimal(200), accountRepository.findAll().get(1).getBalance());
-        assertEquals(new BigDecimal(300), accountRepository.findAll().get(2).getBalance());
+        assertEquals(new BigDecimal(100), accountRepository
+                .findAll()
+                .get(0)
+                .getBalance());
     }
 }
