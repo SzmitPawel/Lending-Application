@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Table(name = "LOAN")
 public class Loan {
     @Id
-    @Setter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true)
     private Long loanId;
@@ -26,8 +26,8 @@ public class Loan {
     private LocalDate loanStartDate;
     @Column(name = "REPAYMENT_PERIOD", nullable = false)
     private Integer repaymentPeriod;
-    @ManyToOne
-    @JoinColumn(name = "LOANLISTS_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CLIENT_ID")
     private Client client;
 
     public Loan() {

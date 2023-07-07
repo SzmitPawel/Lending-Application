@@ -3,12 +3,15 @@ package com.lending.application.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
 @Table(name = "CLIENT")
 public class Client {
-    @Setter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true)
@@ -29,11 +32,20 @@ public class Client {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "RATING_ID")
     private CreditRating creditRating;
+    @Setter(AccessLevel.PRIVATE)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy = "client",targetEntity = Loan.class)
+    private List<Loan> loanList = new ArrayList<>();
 
     public Client() {
     }
 
-    public Client(final String name, final String lastName, final String address, final String emailAddress, final String phoneNumber) {
+    public Client(
+            final String name,
+            final String lastName,
+            final String address,
+            final String emailAddress,
+            final String phoneNumber
+    ) {
         this.name = name;
         this.lastName = lastName;
         this.address = address;
