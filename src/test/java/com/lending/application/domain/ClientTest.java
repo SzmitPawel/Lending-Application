@@ -26,7 +26,7 @@ class ClientTest {
         Client client = new Client();
 
         // when & then
-        assertThrows(DataIntegrityViolationException.class, () -> clientRepository.save(client));
+        assertThrows(DataIntegrityViolationException.class, () -> clientRepository.saveAndFlush(client));
     }
 
     @Test
@@ -36,7 +36,7 @@ class ClientTest {
         client.setName("Client");
         client.setLastName("Last name");
 
-        clientRepository.save(client);
+        clientRepository.saveAndFlush(client);
 
         // when & then
         assertEquals(1,clientRepository.count());
@@ -49,7 +49,7 @@ class ClientTest {
         client.setName("Client");
         client.setLastName("Last name");
 
-        clientRepository.save(client);
+        clientRepository.saveAndFlush(client);
 
         // when
         clientRepository.delete(client);
@@ -69,7 +69,7 @@ class ClientTest {
                 "test@gmail.com"
         );
 
-        clientRepository.save(client);
+        clientRepository.saveAndFlush(client);
 
         // when
         client.setName("Updated name");
@@ -77,7 +77,7 @@ class ClientTest {
         client.setAddress("Updated address");
         client.setPhoneNumber("111-111-111");
         client.setEmailAddress("updated@gmail.com");
-        clientRepository.save(client);
+        clientRepository.saveAndFlush(client);
 
         // when & then
         assertEquals("Updated name", clientRepository
@@ -113,7 +113,7 @@ class ClientTest {
                 "666-666-666"
         );
 
-        clientRepository.save(client);
+        clientRepository.saveAndFlush(client);
 
         // when & then
         assertEquals("Client", clientRepository

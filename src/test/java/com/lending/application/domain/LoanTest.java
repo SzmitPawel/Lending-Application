@@ -25,7 +25,7 @@ class LoanTest {
         Loan loan = new Loan();
 
         // when & then
-        assertThrows(DataIntegrityViolationException.class, ()-> loanRepository.save(loan));
+        assertThrows(DataIntegrityViolationException.class, ()-> loanRepository.saveAndFlush(loan));
     }
 
     @Test
@@ -38,7 +38,7 @@ class LoanTest {
                 22
         );
 
-        loanRepository.save(loan);
+        loanRepository.saveAndFlush(loan);
 
         // when & then
         assertEquals(1, loanRepository.count());
@@ -54,7 +54,7 @@ class LoanTest {
                 22
         );
 
-        loanRepository.save(loan);
+        loanRepository.saveAndFlush(loan);
 
         // when
         loanRepository.delete(loan);
@@ -72,14 +72,14 @@ class LoanTest {
                 LocalDate.of(2023,01,01),
                 22
         );
-        loanRepository.save(loan);
+        loanRepository.saveAndFlush(loan);
 
         // when
         loan.setLoanAmount(new BigDecimal(3000.00));
         loan.setLoanStartDate(LocalDate.now());
         loan.setInterest(2.0F);
         loan.setRepaymentPeriod(10);
-        loanRepository.save(loan);
+        loanRepository.saveAndFlush(loan);
 
         // then
         assertEquals(new BigDecimal(3000.00), loanRepository
@@ -109,7 +109,7 @@ class LoanTest {
                 LocalDate.of(2023,01,01),
                 22
         );
-        loanRepository.save(loan);
+        loanRepository.saveAndFlush(loan);
 
         // when & then
         assertEquals(new BigDecimal(1000.00), loanRepository
