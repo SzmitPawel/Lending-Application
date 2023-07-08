@@ -73,7 +73,7 @@ class RepaymentTest {
     }
 
     @Test
-    void updateRepayment_shouldReturnAllData() {
+    void readRepayment_shouldReturnAllData() {
         // given
         Repayment repayment = new Repayment(new BigDecimal(100.00), LocalDate.now());
         repaymentRepository.saveAndFlush(repayment);
