@@ -23,6 +23,9 @@ public class Repayment {
     @ManyToOne
     @JoinColumn(name = "LOAN_ID")
     private Loan loan;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "PENALTY_ID")
+    private Penalty penalty;
 
     public Repayment() {
     }
