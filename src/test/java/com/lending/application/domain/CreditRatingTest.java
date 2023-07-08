@@ -21,7 +21,7 @@ class CreditRatingTest {
         // given
         CreditRating creditRating = new CreditRating();
 
-        creditRatingRepository.save(creditRating);
+        creditRatingRepository.saveAndFlush(creditRating);
 
         // when & then
         assertEquals(1, creditRatingRepository.count());
@@ -32,7 +32,7 @@ class CreditRatingTest {
         // given
         CreditRating creditRating = new CreditRating();
 
-        creditRatingRepository.save(creditRating);
+        creditRatingRepository.saveAndFlush(creditRating);
 
         // when
         creditRatingRepository.delete(creditRating);
@@ -49,12 +49,12 @@ class CreditRatingTest {
                 LocalDate.of(2023,01,01)
         );
 
-        creditRatingRepository.save(creditRating);
+        creditRatingRepository.saveAndFlush(creditRating);
 
         // when
         creditRating.setCreditRating(CreditRatingEnum.ONE);
         creditRating.setDateOfRating(LocalDate.now());
-        creditRatingRepository.save(creditRating);
+        creditRatingRepository.saveAndFlush(creditRating);
 
         // then
         assertEquals(CreditRatingEnum.ONE,creditRatingRepository
@@ -75,7 +75,7 @@ class CreditRatingTest {
                 LocalDate.now()
         );
 
-        creditRatingRepository.save(creditRating);
+        creditRatingRepository.saveAndFlush(creditRating);
 
         // when & then
         assertEquals(LocalDate.now(), creditRatingRepository

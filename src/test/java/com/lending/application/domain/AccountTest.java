@@ -22,7 +22,7 @@ class AccountTest {
         // given
         Account account = new Account();
 
-        accountRepository.save(account);
+        accountRepository.saveAndFlush(account);
 
         // when & then
         assertEquals(1,accountRepository.count());
@@ -33,7 +33,7 @@ class AccountTest {
         //given
         Account account = new Account();
 
-        accountRepository.save(account);
+        accountRepository.saveAndFlush(account);
 
         // when
         accountRepository.delete(account);
@@ -47,11 +47,11 @@ class AccountTest {
         // given
         Account account = new Account(new BigDecimal(100));
 
-        accountRepository.save(account);
+        accountRepository.saveAndFlush(account);
 
         // when
         account.setBalance(new BigDecimal(200));
-        accountRepository.save(account);
+        accountRepository.saveAndFlush(account);
 
         // then
         assertEquals(new BigDecimal(200),accountRepository
@@ -64,7 +64,7 @@ class AccountTest {
         // given
         Account account = new Account(new BigDecimal(100));
 
-        accountRepository.save(account);
+        accountRepository.saveAndFlush(account);
 
         // when & then
         assertEquals(new BigDecimal(100), accountRepository

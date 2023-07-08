@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,9 +28,12 @@ public class Loan {
     private LocalDate loanStartDate;
     @Column(name = "REPAYMENT_PERIOD", nullable = false)
     private Integer repaymentPeriod;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "CLIENT_ID")
     private Client client;
+    @Setter(AccessLevel.PRIVATE)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY, mappedBy = "loan",targetEntity = Repayment.class)
+    List<Repayment> repaymentList = new ArrayList<>();
 
     public Loan() {
     }
