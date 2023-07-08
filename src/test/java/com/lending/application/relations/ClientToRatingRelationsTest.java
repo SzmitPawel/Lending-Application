@@ -62,6 +62,27 @@ public class ClientToRatingRelationsTest {
         assertEquals(1, clientRepository.count());
         assertEquals(0, creditRatingRepository.count());
     }
+
+    @Test
+    void deleteClientAndCreditRating_shouldDeleteClientWithRating() {
+        // given
+        Client client = new Client();
+        client.setName("Client");
+        client.setLastName("Last name");
+
+        CreditRating creditRating = new CreditRating();
+
+        client.setCreditRating(creditRating);
+        clientRepository.saveAndFlush(client);
+
+        // when
+        clientRepository.delete(client);
+
+        // then
+        assertEquals(0, clientRepository.count());
+        assertEquals(0, creditRatingRepository.count());
+    }
+
     @Test
     void updateCreditRating_shouldReturnUpdatedData() {
         // given
