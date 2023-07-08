@@ -79,8 +79,33 @@ public class ClientToLoanRelationsTest {
                 .get(0)
                 .getLoanList()
                 .size());
-        assertEquals(0,loanRepository.findAll().size());
     }
+
+    @Test
+    void deleteClientWithLoan_shouldDeleteClientWithLoan() {
+        // given
+        Client client = new Client();
+        client.setName("Client");
+        client.setLastName("Last name");
+
+        Loan loan = new Loan(
+                new BigDecimal(1000.00),
+                5.0F,
+                LocalDate.now(),
+                22
+        );
+
+        client.getLoanList().add(loan);
+        clientRepository.saveAndFlush(client);
+
+        // when
+        clientRepository.delete(client);
+
+        // then
+        assertEquals(0, clientRepository.count());
+        assertEquals(0, loanRepository.count());
+    }
+
     @Test
     void updateClientLoan_shouldReturnUpdatedData() {
         // given

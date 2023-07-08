@@ -71,6 +71,27 @@ public class ClientToAccountRelationsTest {
     }
 
     @Test
+    void deleteClientAndAccount_shouldDeleteClientWithAccount() {
+        // given
+        Client client = new Client();
+        client.setName("Client");
+        client.setLastName("Last name");
+
+        Account account = new Account();
+        account.setBalance(new BigDecimal(1));
+
+        client.setAccount(account);
+        clientRepository.saveAndFlush(client);
+
+        // when
+        clientRepository.deleteAll();
+
+        // then
+        assertEquals(0, clientRepository.count());
+        assertEquals(0, accountRepository.count());
+    }
+
+    @Test
     void updateAccount_shouldReturnUpdatedData() {
         // given
         Client client = new Client();
