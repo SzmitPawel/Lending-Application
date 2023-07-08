@@ -20,6 +20,9 @@ public class Repayment {
     private BigDecimal repaymentAmount;
     @Column(name = "REPAYMENT_DATE", nullable = false)
     private LocalDate repaymentDate;
+    @ManyToOne
+    @JoinColumn(name = "LOAN_ID")
+    private Loan loan;
 
     public Repayment() {
     }
