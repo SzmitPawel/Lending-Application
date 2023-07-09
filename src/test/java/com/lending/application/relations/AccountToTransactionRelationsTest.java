@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -35,10 +35,16 @@ public class AccountToTransactionRelationsTest {
 
         account.getTransactionList().add(transaction);
         transaction.setAccount(account);
-
         accountRepository.saveAndFlush(account);
 
-        // when & then
+        // when
+        Account retrievedAccount = accountRepository
+                .findById(account.getAccountId())
+                .orElse(null);
+
+        // when
+        assertNotNull(retrievedAccount);
+        assertNotNull(retrievedAccount.getTransactionList());
         assertEquals(1, accountRepository.count());
         assertEquals(1, transactionRepository.count());
     }
@@ -57,13 +63,23 @@ public class AccountToTransactionRelationsTest {
         accountRepository.saveAndFlush(account);
 
         // when
-        account = accountRepository.findAll().get(0);
-        transaction = account.getTransactionList().get(0);
-        account.getTransactionList().remove(0);
+        Account retrievedAccount = accountRepository
+                .findById(account.getAccountId())
+                .orElse(null);
+
+        assertNotNull(retrievedAccount);
+
+        retrievedAccount.getTransactionList().remove(transaction);
         transactionRepository.delete(transaction);
-        accountRepository.saveAndFlush(account);
+        accountRepository.saveAndFlush(retrievedAccount);
+
+        Account retrievedAccountAfterDelete = accountRepository
+                .findById(retrievedAccount.getAccountId())
+                .orElse(null);
 
         // then
+        assertNotNull(retrievedAccountAfterDelete);
+        assertEquals(0,retrievedAccountAfterDelete.getTransactionList().size());
         assertEquals(1, accountRepository.count());
         assertEquals(0, transactionRepository.count());
     }
@@ -89,8 +105,12 @@ public class AccountToTransactionRelationsTest {
 
         // when
         accountRepository.deleteAll();
+        Account retrievedAccountAfterDelete = accountRepository
+                .findById(account.getAccountId())
+                .orElse(null);
 
         // then
+        assertNull(retrievedAccountAfterDelete);
         assertEquals(0, accountRepository.count());
         assertEquals(0, transactionRepository.count());
     }
@@ -115,19 +135,28 @@ public class AccountToTransactionRelationsTest {
         accountRepository.saveAndFlush(account);
 
         // when
-        transaction2.setTransactionMethodEnum(TransactionMethodEnum.WITHDRAWAL);
-        transaction2.setPaymentAmount(new BigDecimal(50.00));
+        Account retrievedAccount = accountRepository
+                .findById(account.getAccountId())
+                .orElse(null);
+
+        assertNotNull(retrievedAccount);
+
+        retrievedAccount.getTransactionList().get(0).setTransactionMethodEnum(TransactionMethodEnum.WITHDRAWAL);
+        retrievedAccount.getTransactionList().get(0).setPaymentAmount(new BigDecimal(50.00));
+
+        Account retrievedAccountAfterUpdate = accountRepository
+                .findById(retrievedAccount.getAccountId())
+                .orElse(null);
 
         // then
-        assertEquals(TransactionMethodEnum.WITHDRAWAL, accountRepository.findAll()
-                .get(0)
+        assertNotNull(retrievedAccountAfterUpdate);
+        assertEquals(TransactionMethodEnum.WITHDRAWAL, retrievedAccountAfterUpdate
                 .getTransactionList()
-                .get(1)
+                .get(0)
                 .getTransactionMethodEnum());
-        assertEquals(new BigDecimal(50.00), accountRepository.findAll()
-                .get(0)
+        assertEquals(new BigDecimal(50.00), retrievedAccountAfterUpdate
                 .getTransactionList()
-                .get(1)
+                .get(0)
                 .getPaymentAmount());
     }
 
@@ -142,22 +171,23 @@ public class AccountToTransactionRelationsTest {
 
         account.getTransactionList().add(transaction);
         transaction.setAccount(account);
-
         accountRepository.saveAndFlush(account);
 
+        // when
+        Account retrievedAccount = accountRepository
+                .findById(account.getAccountId())
+                .orElse(null);
+
         // when & then
-        assertEquals(new BigDecimal(100.00), accountRepository.findAll()
-                .get(0)
+        assertNotNull(retrievedAccount);
+        assertEquals(new BigDecimal(100.00), retrievedAccount
                 .getTransactionList()
-                .get(0)
-                .getPaymentAmount());
-        assertEquals(LocalDate.now(), accountRepository.findAll()
-                .get(0)
+                .get(0).getPaymentAmount());
+        assertEquals(LocalDate.now(), retrievedAccount
                 .getTransactionList()
                 .get(0)
                 .getPaymentDate());
-        assertEquals(TransactionMethodEnum.DEPOSIT, accountRepository.findAll()
-                .get(0)
+        assertEquals(TransactionMethodEnum.DEPOSIT, retrievedAccount
                 .getTransactionList()
                 .get(0)
                 .getTransactionMethodEnum());

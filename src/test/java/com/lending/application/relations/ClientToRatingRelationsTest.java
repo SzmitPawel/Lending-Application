@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -35,7 +35,14 @@ public class ClientToRatingRelationsTest {
         client.setCreditRating(creditRating);
         clientRepository.saveAndFlush(client);
 
-        // when & then
+        // when
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedClient);
+        assertNotNull(retrievedClient.getCreditRating());
         assertEquals(1, clientRepository.count());
         assertEquals(1, creditRatingRepository.count());
     }
@@ -52,13 +59,22 @@ public class ClientToRatingRelationsTest {
         clientRepository.saveAndFlush(client);
 
         // when
-        client = clientRepository.findAll().get(0);
-        creditRating = client.getCreditRating();
-        client.setCreditRating(null);
-        creditRatingRepository.delete(creditRating);
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
+        assertNotNull(retrievedClient);
+        creditRatingRepository.delete(retrievedClient.getCreditRating());
+        retrievedClient.setCreditRating(null);
         clientRepository.saveAndFlush(client);
 
+        Client retrievedClientAfterDelete = clientRepository
+                .findById(retrievedClient.getClientID())
+                .orElse(null);
+
         // then
+        assertNotNull(retrievedClientAfterDelete);
+        assertNull(retrievedClientAfterDelete.getCreditRating());
         assertEquals(1, clientRepository.count());
         assertEquals(0, creditRatingRepository.count());
     }
@@ -78,7 +94,12 @@ public class ClientToRatingRelationsTest {
         // when
         clientRepository.delete(client);
 
+        Client retrievedClientAfterDelete = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
         // then
+        assertNull(retrievedClientAfterDelete);
         assertEquals(0, clientRepository.count());
         assertEquals(0, creditRatingRepository.count());
     }
@@ -102,17 +123,14 @@ public class ClientToRatingRelationsTest {
         creditRating.setCreditRating(CreditRatingEnum.TWO);
         creditRatingRepository.saveAndFlush(creditRating);
 
+        Client retrievedClientAfterUpdate = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
         // then
-        assertEquals(LocalDate.now(), clientRepository
-                .findAll()
-                .get(0)
-                .getCreditRating()
-                .getDateOfRating());
-        assertEquals(CreditRatingEnum.TWO, clientRepository
-                .findAll()
-                .get(0)
-                .getCreditRating()
-                .getCreditRating());
+        assertNotNull(retrievedClientAfterUpdate);
+        assertEquals(LocalDate.now(), retrievedClientAfterUpdate.getCreditRating().getDateOfRating());
+        assertEquals(CreditRatingEnum.TWO, retrievedClientAfterUpdate.getCreditRating().getCreditRating());
     }
     @Test
     void readCreditRating_shouldReturnAllData() {
@@ -128,15 +146,17 @@ public class ClientToRatingRelationsTest {
         client.setCreditRating(creditRating);
         clientRepository.saveAndFlush(client);
 
-        // when & then
-        assertEquals(LocalDate.of(2023,01,01), clientRepository
-                .findAll()
-                .get(0)
+        // when
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedClient);
+        assertEquals(LocalDate.of(2023,01,01), retrievedClient
                 .getCreditRating()
                 .getDateOfRating());
-        assertEquals(CreditRatingEnum.ONE, clientRepository
-                .findAll()
-                .get(0)
+        assertEquals(CreditRatingEnum.ONE, retrievedClient
                 .getCreditRating()
                 .getCreditRating());
     }

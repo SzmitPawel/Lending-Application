@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -17,13 +17,18 @@ class CreditRatingTest {
     CreditRatingRepository creditRatingRepository;
 
     @Test
-    void createCreditRating_shouldReturn1() {
+    void createCreditRating_shouldReturnCreditRating() {
         // given
         CreditRating creditRating = new CreditRating();
-
         creditRatingRepository.saveAndFlush(creditRating);
 
-        // when & then
+        // when
+        CreditRating retrievedCreditRating = creditRatingRepository
+                .findById(creditRating.getRatingId())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedCreditRating);
         assertEquals(1, creditRatingRepository.count());
     }
 
@@ -31,13 +36,17 @@ class CreditRatingTest {
     void deleteCreditRating_shouldReturn0() {
         // given
         CreditRating creditRating = new CreditRating();
-
         creditRatingRepository.saveAndFlush(creditRating);
 
         // when
         creditRatingRepository.delete(creditRating);
 
+        CreditRating retrievedCreditRating = creditRatingRepository
+                .findById(creditRating.getRatingId())
+                .orElse(null);
+
         // then
+        assertNull(retrievedCreditRating);
         assertEquals(0, creditRatingRepository.count());
     }
 
@@ -48,7 +57,6 @@ class CreditRatingTest {
                 CreditRatingEnum.FOUR,
                 LocalDate.of(2023,01,01)
         );
-
         creditRatingRepository.saveAndFlush(creditRating);
 
         // when
@@ -56,15 +64,14 @@ class CreditRatingTest {
         creditRating.setDateOfRating(LocalDate.now());
         creditRatingRepository.saveAndFlush(creditRating);
 
+        CreditRating retrievedCreditRating = creditRatingRepository
+                .findById(creditRating.getRatingId())
+                .orElse(null);
+
         // then
-        assertEquals(CreditRatingEnum.ONE,creditRatingRepository
-                .findAll()
-                .get(0)
-                .getCreditRating());
-        assertEquals(LocalDate.now(), creditRatingRepository
-                .findAll()
-                .get(0)
-                .getDateOfRating());
+        assertNotNull(retrievedCreditRating);
+        assertEquals(CreditRatingEnum.ONE, retrievedCreditRating.getCreditRating());
+        assertEquals(LocalDate.now(), retrievedCreditRating.getDateOfRating());
     }
 
     @Test
@@ -74,17 +81,16 @@ class CreditRatingTest {
                CreditRatingEnum.ONE,
                 LocalDate.now()
         );
-
         creditRatingRepository.saveAndFlush(creditRating);
 
-        // when & then
-        assertEquals(LocalDate.now(), creditRatingRepository
-                .findAll()
-                .get(0)
-                .getDateOfRating());
-        assertEquals(CreditRatingEnum.ONE, creditRatingRepository
-                .findAll()
-                .get(0)
-                .getCreditRating());
+        // when
+        CreditRating retrievedCreditRating = creditRatingRepository
+                .findById(creditRating.getRatingId())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedCreditRating);
+        assertEquals(LocalDate.now(), retrievedCreditRating.getDateOfRating());
+        assertEquals(CreditRatingEnum.ONE, retrievedCreditRating.getCreditRating());
     }
 }

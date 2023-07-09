@@ -28,14 +28,18 @@ class RepaymentTest {
     }
 
     @Test
-    void createRepayment_shouldReturn1() {
+    void createRepayment_shouldReturnRepayment() {
         // given
         Repayment repayment = new Repayment(new BigDecimal(100.00), LocalDate.now());
-
-        // when
         repaymentRepository.saveAndFlush(repayment);
 
+        // when
+        Repayment retrievedRepayment = repaymentRepository
+                .findById(repayment.getRepaymentId())
+                .orElse(null);
+
         // then
+        assertNotNull(retrievedRepayment);
         assertEquals(1, repaymentRepository.count());
     }
 
@@ -47,8 +51,12 @@ class RepaymentTest {
 
         // when
         repaymentRepository.deleteAll();
+        Repayment retrievedRepaymentAfterDelete = repaymentRepository
+                .findById(repayment.getRepaymentId())
+                .orElse(null);
 
         // then
+        assertNull(retrievedRepaymentAfterDelete);
         assertEquals(0, repaymentRepository.count());
     }
 
@@ -63,13 +71,14 @@ class RepaymentTest {
         repayment.setRepaymentDate(LocalDate.of(2023,01,01));
         repaymentRepository.saveAndFlush(repayment);
 
+        Repayment retrievedRepaymentAfterUpdate = repaymentRepository
+                .findById(repayment.getRepaymentId())
+                .orElse(null);
+
         // then
-        assertEquals(new BigDecimal(200), repaymentRepository.findAll()
-                .get(0)
-                .getRepaymentAmount());
-        assertEquals(LocalDate.of(2023,01,01), repaymentRepository.findAll()
-                .get(0)
-                .getRepaymentDate());
+        assertNotNull(retrievedRepaymentAfterUpdate);
+        assertEquals(new BigDecimal(200), retrievedRepaymentAfterUpdate.getRepaymentAmount());
+        assertEquals(LocalDate.of(2023,01,01), retrievedRepaymentAfterUpdate.getRepaymentDate());
     }
 
     @Test
@@ -78,12 +87,14 @@ class RepaymentTest {
         Repayment repayment = new Repayment(new BigDecimal(100.00), LocalDate.now());
         repaymentRepository.saveAndFlush(repayment);
 
-        // when & then
-        assertEquals(new BigDecimal(100.00), repaymentRepository.findAll()
-                .get(0)
-                .getRepaymentAmount());
-        assertEquals(LocalDate.now(), repaymentRepository.findAll()
-                .get(0)
-                .getRepaymentDate());
+        // when
+        Repayment retrievedRepayment = repaymentRepository
+                .findById(repayment.getRepaymentId())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedRepayment);
+        assertEquals(new BigDecimal(100.00), retrievedRepayment.getRepaymentAmount());
+        assertEquals(LocalDate.now(), retrievedRepayment.getRepaymentDate());
     }
 }

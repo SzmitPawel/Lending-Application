@@ -29,7 +29,7 @@ class LoanTest {
     }
 
     @Test
-    void createLoan_shouldReturn1() {
+    void createLoan_shouldReturnLoan() {
         // given
         Loan loan = new Loan(
                 new BigDecimal(1000),
@@ -37,10 +37,15 @@ class LoanTest {
                 LocalDate.now(),
                 22
         );
-
         loanRepository.saveAndFlush(loan);
 
-        // when & then
+        // then
+        Loan retrievedLoan = loanRepository
+                .findById(loan.getLoanId())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedLoan);
         assertEquals(1, loanRepository.count());
     }
 
@@ -53,13 +58,17 @@ class LoanTest {
                 LocalDate.now(),
                 22
         );
-
         loanRepository.saveAndFlush(loan);
 
         // when
         loanRepository.delete(loan);
 
+        Loan retrievedLoanAfterDelete = loanRepository
+                .findById(loan.getLoanId())
+                .orElse(null);
+
         // then
+        assertNull(retrievedLoanAfterDelete);
         assertEquals(0, loanRepository.count());
     }
 
@@ -81,23 +90,16 @@ class LoanTest {
         loan.setRepaymentPeriod(10);
         loanRepository.saveAndFlush(loan);
 
+        Loan retrievedLoanAfterUpdate = loanRepository
+                .findById(loan.getLoanId())
+                .orElse(null);
+
         // then
-        assertEquals(new BigDecimal(3000.00), loanRepository
-                        .findAll()
-                        .get(0)
-                        .getLoanAmount());
-        assertEquals(2.0F, loanRepository
-                .findAll()
-                .get(0)
-                .getInterest());
-        assertEquals(LocalDate.now(), loanRepository
-                .findAll()
-                .get(0)
-                .getLoanStartDate());
-        assertEquals(10, loanRepository
-                .findAll()
-                .get(0)
-                .getRepaymentPeriod());
+        assertNotNull(retrievedLoanAfterUpdate);
+        assertEquals(new BigDecimal(3000.00), retrievedLoanAfterUpdate.getLoanAmount());
+        assertEquals(2.0F, retrievedLoanAfterUpdate.getInterest());
+        assertEquals(LocalDate.now(), retrievedLoanAfterUpdate.getLoanStartDate());
+        assertEquals(10, retrievedLoanAfterUpdate.getRepaymentPeriod());
     }
 
     @Test
@@ -111,22 +113,14 @@ class LoanTest {
         );
         loanRepository.saveAndFlush(loan);
 
+        // when
+        Loan retrievedLoan = loanRepository.findById(loan.getLoanId()).orElse(null);
+
         // when & then
-        assertEquals(new BigDecimal(1000.00), loanRepository
-                .findAll()
-                .get(0)
-                .getLoanAmount());
-        assertEquals(5.0F, loanRepository
-                .findAll()
-                .get(0)
-                .getInterest());
-        assertEquals(LocalDate.of(2023,01,01), loanRepository
-                .findAll()
-                .get(0)
-                .getLoanStartDate());
-        assertEquals(22, loanRepository
-                .findAll()
-                .get(0)
-                .getRepaymentPeriod());
+        assertNotNull(retrievedLoan);
+        assertEquals(new BigDecimal(1000.00), retrievedLoan.getLoanAmount());
+        assertEquals(5.0F, retrievedLoan.getInterest());
+        assertEquals(LocalDate.of(2023,01,01), retrievedLoan.getLoanStartDate());
+        assertEquals(22, retrievedLoan.getRepaymentPeriod());
     }
 }

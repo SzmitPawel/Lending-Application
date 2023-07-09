@@ -28,17 +28,22 @@ class TransactionTest {
     }
 
     @Test
-    void createTransaction_shouldReturn1() {
+    void createTransaction_shouldReturnTransaction() {
         // given
         Transaction transaction = new Transaction(
                 new BigDecimal(100.00),
                 LocalDate.now(),
                 TransactionMethodEnum.DEPOSIT
         );
-
         transactionRepository.saveAndFlush(transaction);
 
-        // when & then
+        // when
+        Transaction retrievedTransaction = transactionRepository
+                .findById(transaction.getPaymentID())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedTransaction);
         assertEquals(1, transactionRepository.count());
     }
 
@@ -50,13 +55,17 @@ class TransactionTest {
                 LocalDate.now(),
                 TransactionMethodEnum.DEPOSIT
         );
-
         transactionRepository.saveAndFlush(transaction);
 
         // when
         transactionRepository.delete(transaction);
 
+        Transaction retrievedTransactionAfterDelete = transactionRepository
+                .findById(transaction.getPaymentID())
+                .orElse(null);
+
         // then
+        assertNull(retrievedTransactionAfterDelete);
         assertEquals(0, transactionRepository.count());
     }
 
@@ -68,7 +77,6 @@ class TransactionTest {
                 LocalDate.now(),
                 TransactionMethodEnum.DEPOSIT
         );
-
         transactionRepository.saveAndFlush(transaction);
 
         // when
@@ -77,16 +85,15 @@ class TransactionTest {
         transaction.setPaymentDate(LocalDate.of(2023,01,01));
         transactionRepository.saveAndFlush(transaction);
 
+        Transaction retrievedTransactionAfterUpdate = transactionRepository
+                .findById(transaction.getPaymentID())
+                .orElse(null);
+
         // then
-        assertEquals(TransactionMethodEnum.WITHDRAWAL, transactionRepository.findAll()
-                .get(0)
-                .getTransactionMethodEnum());
-        assertEquals(new BigDecimal(200.00), transactionRepository.findAll()
-                .get(0)
-                .getPaymentAmount());
-        assertEquals(LocalDate.of(2023,01,01), transactionRepository.findAll()
-                .get(0)
-                .getPaymentDate());
+        assertNotNull(retrievedTransactionAfterUpdate);
+        assertEquals(TransactionMethodEnum.WITHDRAWAL, retrievedTransactionAfterUpdate.getTransactionMethodEnum());
+        assertEquals(new BigDecimal(200.00), retrievedTransactionAfterUpdate.getPaymentAmount());
+        assertEquals(LocalDate.of(2023,01,01), retrievedTransactionAfterUpdate.getPaymentDate());
     }
 
     @Test
@@ -100,16 +107,14 @@ class TransactionTest {
 
         transactionRepository.saveAndFlush(transaction);
 
-        // when & then
-        assertEquals(new BigDecimal(100.00), transactionRepository.findAll()
-                .get(0)
-                .getPaymentAmount());
-        assertEquals(LocalDate.now(), transactionRepository.findAll()
-                .get(0)
-                .getPaymentDate());
-        assertEquals(TransactionMethodEnum.DEPOSIT, transactionRepository.findAll()
-                .get(0)
-                .getTransactionMethodEnum());
-    }
+        // when
+        Transaction retrievedTransaction = transactionRepository
+                .findById(transaction.getPaymentID())
+                .orElse(null);
 
+        // then
+        assertEquals(new BigDecimal(100.00), retrievedTransaction.getPaymentAmount());
+        assertEquals(LocalDate.now(), retrievedTransaction.getPaymentDate());
+        assertEquals(TransactionMethodEnum.DEPOSIT, retrievedTransaction.getTransactionMethodEnum());
+    }
 }

@@ -36,7 +36,9 @@ class PenaltyTest {
         penaltyRepository.saveAndFlush(penalty);
 
         // when
-        Penalty retrievedPenalty = penaltyRepository.findById(penalty.getPenaltyId()).orElse(null);
+        Penalty retrievedPenalty = penaltyRepository
+                .findById(penalty.getPenaltyId())
+                .orElse(null);
 
         // when & then
         assertNotNull(retrievedPenalty);
@@ -51,7 +53,9 @@ class PenaltyTest {
 
         // when
         penaltyRepository.delete(penalty);
-        Penalty retrievedPenaltyAfterDelete = penaltyRepository.findById(penalty.getPenaltyId()).orElse(null);
+        Penalty retrievedPenaltyAfterDelete = penaltyRepository
+                .findById(penalty.getPenaltyId())
+                .orElse(null);
 
         // then
         assertNull(retrievedPenaltyAfterDelete);
@@ -68,7 +72,9 @@ class PenaltyTest {
         penalty.setPenaltyDate(LocalDate.of(2023,01,01));
         penalty.setPenaltyPercentage(10);
 
-        Penalty retrievedPenaltyAfterUpdate = penaltyRepository.findById(penalty.getPenaltyId()).orElse(null);
+        Penalty retrievedPenaltyAfterUpdate = penaltyRepository
+                .findById(penalty.getPenaltyId())
+                .orElse(null);
 
         // then
         assertNotNull(retrievedPenaltyAfterUpdate);
@@ -83,7 +89,9 @@ class PenaltyTest {
         penaltyRepository.saveAndFlush(penalty);
 
         // when
-        Penalty retrievedPenalty = penaltyRepository.findById(penalty.getPenaltyId()).orElse(null);
+        Penalty retrievedPenalty = penaltyRepository
+                .findById(penalty.getPenaltyId())
+                .orElse(null);
 
         // then
         assertNotNull(retrievedPenalty);
