@@ -40,4 +40,18 @@ public class Transaction {
         this.paymentDate = paymentDate;
         this.transactionMethodEnum = transactionMethodEnum;
     }
+
+    public Transaction(
+            final Long paymentID,
+            final BigDecimal paymentAmount,
+            final LocalDate paymentDate,
+            final TransactionMethodEnum transactionMethodEnum,
+            final Account account
+    ) {
+        this.paymentID = paymentID;
+        this.paymentAmount = paymentAmount;
+        this.paymentDate = paymentDate;
+        this.transactionMethodEnum = transactionMethodEnum;
+        this.account = account;
+    }
 }

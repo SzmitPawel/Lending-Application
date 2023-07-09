@@ -14,6 +14,6 @@ public class RepaymentDto {
     private Long repaymentId;
     private BigDecimal repaymentAmount;
     private LocalDate repaymentDate;
-    private Loan loan;
-    private Penalty penalty;
+    private LoanDto loanDto;
+    private PenaltyDto penaltyDto;
 }

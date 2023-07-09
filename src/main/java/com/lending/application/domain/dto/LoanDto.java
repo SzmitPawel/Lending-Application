@@ -1,7 +1,6 @@
 package com.lending.application.domain.dto;
 
 import com.lending.application.domain.Client;
-import com.lending.application.domain.Repayment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,6 +16,6 @@ public class LoanDto {
     private Float interest;
     private LocalDate loanStartDate;
     private Integer repaymentPeriod;
-    private Client client;
-    List<Repayment> repaymentList;
+    private ClientDto clientDto;
+    List<RepaymentDto> repaymentList;
 }

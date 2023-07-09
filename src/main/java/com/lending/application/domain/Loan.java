@@ -49,4 +49,22 @@ public class Loan {
         this.loanStartDate = loanStartDate;
         this.repaymentPeriod = repaymentPeriod;
     }
+
+    public Loan(
+            final Long loanId,
+            final BigDecimal loanAmount,
+            final Float interest,
+            final LocalDate loanStartDate,
+            final Integer repaymentPeriod,
+            final Client client,
+            final List<Repayment> repaymentList
+    ) {
+        this.loanId = loanId;
+        this.loanAmount = loanAmount;
+        this.interest = interest;
+        this.loanStartDate = loanStartDate;
+        this.repaymentPeriod = repaymentPeriod;
+        this.client = client;
+        this.repaymentList = repaymentList;
+    }
 }

@@ -25,7 +25,20 @@ public class Penalty {
     public Penalty() {
     }
 
-    public Penalty(final Integer penaltyPercentage, final LocalDate penaltyDate) {
+    public Penalty(
+            final Integer penaltyPercentage,
+            final LocalDate penaltyDate
+    ) {
+        this.penaltyPercentage = penaltyPercentage;
+        this.penaltyDate = penaltyDate;
+    }
+
+    public Penalty(
+            final Long penaltyId,
+            final Integer penaltyPercentage,
+            final LocalDate penaltyDate
+    ) {
+        this.penaltyId = penaltyId;
         this.penaltyPercentage = penaltyPercentage;
         this.penaltyDate = penaltyDate;
     }

@@ -15,5 +15,5 @@ public class TransactionDto {
     private BigDecimal paymentAmount;
     private LocalDate paymentDate;
     private TransactionMethodEnum transactionMethodEnum;
-    private Account account;
+    private AccountDto accountDto;
 }
