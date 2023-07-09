@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -30,15 +29,20 @@ class ClientTest {
     }
 
     @Test
-    void createClient_shouldReturn1() {
+    void createClient_shouldReturnClient() {
         // given
         Client client = new Client();
         client.setName("Client");
         client.setLastName("Last name");
-
         clientRepository.saveAndFlush(client);
 
-        // when & then
+        // when
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedClient);
         assertEquals(1,clientRepository.count());
     }
 
@@ -48,13 +52,17 @@ class ClientTest {
         Client client = new Client();
         client.setName("Client");
         client.setLastName("Last name");
-
         clientRepository.saveAndFlush(client);
 
         // when
         clientRepository.delete(client);
 
+        Client retrievedClientAfterDelete = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
         // then
+        assertNull(retrievedClientAfterDelete);
         assertEquals(0,clientRepository.count());
     }
 
@@ -68,7 +76,6 @@ class ClientTest {
                 "666-666-666",
                 "test@gmail.com"
         );
-
         clientRepository.saveAndFlush(client);
 
         // when
@@ -79,27 +86,17 @@ class ClientTest {
         client.setEmailAddress("updated@gmail.com");
         clientRepository.saveAndFlush(client);
 
-        // when & then
-        assertEquals("Updated name", clientRepository
-                .findAll()
-                .get(0)
-                .getName());
-        assertEquals("Updated last name", clientRepository
-                .findAll()
-                .get(0)
-                .getLastName());
-        assertEquals("Updated address", clientRepository
-                .findAll()
-                .get(0)
-                .getAddress());
-        assertEquals("111-111-111", clientRepository
-                .findAll()
-                .get(0)
-                .getPhoneNumber());
-        assertEquals("updated@gmail.com", clientRepository
-                .findAll()
-                .get(0)
-                .getEmailAddress());
+        Client retrievedClientAfterUpdate = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedClientAfterUpdate);
+        assertEquals("Updated name", retrievedClientAfterUpdate.getName());
+        assertEquals("Updated last name", retrievedClientAfterUpdate.getLastName());
+        assertEquals("Updated address", retrievedClientAfterUpdate.getAddress());
+        assertEquals("111-111-111", retrievedClientAfterUpdate.getPhoneNumber());
+        assertEquals("updated@gmail.com", retrievedClientAfterUpdate.getEmailAddress());
     }
 
     @Test
@@ -112,29 +109,19 @@ class ClientTest {
                 "test@gmail.com",
                 "666-666-666"
         );
-
         clientRepository.saveAndFlush(client);
 
+        // when
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
         // when & then
-        assertEquals("Client", clientRepository
-                .findAll()
-                .get(0)
-                .getName());
-        assertEquals("Last name", clientRepository
-                .findAll()
-                .get(0)
-                .getLastName());
-        assertEquals("Address", clientRepository
-                .findAll()
-                .get(0)
-                .getAddress());
-        assertEquals("666-666-666", clientRepository
-                .findAll()
-                .get(0)
-                .getPhoneNumber());
-        assertEquals("test@gmail.com", clientRepository
-                .findAll()
-                .get(0)
-                .getEmailAddress());
+        assertNotNull(retrievedClient);
+        assertEquals("Client", retrievedClient.getName());
+        assertEquals("Last name", retrievedClient.getLastName());
+        assertEquals("Address", retrievedClient.getAddress());
+        assertEquals("666-666-666", retrievedClient.getPhoneNumber());
+        assertEquals("test@gmail.com", retrievedClient.getEmailAddress());
     }
 }

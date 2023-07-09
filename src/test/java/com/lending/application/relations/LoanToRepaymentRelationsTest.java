@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -47,11 +47,14 @@ public class LoanToRepaymentRelationsTest {
         repayment2.setLoan(loan);
         loanRepository.saveAndFlush(loan);
 
-        // when & then
-        assertEquals(2, loanRepository.findAll()
-                .get(0)
-                .getRepaymentList()
-                .size());
+        // when
+        Loan retrievedLoan = loanRepository
+                .findById(loan.getLoanId())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedLoan);
+        assertEquals(2, retrievedLoan.getRepaymentList().size());
     }
 
     @Test
@@ -79,17 +82,23 @@ public class LoanToRepaymentRelationsTest {
         loanRepository.saveAndFlush(loan);
 
         // when
-        loan = loanRepository.findAll().get(0);
-        Repayment repayment = loan.getRepaymentList().get(0);
-        loan.getRepaymentList().remove(repayment);
-        repaymentRepository.delete(repayment);
+        Loan retrievedLoan = loanRepository
+                .findById(loan.getLoanId())
+                .orElse(null);
+
+        assertNotNull(retrievedLoan);
+
+        repaymentRepository.delete(retrievedLoan.getRepaymentList().get(0));
+        retrievedLoan.getRepaymentList().remove(0);
         loanRepository.saveAndFlush(loan);
 
+        Loan retrievedLoanAfterDelete = loanRepository
+                .findById(retrievedLoan.getLoanId())
+                .orElse(null);
+
         // then
-        assertEquals(1, loanRepository.findAll()
-                .get(0)
-                .getRepaymentList()
-                .size());
+        assertNotNull(retrievedLoanAfterDelete);
+        assertEquals(1, retrievedLoan.getRepaymentList().size());
     }
 
     @Test
@@ -119,7 +128,12 @@ public class LoanToRepaymentRelationsTest {
         // when
         loanRepository.deleteAll();
 
+        Loan retrievedLoanAfterDelete = loanRepository
+                .findById(loan.getLoanId())
+                .orElse(null);
+
         // then
+        assertNull(retrievedLoanAfterDelete);
         assertEquals(0, loanRepository.count());
         assertEquals(0, repaymentRepository.count());
     }
@@ -148,14 +162,17 @@ public class LoanToRepaymentRelationsTest {
         repayment.setRepaymentAmount(new BigDecimal(200.00));
         repaymentRepository.saveAndFlush(repayment);
 
+        Loan retrievedLoanAfterUpdate = loanRepository
+                .findById(loan.getLoanId())
+                .orElse(null);
+
         // then
-        assertEquals(new BigDecimal(200.00), loanRepository.findAll()
-                .get(0)
+        assertNotNull(retrievedLoanAfterUpdate);
+        assertEquals(new BigDecimal(200.00), retrievedLoanAfterUpdate
                 .getRepaymentList()
                 .get(0)
                 .getRepaymentAmount());
-        assertEquals(LocalDate.now(), loanRepository.findAll()
-                .get(0)
+        assertEquals(LocalDate.now(), retrievedLoanAfterUpdate
                 .getRepaymentList()
                 .get(0)
                 .getRepaymentDate());
@@ -180,14 +197,18 @@ public class LoanToRepaymentRelationsTest {
         repayment.setLoan(loan);
         loanRepository.saveAndFlush(loan);
 
-        // then & then
-        assertEquals(new BigDecimal(100.00), loanRepository.findAll()
-                .get(0)
+        // when
+        Loan retrievedLoan = loanRepository
+                .findById(loan.getLoanId())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedLoan);
+        assertEquals(new BigDecimal(100.00), retrievedLoan
                 .getRepaymentList()
                 .get(0)
                 .getRepaymentAmount());
-        assertEquals(LocalDate.of(2023,01,01), loanRepository.findAll()
-                .get(0)
+        assertEquals(LocalDate.of(2023,01,01), retrievedLoan
                 .getRepaymentList()
                 .get(0)
                 .getRepaymentDate());

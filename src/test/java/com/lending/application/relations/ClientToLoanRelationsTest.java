@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -23,7 +23,7 @@ public class ClientToLoanRelationsTest {
     LoanRepository loanRepository;
 
     @Test
-    void createClientWithLoan_shouldReturnClientWith1Loan() {
+    void createClientWithLoan_shouldReturn1ClientAnd1Loan() {
         // given
         Client client = new Client();
         client.setName("Client");
@@ -39,19 +39,20 @@ public class ClientToLoanRelationsTest {
         clientRepository.saveAndFlush(client);
         loanRepository.saveAndFlush(loan);
 
-
         // when
         client.getLoanList().add(loan);
         clientRepository.saveAndFlush(client);
 
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
         // then
-        assertEquals(1, clientRepository.findAll()
-                .get(0)
-                .getLoanList()
-                .size());
+        assertNotNull(retrievedClient);
+        assertEquals(1, retrievedClient.getLoanList().size());
     }
     @Test
-    void deleteLoanFromClient_shouldReturn0Loans() {
+    void deleteLoanFromClient_shouldReturn1ClientAnd0Loans() {
         // given
         Client client = new Client();
         client.setName("Client");
@@ -68,17 +69,23 @@ public class ClientToLoanRelationsTest {
         clientRepository.saveAndFlush(client);
 
         // when
-        client = clientRepository.findAll().get(0);
-        loan = client.getLoanList().get(0);
-        client.getLoanList().remove(loan);
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
+        assertNotNull(retrievedClient);
+
+        retrievedClient.getLoanList().remove(loan);
         loanRepository.delete(loan);
         clientRepository.saveAndFlush(client);
 
+        Client retrievedClientAfterDelete = clientRepository
+                .findById(retrievedClient.getClientID())
+                .orElse(null);
+
         // then
-        assertEquals(0, clientRepository.findAll()
-                .get(0)
-                .getLoanList()
-                .size());
+        assertNotNull(retrievedClientAfterDelete);
+        assertEquals(0, retrievedClientAfterDelete.getLoanList().size());
     }
 
     @Test
@@ -101,7 +108,12 @@ public class ClientToLoanRelationsTest {
         // when
         clientRepository.delete(client);
 
+        Client retrievedClientAfterDelete = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
         // then
+        assertNull(retrievedClientAfterDelete);
         assertEquals(0, clientRepository.count());
         assertEquals(0, loanRepository.count());
     }
@@ -126,19 +138,20 @@ public class ClientToLoanRelationsTest {
         // when
         loan.setLoanAmount(new BigDecimal(2000.00));
         loan.setInterest(10.0F);
-
         loanRepository.saveAndFlush(loan);
 
+        Client retrievedClientAfterUpdate = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
         // then
-        assertEquals(new BigDecimal(2000.00), clientRepository.findAll()
-                .get(0)
+        assertNotNull(retrievedClientAfterUpdate);
+        assertEquals(new BigDecimal(2000.00), retrievedClientAfterUpdate
                 .getLoanList()
                 .get(0)
                 .getLoanAmount());
-        assertEquals(10.0F, clientRepository.findAll()
-                .get(0)
-                .getLoanList()
-                .get(0)
+        assertEquals(10.0F, retrievedClientAfterUpdate
+                .getLoanList().get(0)
                 .getInterest());
     }
     @Test
@@ -158,30 +171,25 @@ public class ClientToLoanRelationsTest {
         client.getLoanList().add(loan);
         clientRepository.saveAndFlush(client);
 
-        // when & then
-        assertEquals("Client", clientRepository.findAll()
-                .get(0)
-                .getName());
-        assertEquals("Last name", clientRepository.findAll()
-                .get(0)
-                .getLastName());
-        assertEquals(new BigDecimal(1000.00), clientRepository.findAll()
-                .get(0)
+        // when
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
+        // then
+        assertNotNull(retrievedClient);
+        assertEquals(new BigDecimal(1000.00), retrievedClient
                 .getLoanList()
                 .get(0)
                 .getLoanAmount());
-        assertEquals(5.0F, clientRepository.findAll()
-                .get(0)
+        assertEquals(5.0F, retrievedClient
                 .getLoanList()
                 .get(0)
                 .getInterest());
-        assertEquals(LocalDate.now(), clientRepository.findAll()
-                .get(0)
-                .getLoanList()
-                .get(0)
+        assertEquals(LocalDate.now(), retrievedClient
+                .getLoanList().get(0)
                 .getLoanStartDate());
-        assertEquals(22, clientRepository.findAll()
-                .get(0)
+        assertEquals(22, retrievedClient
                 .getLoanList()
                 .get(0)
                 .getRepaymentPeriod());

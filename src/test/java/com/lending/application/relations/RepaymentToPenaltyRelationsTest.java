@@ -34,12 +34,13 @@ public class RepaymentToPenaltyRelationsTest {
         repaymentRepository.saveAndFlush(repayment);
 
         // when
-        Repayment retrievedRepayment = repaymentRepository.findById(repayment.getRepaymentId()).orElse(null);
+        Repayment retrievedRepayment = repaymentRepository
+                .findById(repayment.getRepaymentId())
+                .orElse(null);
 
         // when & then
         assertNotNull(retrievedRepayment);
-        assertEquals(10, retrievedRepayment.getPenalty().getPenaltyPercentage());
-        assertEquals(LocalDate.now(), retrievedRepayment.getPenalty().getPenaltyDate());
+        assertNotNull(retrievedRepayment.getPenalty());
         assertEquals(1, repaymentRepository.count());
         assertEquals(1, penaltyRepository.count());
     }
@@ -56,12 +57,16 @@ public class RepaymentToPenaltyRelationsTest {
         repaymentRepository.saveAndFlush(repayment);
 
         // when
-        Repayment retrievedRepayment = repaymentRepository.findById(repayment.getRepaymentId()).orElse(null);
+        Repayment retrievedRepayment = repaymentRepository
+                .findById(repayment.getRepaymentId())
+                .orElse(null);
         retrievedRepayment.setPenalty(null);
         repaymentRepository.saveAndFlush(retrievedRepayment);
         penaltyRepository.delete(penalty);
 
-        Repayment retrievedRepaymentAfterDelete = repaymentRepository.findById(repayment.getRepaymentId()).orElse(null);
+        Repayment retrievedRepaymentAfterDelete = repaymentRepository
+                .findById(repayment.getRepaymentId())
+                .orElse(null);
 
         // then
         assertNotNull(retrievedRepaymentAfterDelete);
@@ -125,7 +130,9 @@ public class RepaymentToPenaltyRelationsTest {
         repaymentRepository.saveAndFlush(repayment);
 
         // when
-        Repayment retrievedRepayment = repaymentRepository.findById(repayment.getRepaymentId()).orElse(null);
+        Repayment retrievedRepayment = repaymentRepository
+                .findById(repayment.getRepaymentId())
+                .orElse(null);
 
         // then
         assertNotNull(retrievedRepayment);

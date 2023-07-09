@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -35,12 +35,16 @@ public class ClientToAccountRelationsTest {
         client.setLastName("Last name");
 
         Account account = new Account();
-
         client.setAccount(account);
-
         clientRepository.save(client);
 
+        // when
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
         // when & then
+        assertNotNull(retrievedClient);
         assertEquals(1, clientRepository.count());
         assertEquals(1, accountRepository.count());
     }
@@ -59,13 +63,22 @@ public class ClientToAccountRelationsTest {
         clientRepository.saveAndFlush(client);
 
         // when
-        client = clientRepository.findAll().get(0);
-        account = client.getAccount();
-        client.setAccount(null);
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
+        assertNotNull(retrievedClient);
+
+        retrievedClient.setAccount(null);
         accountRepository.delete(account);
-        clientRepository.saveAndFlush(client);
+        clientRepository.saveAndFlush(retrievedClient);
+
+        Client retrievedClientAfterDelete = clientRepository
+                .findById(retrievedClient.getClientID())
+                .orElse(null);
 
         // then
+        assertNotNull(retrievedClientAfterDelete);
         assertEquals(1, clientRepository.count());
         assertEquals(0, accountRepository.count());
     }
@@ -85,8 +98,12 @@ public class ClientToAccountRelationsTest {
 
         // when
         clientRepository.deleteAll();
+        Client retrievedClientAfterDelete = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
 
         // then
+        assertNull(retrievedClientAfterDelete);
         assertEquals(0, clientRepository.count());
         assertEquals(0, accountRepository.count());
     }
@@ -108,11 +125,13 @@ public class ClientToAccountRelationsTest {
         account.setBalance(new BigDecimal(200));
         accountRepository.save(account);
 
+        Client retrievedClientAfterUpdate = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
         // then
-        assertEquals(new BigDecimal(200), clientRepository.findAll()
-                .get(0)
-                .getAccount()
-                .getBalance());
+        assertNotNull(retrievedClientAfterUpdate);
+        assertEquals(new BigDecimal(200), retrievedClientAfterUpdate.getAccount().getBalance());
     }
 
     @Test
@@ -128,10 +147,13 @@ public class ClientToAccountRelationsTest {
         client.setAccount(account);
         clientRepository.save(client);
 
+        // when
+        Client retrievedClient = clientRepository
+                .findById(client.getClientID())
+                .orElse(null);
+
         // when & then
-        assertEquals(new BigDecimal(1), clientRepository.findAll()
-                .get(0)
-                .getAccount()
-                .getBalance());
+        assertNotNull(retrievedClient);
+        assertEquals(new BigDecimal(1), retrievedClient.getAccount().getBalance());
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -18,13 +18,16 @@ class AccountTest {
     AccountRepository accountRepository;
 
     @Test
-    void createAccount_shouldReturn1() {
+    void createAccount_shouldReturnAccount() {
         // given
         Account account = new Account();
-
         accountRepository.saveAndFlush(account);
 
-        // when & then
+        // when
+        Account retrievedAccount = accountRepository.findById(account.getAccountId()).orElse(null);
+
+        // then
+        assertNotNull(retrievedAccount);
         assertEquals(1,accountRepository.count());
     }
 
@@ -32,13 +35,14 @@ class AccountTest {
     void deleteOneAccount_shouldReturn0() {
         //given
         Account account = new Account();
-
         accountRepository.saveAndFlush(account);
 
         // when
         accountRepository.delete(account);
+        Account retrievedAccountAfterDelete = accountRepository.findById(account.getAccountId()).orElse(null);
 
         // then
+        assertNull(retrievedAccountAfterDelete);
         assertEquals(0, accountRepository.count());
     }
 
@@ -46,30 +50,30 @@ class AccountTest {
     void updateAccount_shouldReturnUpdatedData() {
         // given
         Account account = new Account(new BigDecimal(100));
-
         accountRepository.saveAndFlush(account);
 
         // when
         account.setBalance(new BigDecimal(200));
         accountRepository.saveAndFlush(account);
+        Account retrievedAccountAfterUpdate = accountRepository.findById(account.getAccountId()).orElse(null);
+
 
         // then
-        assertEquals(new BigDecimal(200),accountRepository
-                .findAll()
-                .get(0)
-                .getBalance());
+        assertNotNull(retrievedAccountAfterUpdate);
+        assertEquals(new BigDecimal(200), retrievedAccountAfterUpdate.getBalance());
     }
+
     @Test
     void readAccount_shouldReturnAllData() {
         // given
         Account account = new Account(new BigDecimal(100));
-
         accountRepository.saveAndFlush(account);
 
-        // when & then
-        assertEquals(new BigDecimal(100), accountRepository
-                .findAll()
-                .get(0)
-                .getBalance());
+        // when
+        Account retrievedAccount = accountRepository.findById(account.getAccountId()).orElse(null);
+
+        // then
+        assertNotNull(retrievedAccount);
+        assertEquals(new BigDecimal(100), retrievedAccount.getBalance());
     }
 }
