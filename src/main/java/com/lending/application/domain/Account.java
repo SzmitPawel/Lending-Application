@@ -29,4 +29,14 @@ public class Account {
     public Account(final BigDecimal balance) {
         this.balance = balance;
     }
+
+    public Account(
+            final Long accountId,
+            final BigDecimal balance,
+            final List<Transaction> transactionList
+    ) {
+        this.accountId = accountId;
+        this.balance = balance;
+        this.transactionList = transactionList;
+    }
 }

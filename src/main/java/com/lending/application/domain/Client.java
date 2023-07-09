@@ -52,4 +52,26 @@ public class Client {
         this.emailAddress = emailAddress;
         this.phoneNumber = phoneNumber;
     }
+
+    public Client(
+            final Long clientID,
+            final String name,
+            final String lastName,
+            final String address,
+            final String emailAddress,
+            final String phoneNumber,
+            final Account account,
+            final CreditRating creditRating,
+            final List<Loan> loanList
+    ) {
+        this.clientID = clientID;
+        this.name = name;
+        this.lastName = lastName;
+        this.address = address;
+        this.emailAddress = emailAddress;
+        this.phoneNumber = phoneNumber;
+        this.account = account;
+        this.creditRating = creditRating;
+        this.loanList = loanList;
+    }
 }
