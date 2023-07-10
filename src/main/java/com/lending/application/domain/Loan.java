@@ -1,7 +1,6 @@
 package com.lending.application.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +15,6 @@ import java.util.List;
 @Table(name = "LOAN")
 public class Loan {
     @Id
-    @Setter(AccessLevel.PRIVATE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true)
     private Long loanId;
@@ -31,7 +29,6 @@ public class Loan {
     @ManyToOne
     @JoinColumn(name = "CLIENT_ID")
     private Client client;
-    @Setter(AccessLevel.PRIVATE)
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY, mappedBy = "loan",targetEntity = Repayment.class)
     List<Repayment> repaymentList = new ArrayList<>();
 
@@ -48,23 +45,5 @@ public class Loan {
         this.interest = interest;
         this.loanStartDate = loanStartDate;
         this.repaymentPeriod = repaymentPeriod;
-    }
-
-    public Loan(
-            final Long loanId,
-            final BigDecimal loanAmount,
-            final Float interest,
-            final LocalDate loanStartDate,
-            final Integer repaymentPeriod,
-            final Client client,
-            final List<Repayment> repaymentList
-    ) {
-        this.loanId = loanId;
-        this.loanAmount = loanAmount;
-        this.interest = interest;
-        this.loanStartDate = loanStartDate;
-        this.repaymentPeriod = repaymentPeriod;
-        this.client = client;
-        this.repaymentList = repaymentList;
     }
 }

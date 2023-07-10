@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @Table(name = "RATING")
 public class CreditRating {
     @Id
-    @Setter(AccessLevel.NONE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true)
     private Long ratingId;
@@ -27,16 +26,6 @@ public class CreditRating {
             final CreditRatingEnum creditRating,
             final LocalDate dateOfRating
     ) {
-        this.creditRating = creditRating;
-        this.dateOfRating = dateOfRating;
-    }
-
-    public CreditRating(
-            final Long ratingId,
-            final CreditRatingEnum creditRating,
-            final LocalDate dateOfRating
-    ) {
-        this.ratingId = ratingId;
         this.creditRating = creditRating;
         this.dateOfRating = dateOfRating;
     }

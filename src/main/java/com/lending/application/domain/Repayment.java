@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @Setter
 @Table(name = "REPAYMENT")
 public class Repayment {
-    @Setter(AccessLevel.PRIVATE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true)
@@ -33,19 +32,5 @@ public class Repayment {
     public Repayment(final BigDecimal repaymentAmount, final LocalDate repaymentDate) {
         this.repaymentAmount = repaymentAmount;
         this.repaymentDate = repaymentDate;
-    }
-
-    public Repayment(
-            final Long repaymentId,
-            final BigDecimal repaymentAmount,
-            final LocalDate repaymentDate,
-            final Loan loan,
-            final Penalty penalty
-    ) {
-        this.repaymentId = repaymentId;
-        this.repaymentAmount = repaymentAmount;
-        this.repaymentDate = repaymentDate;
-        this.loan = loan;
-        this.penalty = penalty;
     }
 }
