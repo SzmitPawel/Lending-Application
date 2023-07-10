@@ -23,7 +23,20 @@ public class CreditRating {
     public CreditRating() {
     }
 
-    public CreditRating(final CreditRatingEnum creditRating, final LocalDate dateOfRating) {
+    public CreditRating(
+            final CreditRatingEnum creditRating,
+            final LocalDate dateOfRating
+    ) {
+        this.creditRating = creditRating;
+        this.dateOfRating = dateOfRating;
+    }
+
+    public CreditRating(
+            final Long ratingId,
+            final CreditRatingEnum creditRating,
+            final LocalDate dateOfRating
+    ) {
+        this.ratingId = ratingId;
         this.creditRating = creditRating;
         this.dateOfRating = dateOfRating;
     }
