@@ -142,7 +142,7 @@ public class AccountToTransactionRelationsTest {
         assertNotNull(retrievedAccount);
 
         retrievedAccount.getTransactionList().get(0).setTransactionMethodEnum(TransactionMethodEnum.WITHDRAWAL);
-        retrievedAccount.getTransactionList().get(0).setPaymentAmount(new BigDecimal(50.00));
+        retrievedAccount.getTransactionList().get(0).setTransactionAmount(new BigDecimal(50.00));
 
         Account retrievedAccountAfterUpdate = accountRepository
                 .findById(retrievedAccount.getAccountId())
@@ -157,7 +157,7 @@ public class AccountToTransactionRelationsTest {
         assertEquals(new BigDecimal(50.00), retrievedAccountAfterUpdate
                 .getTransactionList()
                 .get(0)
-                .getPaymentAmount());
+                .getTransactionAmount());
     }
 
     @Test
@@ -182,11 +182,11 @@ public class AccountToTransactionRelationsTest {
         assertNotNull(retrievedAccount);
         assertEquals(new BigDecimal(100.00), retrievedAccount
                 .getTransactionList()
-                .get(0).getPaymentAmount());
+                .get(0).getTransactionAmount());
         assertEquals(LocalDate.now(), retrievedAccount
                 .getTransactionList()
                 .get(0)
-                .getPaymentDate());
+                .getTransactionDate());
         assertEquals(TransactionMethodEnum.DEPOSIT, retrievedAccount
                 .getTransactionList()
                 .get(0)

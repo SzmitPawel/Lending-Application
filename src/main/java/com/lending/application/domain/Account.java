@@ -13,13 +13,11 @@ import java.util.List;
 @Table(name = "ACCOUNT")
 public class Account {
     @Id
-    @Setter(AccessLevel.NONE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true)
     private Long accountId;
     @Column(name = "BALANCE")
     private BigDecimal balance;
-    @Setter(AccessLevel.PRIVATE)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "account", targetEntity = Transaction.class)
     private List<Transaction> transactionList = new ArrayList<>();
 

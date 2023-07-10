@@ -81,8 +81,8 @@ class TransactionTest {
 
         // when
         transaction.setTransactionMethodEnum(TransactionMethodEnum.WITHDRAWAL);
-        transaction.setPaymentAmount(new BigDecimal(200.00));
-        transaction.setPaymentDate(LocalDate.of(2023,01,01));
+        transaction.setTransactionAmount(new BigDecimal(200.00));
+        transaction.setTransactionDate(LocalDate.of(2023,01,01));
         transactionRepository.saveAndFlush(transaction);
 
         Transaction retrievedTransactionAfterUpdate = transactionRepository
@@ -92,8 +92,8 @@ class TransactionTest {
         // then
         assertNotNull(retrievedTransactionAfterUpdate);
         assertEquals(TransactionMethodEnum.WITHDRAWAL, retrievedTransactionAfterUpdate.getTransactionMethodEnum());
-        assertEquals(new BigDecimal(200.00), retrievedTransactionAfterUpdate.getPaymentAmount());
-        assertEquals(LocalDate.of(2023,01,01), retrievedTransactionAfterUpdate.getPaymentDate());
+        assertEquals(new BigDecimal(200.00), retrievedTransactionAfterUpdate.getTransactionAmount());
+        assertEquals(LocalDate.of(2023,01,01), retrievedTransactionAfterUpdate.getTransactionDate());
     }
 
     @Test
@@ -113,8 +113,8 @@ class TransactionTest {
                 .orElse(null);
 
         // then
-        assertEquals(new BigDecimal(100.00), retrievedTransaction.getPaymentAmount());
-        assertEquals(LocalDate.now(), retrievedTransaction.getPaymentDate());
+        assertEquals(new BigDecimal(100.00), retrievedTransaction.getTransactionAmount());
+        assertEquals(LocalDate.now(), retrievedTransaction.getTransactionDate());
         assertEquals(TransactionMethodEnum.DEPOSIT, retrievedTransaction.getTransactionMethodEnum());
     }
 }

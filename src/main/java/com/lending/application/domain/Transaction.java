@@ -14,14 +14,13 @@ import java.time.LocalDate;
 @Table(name = "PAYMENT")
 public class Transaction {
     @Id
-    @Setter(AccessLevel.PRIVATE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true)
     private Long paymentID;
     @Column(name = "PAYMENT_AMOUNT", nullable = false)
-    private BigDecimal paymentAmount;
+    private BigDecimal transactionAmount;
     @Column(name = "PAYMENT_DATE")
-    private LocalDate paymentDate;
+    private LocalDate transactionDate;
     @Column(name = "PAYMENT_METHOD")
     private TransactionMethodEnum transactionMethodEnum;
     @ManyToOne
@@ -36,8 +35,8 @@ public class Transaction {
             final LocalDate paymentDate,
             final TransactionMethodEnum transactionMethodEnum
     ) {
-        this.paymentAmount = paymentAmount;
-        this.paymentDate = paymentDate;
+        this.transactionAmount = paymentAmount;
+        this.transactionDate = paymentDate;
         this.transactionMethodEnum = transactionMethodEnum;
     }
 }
