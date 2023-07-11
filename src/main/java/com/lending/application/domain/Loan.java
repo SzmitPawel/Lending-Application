@@ -46,4 +46,18 @@ public class Loan {
         this.loanStartDate = loanStartDate;
         this.repaymentPeriod = repaymentPeriod;
     }
+
+    public Loan(
+            final Long loanId,
+            final BigDecimal loanAmount,
+            final Float interest,
+            final LocalDate loanStartDate,
+            final Integer repaymentPeriod
+    ) {
+        this.loanId = loanId;
+        this.loanAmount = loanAmount;
+        this.interest = interest;
+        this.loanStartDate = loanStartDate;
+        this.repaymentPeriod = repaymentPeriod;
+    }
 }

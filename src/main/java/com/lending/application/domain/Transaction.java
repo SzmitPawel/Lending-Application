@@ -10,18 +10,18 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
+@Setter(AccessLevel.PRIVATE)
 @Table(name = "PAYMENT")
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true)
     private Long paymentID;
-    @Column(name = "PAYMENT_AMOUNT", nullable = false)
+    @Column(name = "TRANSACTION_AMOUNT", nullable = false)
     private BigDecimal transactionAmount;
-    @Column(name = "PAYMENT_DATE")
+    @Column(name = "TRANSACTION_DATE")
     private LocalDate transactionDate;
-    @Column(name = "PAYMENT_METHOD")
+    @Column(name = "TRANSACTION_METHOD")
     private TransactionMethodEnum transactionMethodEnum;
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_ID")
@@ -37,6 +37,18 @@ public class Transaction {
     ) {
         this.transactionAmount = paymentAmount;
         this.transactionDate = paymentDate;
+        this.transactionMethodEnum = transactionMethodEnum;
+    }
+
+    public Transaction(
+            final Long paymentID,
+            final BigDecimal transactionAmount,
+            final LocalDate transactionDate,
+            final TransactionMethodEnum transactionMethodEnum
+    ) {
+        this.paymentID = paymentID;
+        this.transactionAmount = transactionAmount;
+        this.transactionDate = transactionDate;
         this.transactionMethodEnum = transactionMethodEnum;
     }
 }

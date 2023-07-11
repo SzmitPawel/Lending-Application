@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
+@Setter(AccessLevel.PRIVATE)
 @Table(name = "REPAYMENT")
 public class Repayment {
     @Id
@@ -30,6 +30,16 @@ public class Repayment {
     }
 
     public Repayment(final BigDecimal repaymentAmount, final LocalDate repaymentDate) {
+        this.repaymentAmount = repaymentAmount;
+        this.repaymentDate = repaymentDate;
+    }
+
+    public Repayment(
+            final Long repaymentId,
+            final BigDecimal repaymentAmount,
+            final LocalDate repaymentDate
+    ) {
+        this.repaymentId = repaymentId;
         this.repaymentAmount = repaymentAmount;
         this.repaymentDate = repaymentDate;
     }

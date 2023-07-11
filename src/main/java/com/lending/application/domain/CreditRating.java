@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
+@Setter(AccessLevel.PRIVATE)
 @Table(name = "RATING")
 public class CreditRating {
     @Id
@@ -26,6 +26,16 @@ public class CreditRating {
             final CreditRatingEnum creditRating,
             final LocalDate dateOfRating
     ) {
+        this.creditRating = creditRating;
+        this.dateOfRating = dateOfRating;
+    }
+
+    public CreditRating(
+            final Long ratingId,
+            final CreditRatingEnum creditRating,
+            final LocalDate dateOfRating
+    ) {
+        this.ratingId = ratingId;
         this.creditRating = creditRating;
         this.dateOfRating = dateOfRating;
     }
