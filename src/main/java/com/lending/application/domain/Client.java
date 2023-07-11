@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
+@Setter(AccessLevel.PRIVATE)
 @Table(name = "CLIENT")
 public class Client {
     @Id
@@ -44,6 +44,21 @@ public class Client {
             final String emailAddress,
             final String phoneNumber
     ) {
+        this.name = name;
+        this.lastName = lastName;
+        this.address = address;
+        this.emailAddress = emailAddress;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Client(
+            final Long clientID,
+            final String name,
+            final String lastName,
+            final String address,
+            final String emailAddress,
+            final String phoneNumber) {
+        this.clientID = clientID;
         this.name = name;
         this.lastName = lastName;
         this.address = address;

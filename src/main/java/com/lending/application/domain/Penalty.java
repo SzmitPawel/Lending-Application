@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
+@Setter(AccessLevel.PRIVATE)
 @Table(name = "PENALTY")
 public class Penalty {
     @Id
@@ -28,6 +28,16 @@ public class Penalty {
             final Integer penaltyPercentage,
             final LocalDate penaltyDate
     ) {
+        this.penaltyPercentage = penaltyPercentage;
+        this.penaltyDate = penaltyDate;
+    }
+
+    public Penalty(
+            final Long penaltyId,
+            final Integer penaltyPercentage,
+            final LocalDate penaltyDate
+    ) {
+        this.penaltyId = penaltyId;
         this.penaltyPercentage = penaltyPercentage;
         this.penaltyDate = penaltyDate;
     }

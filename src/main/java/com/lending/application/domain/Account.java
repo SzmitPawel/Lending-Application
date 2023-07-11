@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
+@Setter(AccessLevel.PRIVATE)
 @Table(name = "ACCOUNT")
 public class Account {
     @Id
@@ -28,13 +28,8 @@ public class Account {
         this.balance = balance;
     }
 
-    public Account(
-            final Long accountId,
-            final BigDecimal balance,
-            final List<Transaction> transactionList
-    ) {
+    public Account(final Long accountId, final BigDecimal balance) {
         this.accountId = accountId;
         this.balance = balance;
-        this.transactionList = transactionList;
     }
 }
