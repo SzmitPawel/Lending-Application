@@ -21,14 +21,15 @@ public class ClientMapper {
     }
 
     public Client mapToClient(final ClientDto clientDto) {
-        return new Client(
-                clientDto.getClientID(),
-                clientDto.getName(),
-                clientDto.getLastName(),
-                clientDto.getAddress(),
-                clientDto.getEmailAddress(),
-                clientDto.getPhoneNumber()
-        );
+        Client client = new Client();
+        client.setClientID(clientDto.getClientID());
+        client.setName(clientDto.getName());
+        client.setLastName(clientDto.getLastName());
+        client.setAddress(clientDto.getAddress());
+        client.setEmailAddress(clientDto.getEmailAddress());
+        client.setPhoneNumber(clientDto.getPhoneNumber());
+
+        return client;
     }
 
     public List<ClientDto> mapToClientDtoList(final List<Client> clientList) {

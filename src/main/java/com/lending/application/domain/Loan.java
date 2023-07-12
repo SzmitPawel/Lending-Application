@@ -1,8 +1,6 @@
 package com.lending.application.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,26 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 @Table(name = "LOAN")
 public class Loan {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", unique = true)
     private Long loanId;
-    @Column(name = "LOAN_AMOUNT", nullable = false)
     private BigDecimal loanAmount;
-    @Column(name = "INTEREST", nullable = false)
     private Float interest;
-    @Column(name = "LOAN_START", nullable = false)
     private LocalDate loanStartDate;
-    @Column(name = "REPAYMENT_PERIOD", nullable = false)
     private Integer repaymentPeriod;
-    @ManyToOne
-    @JoinColumn(name = "CLIENT_ID")
     private Client client;
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY, mappedBy = "loan",targetEntity = Repayment.class)
     List<Repayment> repaymentList = new ArrayList<>();
 
     public Loan() {
@@ -47,17 +33,69 @@ public class Loan {
         this.repaymentPeriod = repaymentPeriod;
     }
 
-    public Loan(
-            final Long loanId,
-            final BigDecimal loanAmount,
-            final Float interest,
-            final LocalDate loanStartDate,
-            final Integer repaymentPeriod
-    ) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", unique = true)
+    public Long getLoanId() {
+        return loanId;
+    }
+
+    @Column(name = "LOAN_AMOUNT", nullable = false)
+    public BigDecimal getLoanAmount() {
+        return loanAmount;
+    }
+
+    @Column(name = "INTEREST", nullable = false)
+    public Float getInterest() {
+        return interest;
+    }
+
+    @Column(name = "LOAN_START", nullable = false)
+    public LocalDate getLoanStartDate() {
+        return loanStartDate;
+    }
+
+    @Column(name = "REPAYMENT_PERIOD", nullable = false)
+    public Integer getRepaymentPeriod() {
+        return repaymentPeriod;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "CLIENT_ID")
+    public Client getClient() {
+        return client;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY, mappedBy = "loan",targetEntity = Repayment.class)
+    public List<Repayment> getRepaymentList() {
+        return repaymentList;
+    }
+
+    public void setLoanId(Long loanId) {
         this.loanId = loanId;
+    }
+
+    public void setLoanAmount(BigDecimal loanAmount) {
         this.loanAmount = loanAmount;
+    }
+
+    public void setInterest(Float interest) {
         this.interest = interest;
+    }
+
+    public void setLoanStartDate(LocalDate loanStartDate) {
         this.loanStartDate = loanStartDate;
+    }
+
+    public void setRepaymentPeriod(Integer repaymentPeriod) {
         this.repaymentPeriod = repaymentPeriod;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public void setRepaymentList(List<Repayment> repaymentList) {
+        this.repaymentList = repaymentList;
     }
 }

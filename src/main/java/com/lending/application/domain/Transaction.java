@@ -1,54 +1,77 @@
 package com.lending.application.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Getter
-@Setter(AccessLevel.PRIVATE)
-@Table(name = "PAYMENT")
+@Table(name = "TRANSACTION")
 public class Transaction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", unique = true)
-    private Long paymentID;
-    @Column(name = "TRANSACTION_AMOUNT", nullable = false)
+    private Long transactionID;
     private BigDecimal transactionAmount;
-    @Column(name = "TRANSACTION_DATE")
     private LocalDate transactionDate;
-    @Column(name = "TRANSACTION_METHOD")
     private TransactionMethodEnum transactionMethodEnum;
-    @ManyToOne
-    @JoinColumn(name = "ACCOUNT_ID")
     private Account account;
 
     public Transaction() {
     }
 
     public Transaction(
-            final BigDecimal paymentAmount,
-            final LocalDate paymentDate,
-            final TransactionMethodEnum transactionMethodEnum
-    ) {
-        this.transactionAmount = paymentAmount;
-        this.transactionDate = paymentDate;
-        this.transactionMethodEnum = transactionMethodEnum;
-    }
-
-    public Transaction(
-            final Long paymentID,
             final BigDecimal transactionAmount,
             final LocalDate transactionDate,
             final TransactionMethodEnum transactionMethodEnum
     ) {
-        this.paymentID = paymentID;
         this.transactionAmount = transactionAmount;
         this.transactionDate = transactionDate;
         this.transactionMethodEnum = transactionMethodEnum;
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", unique = true)
+    public Long getTransactionID() {
+        return transactionID;
+    }
+
+    @Column(name = "TRANSACTION_AMOUNT", nullable = false)
+    public BigDecimal getTransactionAmount() {
+        return transactionAmount;
+    }
+
+    @Column(name = "TRANSACTION_DATE")
+    public LocalDate getTransactionDate() {
+        return transactionDate;
+    }
+
+    @Column(name = "TRANSACTION_METHOD")
+    public TransactionMethodEnum getTransactionMethodEnum() {
+        return transactionMethodEnum;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "ACCOUNT_ID")
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setTransactionID(Long transactionID) {
+        this.transactionID = transactionID;
+    }
+
+    public void setTransactionAmount(BigDecimal transactionAmount) {
+        this.transactionAmount = transactionAmount;
+    }
+
+    public void setTransactionDate(LocalDate transactionDate) {
+        this.transactionDate = transactionDate;
+    }
+
+    public void setTransactionMethodEnum(TransactionMethodEnum transactionMethodEnum) {
+        this.transactionMethodEnum = transactionMethodEnum;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }

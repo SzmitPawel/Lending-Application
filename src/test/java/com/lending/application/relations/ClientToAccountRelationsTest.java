@@ -30,9 +30,7 @@ public class ClientToAccountRelationsTest {
     @Test
     void createClientWithAccount_shouldReturn1ClientAnd1Account() {
         // given
-        Client client = new Client();
-        client.setName("Client");
-        client.setLastName("Last name");
+        Client client = new Client("Name", "Last name", null, null, null);
 
         Account account = new Account();
         client.setAccount(account);
