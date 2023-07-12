@@ -31,9 +31,13 @@ class ClientTest {
     @Test
     void createClient_shouldReturnClient() {
         // given
-        Client client = new Client();
-        client.setName("Client");
-        client.setLastName("Last name");
+        Client client = new Client(
+                "Client",
+                "Last name",
+                null,
+                null,
+                null
+        );
         clientRepository.saveAndFlush(client);
 
         // when
@@ -49,9 +53,13 @@ class ClientTest {
     @Test
     void deleteClient_ShouldReturn0(){
         //given
-        Client client = new Client();
-        client.setName("Client");
-        client.setLastName("Last name");
+        Client client = new Client(
+                "Client",
+                "Last name",
+                null,
+                null,
+                null
+        );
         clientRepository.saveAndFlush(client);
 
         // when

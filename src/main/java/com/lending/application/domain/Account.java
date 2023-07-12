@@ -1,24 +1,16 @@
 package com.lending.application.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter(AccessLevel.PRIVATE)
 @Table(name = "ACCOUNT")
 public class Account {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", unique = true)
     private Long accountId;
-    @Column(name = "BALANCE")
     private BigDecimal balance;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "account", targetEntity = Transaction.class)
     private List<Transaction> transactionList = new ArrayList<>();
 
     public Account() {
@@ -28,8 +20,32 @@ public class Account {
         this.balance = balance;
     }
 
-    public Account(final Long accountId, final BigDecimal balance) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", unique = true)
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    @Column(name = "BALANCE")
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "account", targetEntity = Transaction.class)
+    public List<Transaction> getTransactionList() {
+        return transactionList;
+    }
+
+    public void setAccountId(Long accountId) {
         this.accountId = accountId;
+    }
+
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
+    }
+
+    public void setTransactionList(List<Transaction> transactionList) {
+        this.transactionList = transactionList;
     }
 }

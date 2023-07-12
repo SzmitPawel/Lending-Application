@@ -10,8 +10,8 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 public class TransactionDto {
-    private Long paymentID;
-    private BigDecimal paymentAmount;
-    private LocalDate paymentDate;
+    private Long transactionID;
+    private BigDecimal transactionAmount;
+    private LocalDate transactionDate;
     private TransactionMethodEnum transactionMethodEnum;
 }

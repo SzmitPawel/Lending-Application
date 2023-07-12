@@ -15,10 +15,11 @@ public class PenaltyMapper {
     }
 
     public Penalty mapToPenalty(final PenaltyDto penaltyDto) {
-        return new Penalty(
-                penaltyDto.getPenaltyId(),
-                penaltyDto.getPenaltyPercentage(),
-                penaltyDto.getPenaltyDate()
-        );
+        Penalty penalty = new Penalty();
+        penalty.setPenaltyId(penaltyDto.getPenaltyId());
+        penalty.setPenaltyPercentage(penaltyDto.getPenaltyPercentage());
+        penalty.setPenaltyDate(penaltyDto.getPenaltyDate());
+
+        return penalty;
     }
 }

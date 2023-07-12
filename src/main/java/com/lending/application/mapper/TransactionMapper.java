@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class TransactionMapper {
     public TransactionDto mapToTransactionDto(final Transaction transaction) {
         return new TransactionDto(
-                transaction.getPaymentID(),
+                transaction.getTransactionID(),
                 transaction.getTransactionAmount(),
                 transaction.getTransactionDate(),
                 transaction.getTransactionMethodEnum()
@@ -19,12 +19,13 @@ public class TransactionMapper {
     }
 
     public Transaction mapToTransaction(final TransactionDto transactionDto) {
-        return new Transaction(
-                transactionDto.getPaymentID(),
-                transactionDto.getPaymentAmount(),
-                transactionDto.getPaymentDate(),
-                transactionDto.getTransactionMethodEnum()
-        );
+        Transaction transaction = new Transaction();
+        transaction.setTransactionID(transactionDto.getTransactionID());
+        transaction.setTransactionAmount(transactionDto.getTransactionAmount());
+        transaction.setTransactionDate(transactionDto.getTransactionDate());
+        transaction.setTransactionMethodEnum(transactionDto.getTransactionMethodEnum());
+
+        return transaction;
     }
 
     public List<TransactionDto> mapToTransactionDtoList(final List<Transaction> transactionList) {

@@ -18,11 +18,12 @@ public class RepaymentMapper {
     }
 
     public Repayment mapToRepayment(final RepaymentDto repaymentDto) {
-        return new Repayment(
-                repaymentDto.getRepaymentId(),
-                repaymentDto.getRepaymentAmount(),
-                repaymentDto.getRepaymentDate()
-        );
+        Repayment repayment = new Repayment();
+        repayment.setRepaymentId(repaymentDto.getRepaymentId());
+        repayment.setRepaymentAmount(repaymentDto.getRepaymentAmount());
+        repayment.setRepaymentDate(repaymentDto.getRepaymentDate());
+
+        return repayment;
     }
 
     public List<RepaymentDto> mapToRepaymentDtoList(final List<Repayment> repaymentList) {

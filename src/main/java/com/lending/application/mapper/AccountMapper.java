@@ -14,8 +14,10 @@ public class AccountMapper {
     }
 
     public Account mapToAccount(final AccountDto accountDto) {
-        return new Account(
-                accountDto.getAccountId(),
-                accountDto.getBalance());
+        Account account = new Account();
+        account.setAccountId(accountDto.getAccountId());
+        account.setBalance(accountDto.getBalance());
+
+        return account;
     }
 }

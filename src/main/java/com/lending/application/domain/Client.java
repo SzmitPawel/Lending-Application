@@ -1,37 +1,21 @@
 package com.lending.application.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter(AccessLevel.PRIVATE)
 @Table(name = "CLIENT")
 public class Client {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", unique = true)
     private Long clientID;
-    @Column(name = "NAME", nullable = false)
     private String name;
-    @Column(name = "LAST_NAME", nullable = false)
     private String lastName;
-    @Column(name = "ADDRESS")
     private String address;
-    @Column(name = "EMAIL_ADDRESS")
     private String emailAddress;
-    @Column(name = "PHONE_NUMBER")
     private String phoneNumber;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "ACCOUNT_ID")
     private Account account;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "RATING_ID")
     private CreditRating creditRating;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy = "client",targetEntity = Loan.class)
     private List<Loan> loanList = new ArrayList<>();
 
     public Client() {
@@ -51,18 +35,88 @@ public class Client {
         this.phoneNumber = phoneNumber;
     }
 
-    public Client(
-            final Long clientID,
-            final String name,
-            final String lastName,
-            final String address,
-            final String emailAddress,
-            final String phoneNumber) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", unique = true)
+    public Long getClientID() {
+        return clientID;
+    }
+
+    @Column(name = "NAME", nullable = false)
+    public String getName() {
+        return name;
+    }
+
+    @Column(name = "LAST_NAME", nullable = false)
+    public String getLastName() {
+        return lastName;
+    }
+
+    @Column(name = "ADDRESS")
+    public String getAddress() {
+        return address;
+    }
+
+    @Column(name = "EMAIL_ADDRESS")
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    @Column(name = "PHONE_NUMBER")
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "ACCOUNT_ID")
+    public Account getAccount() {
+        return account;
+    }
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "RATING_ID")
+    public CreditRating getCreditRating() {
+        return creditRating;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy = "client",targetEntity = Loan.class)
+    public List<Loan> getLoanList() {
+        return loanList;
+    }
+
+    public void setClientID(Long clientID) {
         this.clientID = clientID;
+    }
+
+    public void setName(String name) {
         this.name = name;
+    }
+
+    public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public void setAddress(String address) {
         this.address = address;
+    }
+
+    public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public void setCreditRating(CreditRating creditRating) {
+        this.creditRating = creditRating;
+    }
+
+    public void setLoanList(List<Loan> loanList) {
+        this.loanList = loanList;
     }
 }

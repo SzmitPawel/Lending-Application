@@ -1,24 +1,14 @@
 package com.lending.application.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Entity
-@Getter
-@Setter(AccessLevel.PRIVATE)
 @Table(name = "PENALTY")
 public class Penalty {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
     private Long penaltyId;
-    @Column(name = "PENALTY_PERCENTAGE", nullable = false)
     private Integer penaltyPercentage;
-    @Column(name = "PENALTY_DATE", nullable = false)
     private LocalDate penaltyDate;
 
     public Penalty() {
@@ -32,13 +22,32 @@ public class Penalty {
         this.penaltyDate = penaltyDate;
     }
 
-    public Penalty(
-            final Long penaltyId,
-            final Integer penaltyPercentage,
-            final LocalDate penaltyDate
-    ) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    public Long getPenaltyId() {
+        return penaltyId;
+    }
+
+    @Column(name = "PENALTY_PERCENTAGE", nullable = false)
+    public Integer getPenaltyPercentage() {
+        return penaltyPercentage;
+    }
+
+    @Column(name = "PENALTY_DATE", nullable = false)
+    public LocalDate getPenaltyDate() {
+        return penaltyDate;
+    }
+
+    public void setPenaltyId(Long penaltyId) {
         this.penaltyId = penaltyId;
+    }
+
+    public void setPenaltyPercentage(Integer penaltyPercentage) {
         this.penaltyPercentage = penaltyPercentage;
+    }
+
+    public void setPenaltyDate(LocalDate penaltyDate) {
         this.penaltyDate = penaltyDate;
     }
 }

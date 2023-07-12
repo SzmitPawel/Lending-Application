@@ -20,13 +20,14 @@ public class LoanMapper {
     }
 
     public Loan mapToLona(final LoanDto loanDto) {
-        return new Loan(
-                loanDto.getLoanId(),
-                loanDto.getLoanAmount(),
-                loanDto.getInterest(),
-                loanDto.getLoanStartDate(),
-                loanDto.getRepaymentPeriod()
-        );
+        Loan loan = new Loan();
+        loan.setLoanId(loanDto.getLoanId());
+        loan.setLoanAmount(loanDto.getLoanAmount());
+        loan.setInterest(loanDto.getInterest());
+        loan.setLoanStartDate(loanDto.getLoanStartDate());
+        loan.setRepaymentPeriod(loan.getRepaymentPeriod());
+
+        return loan;
     }
 
     public List<LoanDto> mapToLoanDtoList(final List<Loan> loanList) {

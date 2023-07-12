@@ -39,7 +39,7 @@ class TransactionTest {
 
         // when
         Transaction retrievedTransaction = transactionRepository
-                .findById(transaction.getPaymentID())
+                .findById(transaction.getTransactionID())
                 .orElse(null);
 
         // then
@@ -61,7 +61,7 @@ class TransactionTest {
         transactionRepository.delete(transaction);
 
         Transaction retrievedTransactionAfterDelete = transactionRepository
-                .findById(transaction.getPaymentID())
+                .findById(transaction.getTransactionID())
                 .orElse(null);
 
         // then
@@ -86,7 +86,7 @@ class TransactionTest {
         transactionRepository.saveAndFlush(transaction);
 
         Transaction retrievedTransactionAfterUpdate = transactionRepository
-                .findById(transaction.getPaymentID())
+                .findById(transaction.getTransactionID())
                 .orElse(null);
 
         // then
@@ -109,7 +109,7 @@ class TransactionTest {
 
         // when
         Transaction retrievedTransaction = transactionRepository
-                .findById(transaction.getPaymentID())
+                .findById(transaction.getTransactionID())
                 .orElse(null);
 
         // then

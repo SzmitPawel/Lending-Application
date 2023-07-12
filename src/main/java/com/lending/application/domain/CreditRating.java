@@ -1,22 +1,14 @@
 package com.lending.application.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
-@Getter
-@Setter(AccessLevel.PRIVATE)
 @Table(name = "RATING")
 public class CreditRating {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", unique = true)
     private Long ratingId;
-    @Column(name = "CREDIT_RATING")
     private CreditRatingEnum creditRating;
-    @Column(name = "DATE")
     private LocalDate dateOfRating;
 
     public CreditRating() {
@@ -30,13 +22,32 @@ public class CreditRating {
         this.dateOfRating = dateOfRating;
     }
 
-    public CreditRating(
-            final Long ratingId,
-            final CreditRatingEnum creditRating,
-            final LocalDate dateOfRating
-    ) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", unique = true)
+    public Long getRatingId() {
+        return ratingId;
+    }
+
+    @Column(name = "CREDIT_RATING")
+    public CreditRatingEnum getCreditRating() {
+        return creditRating;
+    }
+
+    @Column(name = "DATE")
+    public LocalDate getDateOfRating() {
+        return dateOfRating;
+    }
+
+    public void setRatingId(Long ratingId) {
         this.ratingId = ratingId;
+    }
+
+    public void setCreditRating(CreditRatingEnum creditRating) {
         this.creditRating = creditRating;
+    }
+
+    public void setDateOfRating(LocalDate dateOfRating) {
         this.dateOfRating = dateOfRating;
     }
 }

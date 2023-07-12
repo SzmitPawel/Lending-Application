@@ -15,10 +15,11 @@ public class CreditRatingMapper {
     }
 
     public CreditRating mapToCreditRating(final CreditRatingDto creditRatingDto) {
-        return new CreditRating(
-                creditRatingDto.getRatingId(),
-                creditRatingDto.getCreditRating(),
-                creditRatingDto.getDateOfRating()
-        );
+        CreditRating creditRating = new CreditRating();
+        creditRating.setRatingId(creditRatingDto.getRatingId());
+        creditRating.setCreditRating(creditRatingDto.getCreditRating());
+        creditRating.setDateOfRating(creditRatingDto.getDateOfRating());
+
+        return creditRating;
     }
 }
