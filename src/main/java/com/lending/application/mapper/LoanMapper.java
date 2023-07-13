@@ -19,13 +19,13 @@ public class LoanMapper {
         );
     }
 
-    public Loan mapToLona(final LoanDto loanDto) {
+    public Loan mapToLoan(final LoanDto loanDto) {
         Loan loan = new Loan();
         loan.setLoanId(loanDto.getLoanId());
         loan.setLoanAmount(loanDto.getLoanAmount());
         loan.setInterest(loanDto.getInterest());
         loan.setLoanStartDate(loanDto.getLoanStartDate());
-        loan.setRepaymentPeriod(loan.getRepaymentPeriod());
+        loan.setRepaymentPeriod(loanDto.getRepaymentPeriod());
 
         return loan;
     }
@@ -38,7 +38,7 @@ public class LoanMapper {
 
     public List<Loan> mapToLoanList(final List<LoanDto> loanDtoList) {
         return loanDtoList.stream()
-                .map(this::mapToLona)
+                .map(this::mapToLoan)
                 .collect(Collectors.toList());
     }
 }
