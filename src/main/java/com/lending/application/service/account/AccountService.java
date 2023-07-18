@@ -2,6 +2,7 @@ package com.lending.application.service.account;
 
 import com.lending.application.domain.Account;
 import com.lending.application.domain.dto.AccountDto;
+import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.mapper.AccountMapper;
 import com.lending.application.repository.AccountRepository;
 import lombok.AllArgsConstructor;
@@ -16,28 +17,26 @@ public class AccountService {
     AccountMapper accountMapper;
 
     public void createAccount(final AccountDto accountDto) {
-        Account account = accountMapper.mapToAccount(accountDto);
-        accountRepository.saveAndFlush(account);
+        accountRepository.saveAndFlush(accountMapper.mapToAccount(accountDto));
     }
 
-    public AccountDto getAccountById(final Long id) throws ClientNotFoundException {
-        Account account = accountRepository.findById(id).orElseThrow(ClientNotFoundException::new);
+    public AccountDto getAccountById(final Long accountId) throws ClientNotFoundException {
+        Account account = accountRepository.findById(accountId).orElseThrow(ClientNotFoundException::new);
         return accountMapper.mapToDto(account);
     }
 
-    public void deleteAccount(final Long id) throws ClientNotFoundException {
-        if (accountRepository.findById(id).isPresent()) {
-            accountRepository.deleteById(id);
+    public void deleteAccount(final Long accountId) throws ClientNotFoundException {
+        if (accountRepository.findById(accountId).isPresent()) {
+            accountRepository.deleteById(accountId);
         } else {
             throw new ClientNotFoundException();
         }
     }
 
-    public AccountDto updateAccountBalance(final Long id, final BigDecimal balance) throws ClientNotFoundException {
-        Account account = accountRepository.findById(id).orElseThrow(ClientNotFoundException::new);
+    public void updateAccountBalance(final Long accountId, final BigDecimal balance) throws ClientNotFoundException {
+        Account account = accountRepository.findById(accountId).orElseThrow(ClientNotFoundException::new);
         account.setBalance(balance);
-        accountRepository.saveAndFlush(account);
 
-        return accountMapper.mapToDto(account);
+        accountRepository.saveAndFlush(account);
     }
 }
