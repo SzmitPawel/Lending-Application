@@ -29,7 +29,7 @@ class ClientServiceTest {
 
     @Test
     void testGetClientById_ClientNotFoundException() {
-        // give
+        // given
         when(clientRepository.findById(any())).thenReturn(Optional.empty());
 
         // when & then
@@ -38,7 +38,7 @@ class ClientServiceTest {
 
     @Test
     void testDeleteClientById_ClientNotFoundException() {
-        // give
+        // given
         when(clientRepository.findById(any())).thenReturn(Optional.empty());
 
         // when & then
@@ -131,7 +131,7 @@ class ClientServiceTest {
         when(clientRepository.findById(any())).thenReturn(Optional.of(client));
 
         // when
-        clientService.updateClient(1L, clientDto);
+        clientService.updateClient(clientDto);
 
         // then
         verify(clientRepository, times(1)).findById(1L);

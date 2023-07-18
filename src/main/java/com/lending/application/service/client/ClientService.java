@@ -28,8 +28,8 @@ public class ClientService {
         return clientMapper.mapToClientDtoList(clientRepository.findAll());
     }
 
-    public void updateClient(final Long clientId, final ClientDto clientDto) throws ClientNotFoundException{
-        Client client = clientRepository.findById(clientId).orElseThrow(ClientNotFoundException::new);
+    public void updateClient(final ClientDto clientDto) throws ClientNotFoundException{
+        Client client = clientRepository.findById(clientDto.getClientID()).orElseThrow(ClientNotFoundException::new);
 
         client.setName(clientDto.getName());
         client.setLastName(clientDto.getLastName());
