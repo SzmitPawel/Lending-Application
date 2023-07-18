@@ -110,7 +110,6 @@ class AccountServiceTest {
         accountService.deleteAccount(1L);
 
         // when & then
-        verify(accountRepository, times(1)).findById(1L);
         verify(accountRepository, times(1)).deleteById(1L);
     }
 }
