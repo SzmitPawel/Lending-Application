@@ -1,4 +1,4 @@
-package com.lending.application.service.account;
+package com.lending.application.exception;
 
 public class ClientNotFoundException extends Exception {
 }

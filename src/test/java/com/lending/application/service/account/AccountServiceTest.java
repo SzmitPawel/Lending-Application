@@ -2,6 +2,7 @@ package com.lending.application.service.account;
 
 import com.lending.application.domain.Account;
 import com.lending.application.domain.dto.AccountDto;
+import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.mapper.AccountMapper;
 import com.lending.application.repository.AccountRepository;
 import org.junit.jupiter.api.Test;
@@ -29,71 +30,71 @@ class AccountServiceTest {
     @Test
     public void testGetAccountById_ClientNotFoundException() {
         // given
-        when(accountRepository.findById(1L)).thenReturn(Optional.empty());
+        when(accountRepository.findById(any())).thenReturn(Optional.empty());
 
         // when & then
         assertThrows(ClientNotFoundException.class, () -> accountService.getAccountById(1L));
     }
 
     @Test
-    void testCreateAccountById() {
+    void testDeleteAccountById_ClientNotFoundException() {
         // given
-        Account account = new Account();
-        account.setAccountId(1L);
-        account.setBalance(new BigDecimal(10));
+        when(accountRepository.findById(any())).thenReturn(Optional.empty());
 
-        AccountDto accountDto = new AccountDto(1L, new BigDecimal(10));
+        // when & then
+        assertThrows(ClientNotFoundException.class, () -> accountService.deleteAccount(1L));
+    }
+
+    @Test
+    void testCreateAccount() {
+        // given
+        AccountDto accountDto = new AccountDto(
+                1L,
+                new BigDecimal(10)
+        );
+
+        Account account = new Account();
 
         when(accountMapper.mapToAccount(accountDto)).thenReturn(account);
-        when(accountRepository.saveAndFlush(account)).thenReturn(account);
 
         // when
         accountService.createAccount(accountDto);
 
-
         // then
-        verify(accountMapper, times(1)).mapToAccount(accountDto);
         verify(accountRepository, times(1)).saveAndFlush(account);
     }
 
     @Test
-    void testGetAccount_shouldReturnAccountDto() throws ClientNotFoundException {
+    void testGetAccountById() throws ClientNotFoundException {
         // given
         Account account = new Account();
         account.setAccountId(1L);
         account.setBalance(new BigDecimal(10));
 
-        AccountDto accountDto = new AccountDto(1L, new BigDecimal(10));
-
-        when(accountMapper.mapToDto(account)).thenReturn(accountDto);
-        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+        when(accountRepository.findById(any())).thenReturn(Optional.of(account));
+        when(accountMapper.mapToDto(account)).thenCallRealMethod();
 
         // when
         AccountDto retrievedAccountDto = accountService.getAccountById(1L);
 
         // then
-        assertEquals(accountDto, retrievedAccountDto);
+        verify(accountMapper, times(1)).mapToDto(account);
+        verify(accountRepository, times(1)).findById(1L);
+        assertEquals(new BigDecimal(10), retrievedAccountDto.getBalance());
     }
 
     @Test
-    void testUpdateAccountBalance_shouldReturnUpdateAccount() throws ClientNotFoundException {
+    void testUpdateAccountBalance() throws ClientNotFoundException {
         // given
         Account account = new Account();
-        account.setAccountId(1L);
-        account.setBalance(new BigDecimal(10));
 
-        AccountDto accountDto = new AccountDto(1L, new BigDecimal(20));
-
-        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
-        when(accountMapper.mapToDto(account)).thenReturn(accountDto);
+        when(accountRepository.findById(any())).thenReturn(Optional.of(account));
 
         // when
-        AccountDto retrievedAccountAfterUpdate = accountService.updateAccountBalance(1L, new BigDecimal(20));
+        accountService.updateAccountBalance(1L, new BigDecimal(20));
 
         // then
-        assertEquals(1L, retrievedAccountAfterUpdate.getAccountId());
-        assertEquals(new BigDecimal(20), retrievedAccountAfterUpdate.getBalance());
-        verify(accountMapper, times(1)).mapToDto(account);
+        assertEquals(new BigDecimal(20),account.getBalance());
         verify(accountRepository, times(1)).findById(1L);
     }
 
@@ -104,7 +105,7 @@ class AccountServiceTest {
         account.setAccountId(1L);
         account.setBalance(new BigDecimal(10));
 
-        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+        when(accountRepository.findById(any())).thenReturn(Optional.of(account));
 
         accountService.deleteAccount(1L);
 
