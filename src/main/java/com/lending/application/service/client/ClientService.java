@@ -38,9 +38,7 @@ public class ClientService {
         retrievedClient.setEmailAddress(clientDto.getEmailAddress());
         retrievedClient.setPhoneNumber(clientDto.getPhoneNumber());
 
-        clientRepository.saveAndFlush(retrievedClient);
-
-        return clientMapper.mapToClientDto(retrievedClient);
+        return clientMapper.mapToClientDto(clientRepository.saveAndFlush(retrievedClient));
     }
 
     public void deleteClientById(final Long clientId) throws ClientNotFoundException {

@@ -55,12 +55,16 @@ class AccountServiceTest {
 
         Account account = new Account();
 
-        when(accountMapper.mapToAccount(accountDto)).thenReturn(account);
+        when(accountRepository.saveAndFlush(any(Account.class))).thenReturn(account);
+        when(accountMapper.mapToAccount(any(AccountDto.class))).thenReturn(account);
+        when(accountMapper.mapToDto(any(Account.class))).thenReturn(accountDto);
 
         // when
-        accountService.createAccount(accountDto);
+        AccountDto retrievedAccountDto = accountService.createAccount(accountDto);
 
         // then
+        assertEquals(1L, retrievedAccountDto.getAccountId());
+        assertEquals(new BigDecimal(10), retrievedAccountDto.getBalance());
         verify(accountRepository, times(1)).saveAndFlush(account);
     }
 

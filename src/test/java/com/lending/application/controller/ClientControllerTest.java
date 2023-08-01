@@ -3,6 +3,7 @@ package com.lending.application.controller;
 import com.google.gson.Gson;
 import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
+import com.lending.application.facade.ClientServiceFacade;
 import com.lending.application.service.client.ClientService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,8 @@ class ClientControllerTest {
     MockMvc mockMvc;
     @MockBean
     ClientService clientService;
+    @MockBean
+    ClientServiceFacade clientServiceFacade;
 
     @Test
     void testGetClientById_shouldThrowClientNotFoundExceptionAndHttp404() throws  Exception {
@@ -130,15 +133,19 @@ class ClientControllerTest {
         Gson gson = new Gson();
         String jsonContent = gson.toJson(clientDto);
 
+        when(clientServiceFacade.CreateNewClient(any(ClientDto.class))).thenReturn(clientDto);
+
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
                     .post("/lending/client")
                     .contentType(MediaType.APPLICATION_JSON)
                     .characterEncoding(StandardCharsets.UTF_8)
                     .content(jsonContent))
-               .andExpect(MockMvcResultMatchers.status().isCreated());
+               .andExpect(MockMvcResultMatchers.status().isCreated())
+               .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Client 1")))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.lastName", Matchers.is("Last name")));
 
-        verify(clientService, times(1)).createClient(any(ClientDto.class));
+        verify(clientServiceFacade, times(1)).CreateNewClient(any(ClientDto.class));
     }
 
     @Test

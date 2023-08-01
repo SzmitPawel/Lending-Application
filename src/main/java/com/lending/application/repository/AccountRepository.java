@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface AccountRepository extends JpaRepository<Account,Long> {
+    Account saveAndFlush(Account account);
 }

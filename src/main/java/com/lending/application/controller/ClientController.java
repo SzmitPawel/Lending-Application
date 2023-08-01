@@ -2,6 +2,7 @@ package com.lending.application.controller;
 
 import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
+import com.lending.application.facade.ClientServiceFacade;
 import com.lending.application.service.client.ClientService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequestMapping("/lending/client")
 public class ClientController {
     ClientService clientService;
+    ClientServiceFacade clientServiceFacade;
 
     @GetMapping("{clientId}")
     public ResponseEntity<ClientDto> getClientById(@PathVariable ("clientId") Long clientId) {
@@ -41,12 +43,12 @@ public class ClientController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addNewClient(@RequestBody ClientDto clientDto) {
+    public ResponseEntity<ClientDto> addNewClient(@RequestBody ClientDto clientDto) {
 
         try {
-            clientService.createClient(clientDto);
+            ClientDto retrievedClientDto = clientServiceFacade.CreateNewClient(clientDto);
             log.info("A new client created.");
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(retrievedClientDto);
         } catch (DataIntegrityViolationException e) {
             log.error("Fields not-null are null.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
