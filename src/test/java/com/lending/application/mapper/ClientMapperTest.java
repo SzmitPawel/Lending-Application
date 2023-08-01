@@ -31,7 +31,7 @@ class ClientMapperTest {
         ClientDto retrievedClientDto = clientMapper.mapToClientDto(client);
 
         // then
-        assertEquals(1L, retrievedClientDto.getClientID());
+        assertEquals(1L, retrievedClientDto.getClientId());
         assertEquals("Client", retrievedClientDto.getName());
         assertEquals("Last name", retrievedClientDto.getLastName());
         assertEquals("Address", retrievedClientDto.getAddress());
@@ -89,13 +89,13 @@ class ClientMapperTest {
 
         // then
         assertEquals(2, retrievedClientDtoList.size());
-        assertEquals(1L, retrievedClientDtoList.get(0).getClientID());
+        assertEquals(1L, retrievedClientDtoList.get(0).getClientId());
         assertEquals("Client 1", retrievedClientDtoList.get(0).getName());
         assertEquals("Last name 1", retrievedClientDtoList.get(0).getLastName());
         assertEquals("Address 1", retrievedClientDtoList.get(0).getAddress());
         assertEquals("test1@gmail.com", retrievedClientDtoList.get(0).getEmailAddress());
         assertEquals("666-666-666", retrievedClientDtoList.get(0).getPhoneNumber());
-        assertEquals(2L, retrievedClientDtoList.get(1).getClientID());
+        assertEquals(2L, retrievedClientDtoList.get(1).getClientId());
         assertEquals("Client 2", retrievedClientDtoList.get(1).getName());
         assertEquals("Last name 2", retrievedClientDtoList.get(1).getLastName());
         assertEquals("Address 2", retrievedClientDtoList.get(1).getAddress());

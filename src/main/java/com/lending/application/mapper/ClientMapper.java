@@ -22,7 +22,7 @@ public class ClientMapper {
 
     public Client mapToClient(final ClientDto clientDto) {
         Client client = new Client();
-        client.setClientID(clientDto.getClientID());
+        client.setClientID(clientDto.getClientId());
         client.setName(clientDto.getName());
         client.setLastName(clientDto.getLastName());
         client.setAddress(clientDto.getAddress());

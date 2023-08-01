@@ -58,13 +58,20 @@ class ClientServiceTest {
 
         Client client = new Client();
 
-        when(clientMapper.mapToClient(clientDto)).thenReturn(client);
+        when(clientRepository.saveAndFlush(any(Client.class))).thenReturn(client);
+        when(clientMapper.mapToClient(any(ClientDto.class))).thenReturn(client);
+        when(clientMapper.mapToClientDto(any(Client.class))).thenReturn(clientDto);
 
         // when
-        clientService.createClient(clientDto);
+        ClientDto retrievedClientDto = clientService.createClient(clientDto);
 
         // then
-        verify(clientRepository, times(1)).saveAndFlush(client);
+        assertEquals(1L, retrievedClientDto.getClientId());
+        assertEquals("Client", retrievedClientDto.getName());
+        assertEquals("Client last name", retrievedClientDto.getLastName());
+        verify(clientRepository, times(1)).saveAndFlush(any(Client.class));
+        verify(clientMapper, times(1)).mapToClient(any(ClientDto.class));
+        verify(clientMapper, times(1)).mapToClientDto(any(Client.class));
     }
 
     @Test
@@ -129,14 +136,15 @@ class ClientServiceTest {
         Client client = new Client();
 
         when(clientRepository.findById(any())).thenReturn(Optional.of(client));
+        when(clientMapper.mapToClientDto(any(Client.class))).thenReturn(clientDto);
 
         // when
-        clientService.updateClient(clientDto);
+        ClientDto retrievedClientDto = clientService.updateClient(clientDto);
 
         // then
         verify(clientRepository, times(1)).findById(1L);
-        assertEquals("Client", client.getName());
-        assertEquals("Client last name", client.getLastName());
+        assertEquals("Client", retrievedClientDto.getName());
+        assertEquals("Client last name", retrievedClientDto.getLastName());
     }
 
     @Test

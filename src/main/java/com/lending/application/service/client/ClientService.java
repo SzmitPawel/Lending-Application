@@ -16,8 +16,10 @@ public class ClientService {
     ClientRepository clientRepository;
     ClientMapper clientMapper;
 
-    public void createClient(final ClientDto clientDto) {
-        clientRepository.saveAndFlush(clientMapper.mapToClient(clientDto));
+    public ClientDto createClient(final ClientDto clientDto) {
+        Client retrievedClient = clientRepository.saveAndFlush(clientMapper.mapToClient(clientDto));
+        
+        return clientMapper.mapToClientDto(retrievedClient);
     }
 
     public ClientDto getClientById(final Long clientId) throws ClientNotFoundException {
@@ -28,15 +30,17 @@ public class ClientService {
         return clientMapper.mapToClientDtoList(clientRepository.findAll());
     }
 
-    public void updateClient(final ClientDto clientDto) throws ClientNotFoundException{
-        Client client = clientRepository.findById(clientDto.getClientID()).orElseThrow(ClientNotFoundException::new);
+    public ClientDto updateClient(final ClientDto clientDto) throws ClientNotFoundException{
+        Client retrievedClient = clientRepository.findById(clientDto.getClientId()).orElseThrow(ClientNotFoundException::new);
 
-        client.setName(clientDto.getName());
-        client.setLastName(clientDto.getLastName());
-        client.setEmailAddress(clientDto.getEmailAddress());
-        client.setPhoneNumber(clientDto.getPhoneNumber());
+        retrievedClient.setName(clientDto.getName());
+        retrievedClient.setLastName(clientDto.getLastName());
+        retrievedClient.setEmailAddress(clientDto.getEmailAddress());
+        retrievedClient.setPhoneNumber(clientDto.getPhoneNumber());
 
-        clientRepository.saveAndFlush(client);
+        clientRepository.saveAndFlush(retrievedClient);
+
+        return clientMapper.mapToClientDto(retrievedClient);
     }
 
     public void deleteClientById(final Long clientId) throws ClientNotFoundException {
