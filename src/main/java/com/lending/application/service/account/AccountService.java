@@ -16,8 +16,10 @@ public class AccountService {
     AccountRepository accountRepository;
     AccountMapper accountMapper;
 
-    public void createAccount(final AccountDto accountDto) {
-        accountRepository.saveAndFlush(accountMapper.mapToAccount(accountDto));
+    public AccountDto createAccount(final AccountDto accountDto) {
+        Account retrievedAccount = accountRepository.saveAndFlush(accountMapper.mapToAccount(accountDto));
+
+        return accountMapper.mapToDto(retrievedAccount);
     }
 
     public AccountDto getAccountById(final Long accountId) throws ClientNotFoundException {
