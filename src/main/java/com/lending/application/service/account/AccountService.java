@@ -2,43 +2,45 @@ package com.lending.application.service.account;
 
 import com.lending.application.domain.Account;
 import com.lending.application.domain.dto.AccountDto;
+import com.lending.application.exception.AccountNotFoundException;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.mapper.AccountMapper;
 import com.lending.application.repository.AccountRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class AccountService {
-    AccountRepository accountRepository;
-    AccountMapper accountMapper;
+    private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
 
-    public AccountDto createAccount(final AccountDto accountDto) {
-        Account retrievedAccount = accountRepository.saveAndFlush(accountMapper.mapToAccount(accountDto));
+    public Account createAccount(final AccountDto accountDto) {
+        Account account = accountMapper.mapToAccount(accountDto);
+        Account retrievedAccount = accountRepository.saveAndFlush(account);
 
-        return accountMapper.mapToDto(retrievedAccount);
+        return retrievedAccount;
     }
 
-    public AccountDto getAccountById(final Long accountId) throws ClientNotFoundException {
-        Account account = accountRepository.findById(accountId).orElseThrow(ClientNotFoundException::new);
-        return accountMapper.mapToDto(account);
+    public Account getAccountById(final Long accountId) throws AccountNotFoundException {
+        return accountRepository.findById(accountId).orElseThrow(AccountNotFoundException::new);
     }
 
-    public void deleteAccount(final Long accountId) throws ClientNotFoundException {
+    public void deleteAccount(final Long accountId) throws AccountNotFoundException {
         if (accountRepository.findById(accountId).isPresent()) {
             accountRepository.deleteById(accountId);
         } else {
-            throw new ClientNotFoundException();
+            throw new AccountNotFoundException();
         }
     }
 
-    public void updateAccountBalance(final Long accountId, final BigDecimal balance) throws ClientNotFoundException {
-        Account account = accountRepository.findById(accountId).orElseThrow(ClientNotFoundException::new);
-        account.setBalance(balance);
+    public Account updateAccountBalance(final Long accountId, final BigDecimal balance) throws AccountNotFoundException {
+        Account retrievedAccount = accountRepository.findById(accountId).orElseThrow(AccountNotFoundException::new);
+        retrievedAccount.setBalance(balance);
 
-        accountRepository.saveAndFlush(account);
+        return accountRepository.saveAndFlush(retrievedAccount);
     }
 }

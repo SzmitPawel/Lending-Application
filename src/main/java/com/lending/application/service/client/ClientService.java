@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class ClientService {
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
@@ -24,6 +24,7 @@ public class ClientService {
     }
 
     public Client getClientById(final Long clientId) throws ClientNotFoundException {
+
         return clientRepository.findById(clientId).orElseThrow(ClientNotFoundException::new);
     }
 

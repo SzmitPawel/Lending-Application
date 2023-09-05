@@ -86,7 +86,7 @@ class ClientServiceTest {
         Client retrievedClient = clientService.getClientById(1L);
 
         // then
-        verify(clientRepository, times(1)).findById(1L);
+        verify(clientRepository,times(1)).findById(1L);
 
         assertEquals(client.getName(),retrievedClient.getName());
         assertEquals(client.getLastName(), retrievedClient.getLastName());
@@ -113,7 +113,7 @@ class ClientServiceTest {
         List<Client> retrievedClientList = clientService.getAllClients();
 
         // then
-        verify(clientRepository, times(1)).findAll();
+        verify(clientRepository,times(1)).findAll();
 
         assertEquals(clientList.size(), retrievedClientList.size());
     }
@@ -141,7 +141,7 @@ class ClientServiceTest {
         Client updateClientClient = clientService.updateClient(clientDto);
 
         // then
-        verify(clientRepository, times(1)).findById(1L);
+        verify(clientRepository,times(1)).findById(1L);
         verify(clientRepository,times(1)).saveAndFlush(any(Client.class));
 
         assertEquals(clientDto.getName(), updateClientClient.getName());
