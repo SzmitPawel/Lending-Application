@@ -2,19 +2,19 @@ package com.lending.application.service.client;
 
 import com.lending.application.domain.Client;
 import com.lending.application.domain.dto.ClientDto;
+import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.mapper.ClientMapper;
 import com.lending.application.repository.ClientRepository;
-import com.lending.application.exception.ClientNotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class ClientService {
-    private ClientRepository clientRepository;
-    private ClientMapper clientMapper;
+    private final ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
 
     public Client createClient(final ClientDto clientDto) {
         Client client = clientMapper.mapToClient(clientDto);
