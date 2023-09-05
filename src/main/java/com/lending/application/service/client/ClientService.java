@@ -13,24 +13,25 @@ import java.util.List;
 @AllArgsConstructor
 @Service
 public class ClientService {
-    ClientRepository clientRepository;
-    ClientMapper clientMapper;
+    private ClientRepository clientRepository;
+    private ClientMapper clientMapper;
 
-    public ClientDto createClient(final ClientDto clientDto) {
-        Client retrievedClient = clientRepository.saveAndFlush(clientMapper.mapToClient(clientDto));
+    public Client createClient(final ClientDto clientDto) {
+        Client client = clientMapper.mapToClient(clientDto);
+        Client retrievedClient = clientRepository.saveAndFlush(client);
         
-        return clientMapper.mapToClientDto(retrievedClient);
+        return retrievedClient;
     }
 
-    public ClientDto getClientById(final Long clientId) throws ClientNotFoundException {
-        return clientMapper.mapToClientDto(clientRepository.findById(clientId).orElseThrow(ClientNotFoundException::new));
+    public Client getClientById(final Long clientId) throws ClientNotFoundException {
+        return clientRepository.findById(clientId).orElseThrow(ClientNotFoundException::new);
     }
 
-    public List<ClientDto> getAllClients() {
-        return clientMapper.mapToClientDtoList(clientRepository.findAll());
+    public List<Client> getAllClients() {
+        return clientRepository.findAll();
     }
 
-    public ClientDto updateClient(final ClientDto clientDto) throws ClientNotFoundException{
+    public Client updateClient(final ClientDto clientDto) throws ClientNotFoundException{
         Client retrievedClient = clientRepository.findById(clientDto.getClientId()).orElseThrow(ClientNotFoundException::new);
 
         retrievedClient.setName(clientDto.getName());
@@ -38,7 +39,7 @@ public class ClientService {
         retrievedClient.setEmailAddress(clientDto.getEmailAddress());
         retrievedClient.setPhoneNumber(clientDto.getPhoneNumber());
 
-        return clientMapper.mapToClientDto(clientRepository.saveAndFlush(retrievedClient));
+        return clientRepository.saveAndFlush(retrievedClient);
     }
 
     public void deleteClientById(final Long clientId) throws ClientNotFoundException {
