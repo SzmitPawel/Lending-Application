@@ -42,8 +42,8 @@ public class AccountService {
     public AccountDto updateAccountBalance(final Long accountId, final BigDecimal balance) throws AccountNotFoundException {
         Account retrievedAccount = accountRepository.findById(accountId).orElseThrow(AccountNotFoundException::new);
         retrievedAccount.setBalance(balance);
-        accountRepository.saveAndFlush(retrievedAccount);
+        Account updatedAccount = accountRepository.saveAndFlush(retrievedAccount);
 
-        return accountMapper.mapToDto(retrievedAccount);
+        return accountMapper.mapToDto(updatedAccount);
     }
 }
