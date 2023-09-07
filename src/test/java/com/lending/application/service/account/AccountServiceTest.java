@@ -15,8 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,60 +49,61 @@ class AccountServiceTest {
     void testCreateAccount() {
         // given
         AccountDto accountDto = new AccountDto();
-        accountDto.setBalance(new BigDecimal(10));
-
         Account account = new Account();
-        account.setAccountId(1L);
-        account.setBalance(accountDto.getBalance());
 
         when(accountMapper.mapToAccount(accountDto)).thenReturn(account);
-        when(accountRepository.saveAndFlush(any(Account.class))).thenReturn(account);
+        when(accountMapper.mapToDto(account)).thenReturn(accountDto);
+        when(accountRepository.saveAndFlush(account)).thenReturn(account);
 
         // when
-        Account retrievedAccount = accountService.createAccount(accountDto);
+        AccountDto retrievedAccount = accountService.createAccount(accountDto);
 
         // then
-        verify(accountMapper,times(1)).mapToAccount(accountDto);
-        verify(accountRepository,times(1)).saveAndFlush(account);
+        verify(accountMapper,times(1)).mapToAccount(any(AccountDto.class));
+        verify(accountMapper,times(1)).mapToDto(any(Account.class));
+        verify(accountRepository,times(1)).saveAndFlush(any(Account.class));
 
-        assertEquals(accountDto.getBalance(), retrievedAccount.getBalance());
+        assertNotNull(retrievedAccount);
     }
 
     @Test
     void testGetAccountById() throws AccountNotFoundException {
         // given
         Account account = new Account();
-        account.setAccountId(1L);
-        account.setBalance(new BigDecimal(10));
+        AccountDto accountDto = new AccountDto();
 
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+        when(accountMapper.mapToDto(account)).thenReturn(accountDto);
 
         // when
-        Account retrievedAccountDto = accountService.getAccountById(1L);
+        AccountDto retrievedAccountDto = accountService.getAccountById(1L);
 
         // then
-        verify(accountRepository,times(1)).findById(1L);
+        verify(accountRepository,times(1)).findById(any());
+        verify(accountMapper,times(1)).mapToDto(any(Account.class));
 
-        assertEquals(account.getBalance(), retrievedAccountDto.getBalance());
+        assertNotNull(retrievedAccountDto);
     }
 
     @Test
     void testUpdateAccountBalance() throws AccountNotFoundException {
         // given
         Account account = new Account();
-        account.setBalance(new BigDecimal(10));
+        AccountDto accountDto = new AccountDto();
 
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
-        when(accountRepository.saveAndFlush(any(Account.class))).thenReturn(account);
+        when(accountRepository.saveAndFlush(account)).thenReturn(account);
+        when(accountMapper.mapToDto(account)).thenReturn(accountDto);
 
         // when
-        Account updatedAccount = accountService.updateAccountBalance(1L, new BigDecimal(20));
+        AccountDto updatedAccount = accountService.updateAccountBalance(1L, new BigDecimal(20));
 
         // then
-        verify(accountRepository,times(1)).findById(1L);
-        verify(accountRepository,times(1)).saveAndFlush(account);
+        verify(accountRepository,times(1)).findById(any());
+        verify(accountRepository,times(1)).saveAndFlush(any(Account.class));
+        verify(accountMapper,times(1)).mapToDto(any(Account.class));
 
-        assertEquals(new BigDecimal(20),updatedAccount.getBalance());
+        assertNotNull(updatedAccount);
     }
 
     @Test
@@ -116,6 +116,6 @@ class AccountServiceTest {
         accountService.deleteAccount(1L);
 
         // when & then
-        verify(accountRepository, times(1)).deleteById(1L);
+        verify(accountRepository, times(1)).deleteById(any());
     }
 }

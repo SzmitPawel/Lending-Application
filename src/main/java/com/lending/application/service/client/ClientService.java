@@ -16,23 +16,25 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
 
-    public Client createClient(final ClientDto clientDto) {
+    public ClientDto createClient(final ClientDto clientDto) {
         Client client = clientMapper.mapToClient(clientDto);
         Client retrievedClient = clientRepository.saveAndFlush(client);
         
-        return retrievedClient;
+        return clientMapper.mapToClientDto(retrievedClient);
     }
 
-    public Client getClientById(final Long clientId) throws ClientNotFoundException {
+    public ClientDto getClientById(final Long clientId) throws ClientNotFoundException {
+        Client retrievedClient = clientRepository.findById(clientId).orElseThrow(ClientNotFoundException::new);
 
-        return clientRepository.findById(clientId).orElseThrow(ClientNotFoundException::new);
+        return clientMapper.mapToClientDto(retrievedClient);
     }
 
-    public List<Client> getAllClients() {
-        return clientRepository.findAll();
+    public List<ClientDto> getAllClients() {
+        List<Client> retrievedClientList = clientRepository.findAll();
+        return clientMapper.mapToClientDtoList(retrievedClientList);
     }
 
-    public Client updateClient(final ClientDto clientDto) throws ClientNotFoundException{
+    public ClientDto updateClient(final ClientDto clientDto) throws ClientNotFoundException{
         Client retrievedClient = clientRepository.findById(clientDto.getClientId()).orElseThrow(ClientNotFoundException::new);
 
         retrievedClient.setName(clientDto.getName());
@@ -40,7 +42,9 @@ public class ClientService {
         retrievedClient.setEmailAddress(clientDto.getEmailAddress());
         retrievedClient.setPhoneNumber(clientDto.getPhoneNumber());
 
-        return clientRepository.saveAndFlush(retrievedClient);
+        clientRepository.saveAndFlush(retrievedClient);
+
+        return clientMapper.mapToClientDto(retrievedClient);
     }
 
     public void deleteClientById(final Long clientId) throws ClientNotFoundException {

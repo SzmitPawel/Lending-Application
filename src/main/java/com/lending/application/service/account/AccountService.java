@@ -18,15 +18,17 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
 
-    public Account createAccount(final AccountDto accountDto) {
+    public AccountDto createAccount(final AccountDto accountDto) {
         Account account = accountMapper.mapToAccount(accountDto);
         Account retrievedAccount = accountRepository.saveAndFlush(account);
 
-        return retrievedAccount;
+        return accountMapper.mapToDto(retrievedAccount);
     }
 
-    public Account getAccountById(final Long accountId) throws AccountNotFoundException {
-        return accountRepository.findById(accountId).orElseThrow(AccountNotFoundException::new);
+    public AccountDto getAccountById(final Long accountId) throws AccountNotFoundException {
+        Account retrievedAccount = accountRepository.findById(accountId).orElseThrow(AccountNotFoundException::new);
+
+        return accountMapper.mapToDto(retrievedAccount);
     }
 
     public void deleteAccount(final Long accountId) throws AccountNotFoundException {
@@ -37,10 +39,11 @@ public class AccountService {
         }
     }
 
-    public Account updateAccountBalance(final Long accountId, final BigDecimal balance) throws AccountNotFoundException {
+    public AccountDto updateAccountBalance(final Long accountId, final BigDecimal balance) throws AccountNotFoundException {
         Account retrievedAccount = accountRepository.findById(accountId).orElseThrow(AccountNotFoundException::new);
         retrievedAccount.setBalance(balance);
+        accountRepository.saveAndFlush(retrievedAccount);
 
-        return accountRepository.saveAndFlush(retrievedAccount);
+        return accountMapper.mapToDto(retrievedAccount);
     }
 }
