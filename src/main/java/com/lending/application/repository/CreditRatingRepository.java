@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Transactional
 public interface CreditRatingRepository extends JpaRepository<CreditRating,Long> {
+    CreditRating saveAndFlush(CreditRating creditRating);
 }

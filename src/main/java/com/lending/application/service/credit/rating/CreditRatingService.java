@@ -6,16 +6,20 @@ import com.lending.application.exception.CreditRatingNotFoundException;
 import com.lending.application.mapper.CreditRatingMapper;
 import com.lending.application.repository.CreditRatingRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class CreditRatingService {
-    CreditRatingRepository creditRatingRepository;
-    CreditRatingMapper creditRatingMapper;
+    private final CreditRatingRepository creditRatingRepository;
+    private final CreditRatingMapper creditRatingMapper;
 
-    public void createCreditRating(final CreditRatingDto creditRatingDto) {
-        creditRatingRepository.saveAndFlush(creditRatingMapper.mapToCreditRating(creditRatingDto));
+    public CreditRatingDto createCreditRating(final CreditRatingDto creditRatingDto) {
+        CreditRating creditRating = creditRatingMapper.mapToCreditRating(creditRatingDto);
+        CreditRating createdCreditRating = creditRatingRepository.saveAndFlush(creditRating);
+
+        return creditRatingMapper.mapToCreditRatingDto(createdCreditRating);
     }
 
     public CreditRatingDto getCreditRatingById(final Long creditRatingId) throws CreditRatingNotFoundException{
@@ -26,15 +30,17 @@ public class CreditRatingService {
         return creditRatingMapper.mapToCreditRatingDto(creditRating);
     }
 
-    public void updateCreditRating(final CreditRatingDto creditRatingDto) throws CreditRatingNotFoundException{
-        CreditRating creditRating = creditRatingRepository
+    public CreditRatingDto updateCreditRating(final CreditRatingDto creditRatingDto) throws CreditRatingNotFoundException{
+        CreditRating retrievedCreditRating = creditRatingRepository
                 .findById(creditRatingDto.getRatingId())
                 .orElseThrow(CreditRatingNotFoundException::new);
 
-        creditRating.setCreditRating(creditRatingDto.getCreditRating());
-        creditRating.setDateOfRating(creditRatingDto.getDateOfRating());
+        retrievedCreditRating.setCreditRating(creditRatingDto.getCreditRating());
+        retrievedCreditRating.setDateOfRating(creditRatingDto.getDateOfRating());
 
-        creditRatingRepository.saveAndFlush(creditRating);
+        CreditRating updatedCreditRating = creditRatingRepository.saveAndFlush(retrievedCreditRating);
+
+        return creditRatingMapper.mapToCreditRatingDto(updatedCreditRating);
     }
 
     public void deleteCreditRatingById(final Long creditRatingId) throws CreditRatingNotFoundException {
