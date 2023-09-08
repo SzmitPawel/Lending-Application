@@ -6,16 +6,20 @@ import com.lending.application.exception.PenaltyNotFoundException;
 import com.lending.application.mapper.PenaltyMapper;
 import com.lending.application.repository.PenaltyRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class PenaltyService {
-    PenaltyRepository penaltyRepository;
-    PenaltyMapper penaltyMapper;
+    private final PenaltyRepository penaltyRepository;
+    private final PenaltyMapper penaltyMapper;
 
-    public void createPenalty(final PenaltyDto penaltyDto) {
-        penaltyRepository.saveAndFlush(penaltyMapper.mapToPenalty(penaltyDto));
+    public PenaltyDto createPenalty(final PenaltyDto penaltyDto) {
+        Penalty penalty = penaltyMapper.mapToPenalty(penaltyDto);
+        Penalty createdPenalty = penaltyRepository.saveAndFlush(penalty);
+
+        return penaltyMapper.mapToPenaltyDto(createdPenalty);
     }
 
     public PenaltyDto getPenaltyById(final Long penaltyId) throws PenaltyNotFoundException {
@@ -26,7 +30,7 @@ public class PenaltyService {
         return penaltyMapper.mapToPenaltyDto(penalty);
     }
 
-    public void updatePenalty(final PenaltyDto penaltyDto) throws PenaltyNotFoundException {
+    public PenaltyDto updatePenalty(final PenaltyDto penaltyDto) throws PenaltyNotFoundException {
         Penalty penalty = penaltyRepository
                 .findById(penaltyDto.getPenaltyId())
                 .orElseThrow(PenaltyNotFoundException::new);
@@ -34,7 +38,9 @@ public class PenaltyService {
         penalty.setPenaltyPercentage(penaltyDto.getPenaltyPercentage());
         penalty.setPenaltyDate(penaltyDto.getPenaltyDate());
 
-        penaltyRepository.saveAndFlush(penalty);
+        Penalty updatedPenalty = penaltyRepository.saveAndFlush(penalty);
+
+        return penaltyMapper.mapToPenaltyDto(updatedPenalty);
     }
 
     public void deletePenaltyById(final Long penaltyId) throws PenaltyNotFoundException {

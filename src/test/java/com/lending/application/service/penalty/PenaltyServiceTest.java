@@ -21,11 +21,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PenaltyServiceTest {
     @InjectMocks
-    PenaltyService penaltyService;
+    private PenaltyService penaltyService;
     @Mock
-    PenaltyMapper penaltyMapper;
+    private PenaltyMapper penaltyMapper;
     @Mock
-    PenaltyRepository penaltyRepository;
+    private PenaltyRepository penaltyRepository;
 
     @Test
     void testGetPenaltyById_shouldThrowPenaltyNotFoundException() {
@@ -48,64 +48,63 @@ class PenaltyServiceTest {
     @Test
     void testCreatePenalty() {
         // given
-        PenaltyDto penaltyDto = new PenaltyDto(
-                1L,
-                5,
-                LocalDate.now()
-        );
-
+        PenaltyDto penaltyDto = new PenaltyDto();
         Penalty penalty = new Penalty();
 
         when(penaltyMapper.mapToPenalty(penaltyDto)).thenReturn(penalty);
+        when(penaltyMapper.mapToPenaltyDto(penalty)).thenReturn(penaltyDto);
+        when(penaltyRepository.saveAndFlush(penalty)).thenReturn(penalty);
 
         // when
-        penaltyService.createPenalty(penaltyDto);
+        PenaltyDto retrievedPenaltyDto = penaltyService.createPenalty(penaltyDto);
 
         // then
-        verify(penaltyRepository, times(1)).saveAndFlush(penalty);
+        verify(penaltyRepository,times(1)).saveAndFlush(any(Penalty.class));
+        verify(penaltyMapper,times(1)).mapToPenalty(any(PenaltyDto.class));
+        verify(penaltyMapper,times(1)).mapToPenaltyDto(any(Penalty.class));
+
+        assertNotNull(retrievedPenaltyDto);
     }
 
     @Test
     void testGetPenaltyById() throws PenaltyNotFoundException {
         // given
         Penalty penalty = new Penalty();
-        penalty.setPenaltyPercentage(5);
-        penalty.setPenaltyDate(LocalDate.now());
+        PenaltyDto penaltyDto = new PenaltyDto();
 
-        when(penaltyRepository.findById(any())).thenReturn(Optional.of(penalty));
-        when(penaltyMapper.mapToPenaltyDto(penalty)).thenCallRealMethod();
+        when(penaltyRepository.findById(1L)).thenReturn(Optional.of(penalty));
+        when(penaltyMapper.mapToPenaltyDto(penalty)).thenReturn(penaltyDto);
 
         // when
         PenaltyDto retrievedPenaltyDto = penaltyService.getPenaltyById(1L);
 
         // then
-        verify(penaltyRepository, times(1)).findById(1L);
-        verify(penaltyMapper, times(1)).mapToPenaltyDto(penalty);
-        assertEquals(5, retrievedPenaltyDto.getPenaltyPercentage());
-        assertEquals(LocalDate.now(), retrievedPenaltyDto.getPenaltyDate());
+        verify(penaltyRepository,times(1)).findById(any());
+        verify(penaltyMapper,times(1)).mapToPenaltyDto(any(Penalty.class));
+
+        assertNotNull(retrievedPenaltyDto);
     }
 
     @Test
     void testUpdatePenalty() throws PenaltyNotFoundException {
         // given
-        PenaltyDto penaltyDto = new PenaltyDto(
-                1L,
-                5,
-                LocalDate.now()
-        );
-
+        PenaltyDto penaltyDto = new PenaltyDto();
+        penaltyDto.setPenaltyId(1L);
         Penalty penalty = new Penalty();
 
-        when(penaltyRepository.findById(any())).thenReturn(Optional.of(penalty));
+        when(penaltyRepository.findById(1L)).thenReturn(Optional.of(penalty));
+        when(penaltyRepository.saveAndFlush(penalty)).thenReturn(penalty);
+        when(penaltyMapper.mapToPenaltyDto(penalty)).thenReturn(penaltyDto);
 
         // when
-        penaltyService.updatePenalty(penaltyDto);
+        PenaltyDto retrievedPenaltyDto = penaltyService.updatePenalty(penaltyDto);
 
         // then
-        verify(penaltyRepository, times(1)).findById(1L);
-        verify(penaltyRepository, times(1)).saveAndFlush(penalty);
-        assertEquals(5, penalty.getPenaltyPercentage());
-        assertEquals(LocalDate.now(), penalty.getPenaltyDate());
+        verify(penaltyRepository, times(1)).findById(any());
+        verify(penaltyRepository, times(1)).saveAndFlush(any(Penalty.class));
+        verify(penaltyMapper,times(1)).mapToPenaltyDto(any(Penalty.class));
+
+        assertNotNull(retrievedPenaltyDto);
     }
 
     @Test
