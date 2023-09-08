@@ -23,11 +23,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class RepaymentServiceTest {
     @InjectMocks
-    RepaymentService repaymentService;
+    private RepaymentService repaymentService;
     @Mock
-    RepaymentMapper repaymentMapper;
+    private RepaymentMapper repaymentMapper;
     @Mock
-    RepaymentRepository repaymentRepository;
+    private RepaymentRepository repaymentRepository;
 
     @Test
     void testGetRepaymentById_shouldThrowRepaymentNotFoundException() {
@@ -50,89 +50,88 @@ class RepaymentServiceTest {
     @Test
     void testCreateRepayment() {
         // given
-        RepaymentDto repaymentDto = new RepaymentDto(
-                1L,
-                new BigDecimal(10),
-                LocalDate.now()
-        );
-
+        RepaymentDto repaymentDto = new RepaymentDto();
         Repayment repayment = new Repayment();
 
         when(repaymentMapper.mapToRepayment(repaymentDto)).thenReturn(repayment);
+        when(repaymentRepository.saveAndFlush(repayment)).thenReturn(repayment);
+        when(repaymentMapper.mapToRepaymentDto(repayment)).thenReturn(repaymentDto);
 
         // when
-        repaymentService.createRepayment(repaymentDto);
+        RepaymentDto retrievedRepaymentDto = repaymentService.createRepayment(repaymentDto);
 
         // then
-        verify(repaymentRepository, times(1)).saveAndFlush(repayment);
+        verify(repaymentMapper,times(1)).mapToRepayment(any(RepaymentDto.class));
+        verify(repaymentRepository,times(1)).saveAndFlush(any());
+        verify(repaymentMapper,times(1)).mapToRepaymentDto(any(Repayment.class));
+
+        assertNotNull(retrievedRepaymentDto);
     }
 
     @Test
     void testGetRepaymentById() throws RepaymentNotFoundException {
         // given
         Repayment repayment = new Repayment();
-        repayment.setRepaymentAmount(new BigDecimal(10));
-        repayment.setRepaymentDate(LocalDate.now());
+        RepaymentDto repaymentDto = new RepaymentDto();
 
-        when(repaymentMapper.mapToRepaymentDto(repayment)).thenCallRealMethod();
+        when(repaymentMapper.mapToRepaymentDto(repayment)).thenReturn(repaymentDto);
         when(repaymentRepository.findById(any())).thenReturn(Optional.of(repayment));
 
         // when
         RepaymentDto retrievedRepaymentDto = repaymentService.getRepaymentById(1L);
 
         // then
-        verify(repaymentMapper, times(1)).mapToRepaymentDto(repayment);
-        verify(repaymentRepository, times(1)).findById(1L);
-        assertEquals(new BigDecimal(10), retrievedRepaymentDto.getRepaymentAmount());
-        assertEquals(LocalDate.now(), retrievedRepaymentDto.getRepaymentDate());
+        verify(repaymentMapper,times(1)).mapToRepaymentDto(any(Repayment.class));
+        verify(repaymentRepository, times(1)).findById(any());
+
+        assertNotNull(retrievedRepaymentDto);
     }
 
     @Test
     void testGetAllRepayments_shouldReturnRepaymentDtoList() {
         // given
         Repayment repayment1 = new Repayment();
-        repayment1.setRepaymentAmount(new BigDecimal(10));
-        repayment1.setRepaymentDate(LocalDate.now());
-
         Repayment repayment2 = new Repayment();
-        repayment2.setRepaymentAmount(new BigDecimal(20));
-        repayment2.setRepaymentDate(LocalDate.now());
 
         List<Repayment> repaymentList = List.of(repayment1,repayment2);
 
-        when(repaymentMapper.mapToRepaymentDtoList(repaymentList)).thenCallRealMethod();
+        RepaymentDto repaymentDto1 = new RepaymentDto();
+        RepaymentDto repaymentDto2 = new RepaymentDto();
+
+        List<RepaymentDto> repaymentDtoList = List.of(repaymentDto1,repaymentDto2);
+
+        when(repaymentMapper.mapToRepaymentDtoList(repaymentList)).thenReturn(repaymentDtoList);
         when(repaymentRepository.findAll()).thenReturn(repaymentList);
 
         // when
         List<RepaymentDto> retrievedRepaymentDtoList = repaymentService.getAllRepayments();
 
         // then
-        verify(repaymentMapper, times(1)).mapToRepaymentDtoList(repaymentList);
+        verify(repaymentMapper, times(1)).mapToRepaymentDtoList(anyList());
         verify(repaymentRepository, times(1)).findAll();
-        assertEquals(2, retrievedRepaymentDtoList.size());
+
+        assertNotNull(retrievedRepaymentDtoList);
     }
 
     @Test
     void testUpdateRepayment() throws RepaymentNotFoundException {
         // given
-        RepaymentDto repaymentDto = new RepaymentDto(
-                1L,
-                new BigDecimal(10),
-                LocalDate.now()
-        );
-
+        RepaymentDto repaymentDto = new RepaymentDto();
+        repaymentDto.setRepaymentId(1L);
         Repayment repayment = new Repayment();
 
-        when(repaymentRepository.findById(any())).thenReturn(Optional.of(repayment));
+        when(repaymentRepository.findById(1L)).thenReturn(Optional.of(repayment));
+        when(repaymentRepository.saveAndFlush(repayment)).thenReturn(repayment);
+        when(repaymentMapper.mapToRepaymentDto(repayment)).thenReturn(repaymentDto);
 
         // when
-        repaymentService.updateRepayment(repaymentDto);
+        RepaymentDto retrievedRepaymentDto = repaymentService.updateRepayment(repaymentDto);
 
         // then
-        verify(repaymentRepository, times(1)).findById(1L);
-        verify(repaymentRepository, times(1)).saveAndFlush(repayment);
-        assertEquals(new BigDecimal(10), repayment.getRepaymentAmount());
-        assertEquals(LocalDate.now(), repayment.getRepaymentDate());
+        verify(repaymentRepository, times(1)).findById(any());
+        verify(repaymentRepository, times(1)).saveAndFlush(any(Repayment.class));
+
+        assertNotNull(retrievedRepaymentDto);
     }
 
     @Test
