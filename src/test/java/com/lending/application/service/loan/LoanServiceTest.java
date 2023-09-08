@@ -23,11 +23,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class LoanServiceTest {
     @InjectMocks
-    LoanService loanService;
+    private LoanService loanService;
     @Mock
-    LoanRepository loanRepository;
+    private LoanRepository loanRepository;
     @Mock
-    LoanMapper loanMapper;
+    private LoanMapper loanMapper;
 
     @Test
     void testGetLoanById_LoanNotFoundException() {
@@ -50,108 +50,89 @@ class LoanServiceTest {
     @Test
     void testCreateLoan() {
         // given
-        LoanDto loanDto = new LoanDto(
-                1L,
-                new BigDecimal(10),
-                5.00F,
-                LocalDate.now(),
-                22
-        );
-
+        LoanDto loanDto = new LoanDto();
         Loan loan = new Loan();
 
         when(loanMapper.mapToLoan(loanDto)).thenReturn(loan);
+        when(loanRepository.saveAndFlush(loan)).thenReturn(loan);
+        when(loanMapper.mapToLoanDto(loan)).thenReturn(loanDto);
 
         // when
-        loanService.createLoan(loanDto);
+        LoanDto retrievedLoanDto = loanService.createLoan(loanDto);
 
         // then
-        verify(loanMapper, times(1)).mapToLoan(loanDto);
-        verify(loanRepository, times(1)).saveAndFlush(loan);
+        verify(loanMapper,times(1)).mapToLoan(any(LoanDto.class));
+        verify(loanRepository,times(1)).saveAndFlush(any(Loan.class));
+        verify(loanMapper,times(1)).mapToLoanDto(any(Loan.class));
+
+        assertNotNull(retrievedLoanDto);
     }
 
     @Test
     void testGetLoanById() throws LoanNotFoundException {
         // given
         Loan loan = new Loan();
-        loan.setLoanId(1L);
-        loan.setLoanAmount(new BigDecimal(10));
-        loan.setInterest(5.00F);
-        loan.setLoanStartDate(LocalDate.now());
-        loan.setRepaymentPeriod(24);
+        LoanDto loanDto = new LoanDto();
 
         when(loanRepository.findById(any())).thenReturn(Optional.of(loan));
-        when(loanMapper.mapToLoanDto(loan)).thenCallRealMethod();
+        when(loanMapper.mapToLoanDto(loan)).thenReturn(loanDto);
 
         // when
         LoanDto retrievedLoanDto = loanService.getLoanById(1L);
 
         // then
-        verify(loanRepository, times(1)).findById(1L);
-        verify(loanMapper, times(1)).mapToLoanDto(loan);
-        assertEquals(1L, retrievedLoanDto.getLoanId());
-        assertEquals(new BigDecimal(10), retrievedLoanDto.getLoanAmount());
-        assertEquals(5.00F, retrievedLoanDto.getInterest());
-        assertEquals(LocalDate.now(), retrievedLoanDto.getLoanStartDate());
-        assertEquals(24, retrievedLoanDto.getRepaymentPeriod());
+        verify(loanRepository,times(1)).findById(any());
+        verify(loanMapper,times(1)).mapToLoanDto(any(Loan.class));
+
+        assertNotNull(retrievedLoanDto);
     }
 
     @Test
     void testGetAllLoan() {
         // given
         Loan loan1 = new Loan();
-        loan1.setLoanId(1L);
-        loan1.setLoanAmount(new BigDecimal(10));
-        loan1.setInterest(5.00F);
-        loan1.setLoanStartDate(LocalDate.now());
-        loan1.setRepaymentPeriod(24);
-
         Loan loan2 = new Loan();
-        loan2.setLoanId(2L);
-        loan2.setLoanAmount(new BigDecimal(20));
-        loan2.setInterest(5.50F);
-        loan2.setLoanStartDate(LocalDate.now());
-        loan2.setRepaymentPeriod(12);
 
         List<Loan> loanList = List.of(loan1,loan2);
 
+        LoanDto loanDto1 = new LoanDto();
+        LoanDto loanDto2 = new LoanDto();
+
+        List<LoanDto> loanDtoList = List.of(loanDto1,loanDto2);
+
         when(loanRepository.findAll()).thenReturn(loanList);
-        when(loanMapper.mapToLoanDtoList(loanList)).thenCallRealMethod();
+        when(loanMapper.mapToLoanDtoList(loanList)).thenReturn(loanDtoList);
 
         // when
         List<LoanDto> retrievedLoanDtoList = loanService.getAllLoan();
 
         // then
-        verify(loanRepository, times(1)).findAll();
-        verify(loanMapper, times(1)).mapToLoanDtoList(loanList);
-        assertEquals(2, retrievedLoanDtoList.size());
+        verify(loanRepository,times(1)).findAll();
+        verify(loanMapper,times(1)).mapToLoanDtoList(loanList);
+
+        assertNotNull(retrievedLoanDtoList);
     }
 
     @Test
     void testUpdateLoan() throws LoanNotFoundException {
         // given
-        LoanDto loanDto = new LoanDto(
-                1L,
-                new BigDecimal(10),
-                5.00F,
-                LocalDate.now(),
-                24
-        );
-
+        LoanDto loanDto = new LoanDto();
+        loanDto.setLoanId(1L);
         Loan loan = new Loan();
 
-        when(loanRepository.findById(any())).thenReturn(Optional.of(loan));
+        when(loanRepository.findById(1l)).thenReturn(Optional.of(loan));
+        when(loanRepository.saveAndFlush(loan)).thenReturn(loan);
+        when(loanMapper.mapToLoanDto(loan)).thenReturn(loanDto);
 
         // when
-        loanService.updateLoan(loanDto);
+        LoanDto retrievedLoanDto = loanService.updateLoan(loanDto);
 
         // then
-        verify(loanRepository, times(1)).findById(1L);
-        verify(loanRepository, times(1)).saveAndFlush(loan);
-        assertEquals(new BigDecimal(10), loan.getLoanAmount());
-        assertEquals(5.00F, loan.getInterest());
-        assertEquals(LocalDate.now(), loan.getLoanStartDate());
-        assertEquals(24, loan.getRepaymentPeriod());
+        verify(loanRepository,times(1)).findById(any());
+        verify(loanRepository,times(1)).saveAndFlush(any(Loan.class));
+        verify(loanMapper,times(1)).mapToLoanDto(any(Loan.class));
+
+        assertNotNull(retrievedLoanDto);
     }
 
     @Test

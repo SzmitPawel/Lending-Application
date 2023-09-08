@@ -6,24 +6,29 @@ import com.lending.application.exception.LoanNotFoundException;
 import com.lending.application.mapper.LoanMapper;
 import com.lending.application.repository.LoanRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class LoanService {
-    LoanRepository loanRepository;
-    LoanMapper loanMapper;
+    private final LoanRepository loanRepository;
+    private final LoanMapper loanMapper;
 
-    public void createLoan(final LoanDto loanDto) {
-        loanRepository.saveAndFlush(loanMapper.mapToLoan(loanDto));
+    public LoanDto createLoan(final LoanDto loanDto) {
+        Loan loan = loanMapper.mapToLoan(loanDto);
+
+        Loan createdLoan = loanRepository.saveAndFlush(loan);
+
+        return loanMapper.mapToLoanDto(createdLoan);
     }
 
     public LoanDto getLoanById(final Long loanId) throws LoanNotFoundException {
-        Loan loan = loanRepository.findById(loanId).orElseThrow(LoanNotFoundException::new);
+        Loan retrievedLoan = loanRepository.findById(loanId).orElseThrow(LoanNotFoundException::new);
 
-        return loanMapper.mapToLoanDto(loan);
+        return loanMapper.mapToLoanDto(retrievedLoan);
     }
 
     public List<LoanDto> getAllLoan() {
@@ -32,15 +37,17 @@ public class LoanService {
         return loanMapper.mapToLoanDtoList(loanList);
     }
 
-    public void updateLoan(final LoanDto loanDto) throws LoanNotFoundException {
-        Loan loan = loanRepository.findById(loanDto.getLoanId()).orElseThrow(LoanNotFoundException::new);
+    public LoanDto updateLoan(final LoanDto loanDto) throws LoanNotFoundException {
+        Loan retrievedLoan = loanRepository.findById(loanDto.getLoanId()).orElseThrow(LoanNotFoundException::new);
 
-        loan.setLoanAmount(loanDto.getLoanAmount());
-        loan.setInterest(loanDto.getInterest());
-        loan.setLoanStartDate(loanDto.getLoanStartDate());
-        loan.setRepaymentPeriod(loanDto.getRepaymentPeriod());
+        retrievedLoan.setLoanAmount(loanDto.getLoanAmount());
+        retrievedLoan.setInterest(loanDto.getInterest());
+        retrievedLoan.setLoanStartDate(loanDto.getLoanStartDate());
+        retrievedLoan.setRepaymentPeriod(loanDto.getRepaymentPeriod());
 
-        loanRepository.saveAndFlush(loan);
+        Loan updatedLoan = loanRepository.saveAndFlush(retrievedLoan);
+
+        return loanMapper.mapToLoanDto(updatedLoan);
     }
 
     public void deleteLoanById(final Long loanId) throws LoanNotFoundException {
