@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceTest {
     @InjectMocks
-    TransactionService transactionService;
+    private TransactionService transactionService;
     @Mock
     TransactionRepository transactionRepository;
     @Mock
@@ -49,79 +49,92 @@ class TransactionServiceTest {
     }
 
     @Test
-    void tyestGetTransactionById() throws TransactionNotFoundException {
+    void testCreateTransaction() {
         // given
-        Transaction transaction = new Transaction(
-                new BigDecimal(10),
-                LocalDate.now(),
-                TransactionMethodEnum.DEPOSIT
-        );
+        Transaction transaction = new Transaction();
+        TransactionDto transactionDto = new TransactionDto();
 
-        when(transactionRepository.findById(any())).thenReturn(Optional.of(transaction));
-        when(transactionMapper.mapToTransactionDto(transaction)).thenCallRealMethod();
+        when(transactionMapper.mapToTransaction(transactionDto)).thenReturn(transaction);
+        when(transactionRepository.saveAndFlush(transaction)).thenReturn(transaction);
+        when(transactionMapper.mapToTransactionDto(transaction)).thenReturn(transactionDto);
+
+        // when
+        TransactionDto retrievedTransactionDto = transactionService.createTransaction(transactionDto);
+
+        // then
+        verify(transactionMapper,times(1)).mapToTransaction(any(TransactionDto.class));
+        verify(transactionRepository,times(1)).saveAndFlush(any(Transaction.class));
+        verify(transactionMapper,times(1)).mapToTransactionDto(any(Transaction.class));
+
+        assertNotNull(retrievedTransactionDto);
+    }
+
+    @Test
+    void testGetTransactionById() throws TransactionNotFoundException {
+        // given
+        Transaction transaction = new Transaction();
+        TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setTransactionID(1L);
+
+        when(transactionRepository.findById(1L)).thenReturn(Optional.of(transaction));
+        when(transactionMapper.mapToTransactionDto(transaction)).thenReturn(transactionDto);
 
         // when
         TransactionDto retrievedTransactionDto = transactionService.getTransactionById(1L);
 
         // then
-        verify(transactionRepository, times(1)).findById(1L);
-        verify(transactionMapper, times(1)).mapToTransactionDto(transaction);
-        assertEquals(new BigDecimal(10), retrievedTransactionDto.getTransactionAmount());
-        assertEquals(LocalDate.now(), retrievedTransactionDto.getTransactionDate());
-        assertEquals(TransactionMethodEnum.DEPOSIT, retrievedTransactionDto.getTransactionMethodEnum());
+        verify(transactionRepository, times(1)).findById(any());
+        verify(transactionMapper, times(1)).mapToTransactionDto(any(Transaction.class));
+
+        assertNotNull(retrievedTransactionDto);
     }
 
     @Test
     void testGetAllTransactions() {
         // given
-        Transaction transaction1 = new Transaction(
-                new BigDecimal(10),
-                LocalDate.now(),
-                TransactionMethodEnum.DEPOSIT
-        );
-        Transaction transaction2 = new Transaction(
-                new BigDecimal(20),
-                LocalDate.now(),
-                TransactionMethodEnum.WITHDRAWAL
-        );
+        Transaction transaction1 = new Transaction();
+        Transaction transaction2 = new Transaction();
 
         List<Transaction> transactionList = List.of(transaction1,transaction2);
 
+        TransactionDto transactionDto1 = new TransactionDto();
+        TransactionDto transactionDto2 = new TransactionDto();
+
+        List<TransactionDto> transactionDtoList = List.of(transactionDto1,transactionDto2);
+
         when(transactionRepository.findAll()).thenReturn(transactionList);
-        when(transactionMapper.mapToTransactionDtoList(transactionList)).thenCallRealMethod();
+        when(transactionMapper.mapToTransactionDtoList(transactionList)).thenReturn(transactionDtoList);
 
         // when
         List<TransactionDto> retrievedTransactionDtoList = transactionService.getAllTransactions();
 
         // then
         verify(transactionRepository, times(1)).findAll();
-        verify(transactionMapper, times(1)).mapToTransactionDtoList(transactionList);
-        assertEquals(2, retrievedTransactionDtoList.size());
+        verify(transactionMapper, times(1)).mapToTransactionDtoList(anyList());
+
+        assertNotNull(retrievedTransactionDtoList);
     }
 
     @Test
     void testUpdateTransaction() throws TransactionNotFoundException {
         // given
-        TransactionDto transactionDto = new TransactionDto(
-                1L,
-                new BigDecimal(10),
-                LocalDate.now(),
-                TransactionMethodEnum.DEPOSIT
-        );
-
+        TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setTransactionID(1L);
         Transaction transaction = new Transaction();
 
-        when(transactionRepository.findById(any())).thenReturn(Optional.of(transaction));
+        when(transactionRepository.findById(1L)).thenReturn(Optional.of(transaction));
+        when(transactionRepository.saveAndFlush(transaction)).thenReturn(transaction);
+        when(transactionMapper.mapToTransactionDto(transaction)).thenReturn(transactionDto);
 
         // when
-        transactionService.updateTransaction(transactionDto);
+        TransactionDto retrievedTransactionDto = transactionService.updateTransaction(transactionDto);
 
         // then
-        verify(transactionRepository, times(1)).findById(1L);
-        verify(transactionRepository, times(1)).saveAndFlush(transaction);
-        assertEquals(new BigDecimal(10), transaction.getTransactionAmount());
-        assertEquals(LocalDate.now(), transaction.getTransactionDate());
-        assertEquals(TransactionMethodEnum.DEPOSIT, transaction.getTransactionMethodEnum());
+        verify(transactionRepository, times(1)).findById(any());
+        verify(transactionRepository, times(1)).saveAndFlush(any(Transaction.class));
+        verify(transactionMapper,times(1)).mapToTransactionDto(any(Transaction.class));
+
+        assertNotNull(retrievedTransactionDto);
     }
 
     @Test

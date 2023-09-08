@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class ClientMapper {
     public ClientDto mapToClientDto(final Client client) {
         return new ClientDto(
-                client.getClientID(),
+                client.getClientId(),
                 client.getName(),
                 client.getLastName(),
                 client.getAddress(),
@@ -22,7 +22,7 @@ public class ClientMapper {
 
     public Client mapToClient(final ClientDto clientDto) {
         Client client = new Client();
-        client.setClientID(clientDto.getClientId());
+        client.setClientId(clientDto.getClientId());
         client.setName(clientDto.getName());
         client.setLastName(clientDto.getLastName());
         client.setAddress(clientDto.getAddress());

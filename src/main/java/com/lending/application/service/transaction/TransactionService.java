@@ -7,19 +7,22 @@ import com.lending.application.mapper.TransactionMapper;
 import com.lending.application.repository.CreditRatingRepository;
 import com.lending.application.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class TransactionService {
-    TransactionRepository transactionRepository;
-    TransactionMapper transactionMapper;
-    private final CreditRatingRepository creditRatingRepository;
+    private final TransactionRepository transactionRepository;
+    private final TransactionMapper transactionMapper;
 
-    public void createTransaction(final TransactionDto transactionDto) {
-        transactionRepository.saveAndFlush(transactionMapper.mapToTransaction(transactionDto));
+    public TransactionDto createTransaction(final TransactionDto transactionDto) {
+        Transaction transaction = transactionMapper.mapToTransaction(transactionDto);
+        Transaction createdTransaction = transactionRepository.saveAndFlush(transaction);
+
+        return transactionMapper.mapToTransactionDto(createdTransaction);
     }
 
     public TransactionDto getTransactionById(final Long transactionId) throws TransactionNotFoundException {
@@ -36,7 +39,7 @@ public class TransactionService {
         return transactionMapper.mapToTransactionDtoList(transactionList);
     }
 
-    public void updateTransaction(final TransactionDto transactionDto) throws TransactionNotFoundException {
+    public TransactionDto updateTransaction(final TransactionDto transactionDto) throws TransactionNotFoundException {
         Transaction transaction = transactionRepository
                 .findById(transactionDto.getTransactionID())
                 .orElseThrow(TransactionNotFoundException::new);
@@ -45,7 +48,9 @@ public class TransactionService {
         transaction.setTransactionDate(transactionDto.getTransactionDate());
         transaction.setTransactionMethodEnum(transactionDto.getTransactionMethodEnum());
 
-        transactionRepository.saveAndFlush(transaction);
+        Transaction updatedTransaction = transactionRepository.saveAndFlush(transaction);
+
+        return transactionMapper.mapToTransactionDto(updatedTransaction);
     }
 
     public void deleteTransactionById(final Long transactionId) throws TransactionNotFoundException {

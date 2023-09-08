@@ -25,7 +25,7 @@ class ClientMapperTest {
                 "test@gmail.com",
                 "666-666-666"
         );
-        client.setClientID(1L);
+        client.setClientId(1L);
 
         // when
         ClientDto retrievedClientDto = clientMapper.mapToClientDto(client);
@@ -55,7 +55,7 @@ class ClientMapperTest {
         Client retrievedClient = clientMapper.mapToClient(clientDto);
 
         // then
-        assertEquals(1L, retrievedClient.getClientID());
+        assertEquals(1L, retrievedClient.getClientId());
         assertEquals("Client", retrievedClient.getName());
         assertEquals("Last name", retrievedClient.getLastName());
         assertEquals("Address", retrievedClient.getAddress());
@@ -73,7 +73,7 @@ class ClientMapperTest {
                 "test1@gmail.com",
                 "666-666-666"
         );
-        client1.setClientID(1L);
+        client1.setClientId(1L);
         Client client2 = new Client(
                 "Client 2",
                 "Last name 2",
@@ -81,7 +81,7 @@ class ClientMapperTest {
                 "test2@gmail.com",
                 "777-777-777"
         );
-        client2.setClientID(2L);
+        client2.setClientId(2L);
         List<Client> clientList = List.of(client1,client2);
 
         // when
@@ -129,13 +129,13 @@ class ClientMapperTest {
 
         // then
         assertEquals(2, retrievedClientList.size());
-        assertEquals(1L, retrievedClientList.get(0).getClientID());
+        assertEquals(1L, retrievedClientList.get(0).getClientId());
         assertEquals("Client 1", retrievedClientList.get(0).getName());
         assertEquals("Last name 1", retrievedClientList.get(0).getLastName());
         assertEquals("Address 1", retrievedClientList.get(0).getAddress());
         assertEquals("test1@gmail.com", retrievedClientList.get(0).getEmailAddress());
         assertEquals("666-666-666", retrievedClientList.get(0).getPhoneNumber());
-        assertEquals(2L, retrievedClientList.get(1).getClientID());
+        assertEquals(2L, retrievedClientList.get(1).getClientId());
         assertEquals("Client 2", retrievedClientList.get(1).getName());
         assertEquals("Last name 2", retrievedClientList.get(1).getLastName());
         assertEquals("Address 2", retrievedClientList.get(1).getAddress());
