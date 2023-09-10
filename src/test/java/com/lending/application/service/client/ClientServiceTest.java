@@ -45,27 +45,6 @@ class ClientServiceTest {
     }
 
     @Test
-    void testCreateClient() {
-        // given
-        ClientDto clientDto = new ClientDto();
-        Client client = new Client();
-
-        when(clientMapper.mapToClient(clientDto)).thenReturn(client);
-        when(clientRepository.saveAndFlush(client)).thenReturn(client);
-        when(clientMapper.mapToClientDto(client)).thenReturn(clientDto);
-
-        // when
-        ClientDto retrievedClient = clientService.createClient(clientDto);
-
-        // then
-        verify(clientMapper,times(1)).mapToClient(any(ClientDto.class));
-        verify(clientRepository,times(1)).saveAndFlush(any(Client.class));
-        verify(clientMapper,times(1)).mapToClientDto(any(Client.class));
-
-        assertNotNull(retrievedClient);
-    }
-
-    @Test
     void testGetClientById() throws ClientNotFoundException {
         // given
         Client client = new Client();

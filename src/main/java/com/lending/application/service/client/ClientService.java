@@ -16,13 +16,6 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
 
-    public ClientDto createClient(final ClientDto clientDto) {
-        Client client = clientMapper.mapToClient(clientDto);
-        Client retrievedClient = clientRepository.saveAndFlush(client);
-        
-        return clientMapper.mapToClientDto(retrievedClient);
-    }
-
     public ClientDto getClientById(final Long clientId) throws ClientNotFoundException {
         Client retrievedClient = clientRepository.findById(clientId).orElseThrow(ClientNotFoundException::new);
 
