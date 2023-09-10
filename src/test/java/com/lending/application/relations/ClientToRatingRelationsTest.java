@@ -37,7 +37,7 @@ public class ClientToRatingRelationsTest {
 
         // when
         Client retrievedClient = clientRepository
-                .findById(client.getClientID())
+                .findById(client.getClientId())
                 .orElse(null);
 
         // then
@@ -60,7 +60,7 @@ public class ClientToRatingRelationsTest {
 
         // when
         Client retrievedClient = clientRepository
-                .findById(client.getClientID())
+                .findById(client.getClientId())
                 .orElse(null);
 
         assertNotNull(retrievedClient);
@@ -69,7 +69,7 @@ public class ClientToRatingRelationsTest {
         clientRepository.saveAndFlush(client);
 
         Client retrievedClientAfterDelete = clientRepository
-                .findById(retrievedClient.getClientID())
+                .findById(retrievedClient.getClientId())
                 .orElse(null);
 
         // then
@@ -95,7 +95,7 @@ public class ClientToRatingRelationsTest {
         clientRepository.delete(client);
 
         Client retrievedClientAfterDelete = clientRepository
-                .findById(client.getClientID())
+                .findById(client.getClientId())
                 .orElse(null);
 
         // then
@@ -124,7 +124,7 @@ public class ClientToRatingRelationsTest {
         creditRatingRepository.saveAndFlush(creditRating);
 
         Client retrievedClientAfterUpdate = clientRepository
-                .findById(client.getClientID())
+                .findById(client.getClientId())
                 .orElse(null);
 
         // then
@@ -148,7 +148,7 @@ public class ClientToRatingRelationsTest {
 
         // when
         Client retrievedClient = clientRepository
-                .findById(client.getClientID())
+                .findById(client.getClientId())
                 .orElse(null);
 
         // then
