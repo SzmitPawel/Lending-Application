@@ -37,30 +37,16 @@ class AccountServiceTest {
     }
 
     @Test
-    void testDeleteAccountById_AccountNotFoundException() {
-        // given
-        when(accountRepository.findById(any())).thenReturn(Optional.empty());
-
-        // when & then
-        assertThrows(AccountNotFoundException.class, () -> accountService.deleteAccount(1L));
-    }
-
-    @Test
     void testCreateAccount() {
         // given
-        AccountDto accountDto = new AccountDto();
         Account account = new Account();
 
-        when(accountMapper.mapToAccount(accountDto)).thenReturn(account);
-        when(accountMapper.mapToDto(account)).thenReturn(accountDto);
         when(accountRepository.saveAndFlush(account)).thenReturn(account);
 
         // when
-        AccountDto retrievedAccount = accountService.createAccount(accountDto);
+        Account retrievedAccount = accountService.createAccount(account);
 
         // then
-        verify(accountMapper,times(1)).mapToAccount(any(AccountDto.class));
-        verify(accountMapper,times(1)).mapToDto(any(Account.class));
         verify(accountRepository,times(1)).saveAndFlush(any(Account.class));
 
         assertNotNull(retrievedAccount);
@@ -70,17 +56,14 @@ class AccountServiceTest {
     void testGetAccountById() throws AccountNotFoundException {
         // given
         Account account = new Account();
-        AccountDto accountDto = new AccountDto();
 
-        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
-        when(accountMapper.mapToDto(account)).thenReturn(accountDto);
+        when(accountRepository.findById(any())).thenReturn(Optional.of(account));
 
         // when
-        AccountDto retrievedAccountDto = accountService.getAccountById(1L);
+        Account retrievedAccountDto = accountService.getAccountById(1L);
 
         // then
         verify(accountRepository,times(1)).findById(any());
-        verify(accountMapper,times(1)).mapToDto(any(Account.class));
 
         assertNotNull(retrievedAccountDto);
     }
@@ -89,21 +72,27 @@ class AccountServiceTest {
     void testUpdateAccountBalance() throws AccountNotFoundException {
         // given
         Account account = new Account();
-        AccountDto accountDto = new AccountDto();
 
-        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+        when(accountRepository.findById(any())).thenReturn(Optional.of(account));
         when(accountRepository.saveAndFlush(account)).thenReturn(account);
-        when(accountMapper.mapToDto(account)).thenReturn(accountDto);
 
         // when
-        AccountDto updatedAccount = accountService.updateAccountBalance(1L, new BigDecimal(20));
+        Account updatedAccount = accountService.updateAccountBalance(1L, new BigDecimal(20));
 
         // then
         verify(accountRepository,times(1)).findById(any());
         verify(accountRepository,times(1)).saveAndFlush(any(Account.class));
-        verify(accountMapper,times(1)).mapToDto(any(Account.class));
 
         assertNotNull(updatedAccount);
+    }
+
+    @Test
+    void testDeleteAccountById_AccountNotFoundException() {
+        // given
+        when(accountRepository.findById(any())).thenReturn(Optional.empty());
+
+        // when & then
+        assertThrows(AccountNotFoundException.class, () -> accountService.deleteAccount(1L));
     }
 
     @Test
@@ -111,7 +100,7 @@ class AccountServiceTest {
         // given
         Account account = new Account();
 
-        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+        when(accountRepository.findById(any())).thenReturn(Optional.of(account));
 
         accountService.deleteAccount(1L);
 
