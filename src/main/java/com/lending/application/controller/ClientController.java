@@ -2,8 +2,7 @@ package com.lending.application.controller;
 
 import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.service.client.ClientAccountService;
-import com.lending.application.service.client.ClientService;
+import com.lending.application.service.client.ClientServiceFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,43 +18,42 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/lending/client")
 public class ClientController {
-    private final ClientService clientService;
-    private final ClientAccountService clientAccountService;
+    private final ClientServiceFacade clientServiceFacade;
 
     @GetMapping("{clientId}")
     public ResponseEntity<ClientDto> getClientById(@PathVariable Long clientId) {
         try {
-            ClientDto retrievedClientDto = clientService.getClientById(clientId);
-            log.info("Operation return succeeded client: " + clientId);
+            ClientDto retrievedClientDto = clientServiceFacade.getClientById(clientId);
+            log.info("Successfully retrieved client: " + clientId);
             return ResponseEntity.ok(retrievedClientDto);
         } catch (ClientNotFoundException e) {
-            log.error("Operation return failed client: " + clientId + " not found.");
+            log.error("Failed to retrieve client: " + clientId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     @GetMapping
     public ResponseEntity<List<ClientDto>> getAllClients() {
-        List<ClientDto> retrievedClientDtoList = clientService.getAllClients();
-        log.info("Operation return all clients succeeded.");
+        List<ClientDto> retrievedClientDtoList = clientServiceFacade.getAllClients();
+        log.info("Successfully retrieved clients list.");
         return ResponseEntity.status(HttpStatus.OK).body(retrievedClientDtoList);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClientDto> createClient(@RequestBody ClientDto clientDto) {
-        ClientDto retrievedClientDto = clientAccountService.createClient(clientDto);
-        log.info("Operation create a new client succeeded.");
+        ClientDto retrievedClientDto = clientServiceFacade.createClient(clientDto);
+        log.info("Successfully created a new client.");
         return ResponseEntity.status(HttpStatus.CREATED).body(retrievedClientDto);
     }
 
     @DeleteMapping("{clientId}")
     public ResponseEntity<Void> deleteClientById(@PathVariable ("clientId") Long clientId) {
         try {
-            clientService.deleteClientById(clientId);
-            log.info("Operation delete succeeded client id: " + clientId);
+            clientServiceFacade.deleteClientById(clientId);
+            log.info("Successfully deleted client: " + clientId);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (ClientNotFoundException e) {
-            log.info("Operation delete failed client id: " + clientId);
+            log.info("Failed to delete client: " + clientId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -63,14 +61,14 @@ public class ClientController {
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClientDto> updateClient(@RequestBody ClientDto clientDto) {
         try {
-            ClientDto retrievedClientDto = clientService.updateClient(clientDto);
-            log.info("Operation update succeeded client id: " + clientDto.getClientId());
+            ClientDto retrievedClientDto = clientServiceFacade.updateClient(clientDto);
+            log.info("Successfully updated client " + clientDto.getClientId());
             return ResponseEntity.status(HttpStatus.OK).body(retrievedClientDto);
         } catch (ClientNotFoundException e) {
-            log.error("Operation update failed client id: " + clientDto.getClientId() + " not found.");
+            log.error("Failed to update client: " + clientDto.getClientId());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (DataIntegrityViolationException e) {
-            log.error("Operation update failed not-null are null.");
+            log.error("Failed to update client due to data integrity violation.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }

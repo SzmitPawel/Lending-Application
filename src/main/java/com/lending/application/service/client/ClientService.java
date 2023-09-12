@@ -3,7 +3,6 @@ package com.lending.application.service.client;
 import com.lending.application.domain.Client;
 import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.mapper.ClientMapper;
 import com.lending.application.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,20 +13,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClientService {
     private final ClientRepository clientRepository;
-    private final ClientMapper clientMapper;
 
-    public ClientDto getClientById(final Long clientId) throws ClientNotFoundException {
-        Client retrievedClient = clientRepository.findById(clientId).orElseThrow(ClientNotFoundException::new);
-
-        return clientMapper.mapToClientDto(retrievedClient);
+    public Client getClientById(final Long clientId) throws ClientNotFoundException {
+        return clientRepository.findById(clientId).orElseThrow(ClientNotFoundException::new);
     }
 
-    public List<ClientDto> getAllClients() {
-        List<Client> retrievedClientList = clientRepository.findAll();
-        return clientMapper.mapToClientDtoList(retrievedClientList);
+    public List<Client> getAllClientsList() {
+        return clientRepository.findAll();
     }
 
-    public ClientDto updateClient(final ClientDto clientDto) throws ClientNotFoundException{
+    public Client updateClient(final ClientDto clientDto) throws ClientNotFoundException{
         Client retrievedClient = clientRepository.findById(clientDto.getClientId()).orElseThrow(ClientNotFoundException::new);
 
         retrievedClient.setName(clientDto.getName());
@@ -35,9 +30,7 @@ public class ClientService {
         retrievedClient.setEmailAddress(clientDto.getEmailAddress());
         retrievedClient.setPhoneNumber(clientDto.getPhoneNumber());
 
-        Client updatedClient  = clientRepository.saveAndFlush(retrievedClient);
-
-        return clientMapper.mapToClientDto(updatedClient);
+        return clientRepository.saveAndFlush(retrievedClient);
     }
 
     public void deleteClientById(final Long clientId) throws ClientNotFoundException {

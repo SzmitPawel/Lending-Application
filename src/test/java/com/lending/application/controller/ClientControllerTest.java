@@ -3,7 +3,8 @@ package com.lending.application.controller;
 import com.google.gson.Gson;
 import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.service.client.ClientAccountService;
+import com.lending.application.service.client.ClientServiceFacade;
+import com.lending.application.service.client.CreateClientService;
 import com.lending.application.service.client.ClientService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -29,9 +30,7 @@ class ClientControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private ClientService clientService;
-    @MockBean
-    private ClientAccountService clientAccountService;
+    private ClientServiceFacade clientServiceFacade;
 
     @Test
     void testGetClientById_succeedHttp200() throws Exception {
@@ -45,7 +44,7 @@ class ClientControllerTest {
                 null
         );
 
-        when(clientService.getClientById(1L)).thenReturn(clientDto);
+        when(clientServiceFacade.getClientById(1L)).thenReturn(clientDto);
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
@@ -60,7 +59,7 @@ class ClientControllerTest {
     @Test
     void testGetClientById_ClientNotFoundExceptionHttp404() throws Exception {
         // given
-        when(clientService.getClientById(any())).thenThrow(new ClientNotFoundException());
+        when(clientServiceFacade.getClientById(any())).thenThrow(new ClientNotFoundException());
 
         // when & then
         mockMvc.perform((MockMvcRequestBuilders
@@ -71,7 +70,7 @@ class ClientControllerTest {
     @Test
     void testGetAllClients_succeedHttp200() throws Exception {
         // given
-        when(clientService.getAllClients()).thenReturn(List.of());
+        when(clientServiceFacade.getAllClients()).thenReturn(List.of());
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
@@ -103,7 +102,7 @@ class ClientControllerTest {
 
         List<ClientDto> clientDtoList = List.of(clientDto1,clientDto2);
 
-        when(clientService.getAllClients()).thenReturn(clientDtoList);
+        when(clientServiceFacade.getAllClients()).thenReturn(clientDtoList);
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
@@ -142,7 +141,7 @@ class ClientControllerTest {
                     .content(jsonContent))
                .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        verify(clientAccountService, times(1)).createClient(any(ClientDto.class));
+        verify(clientServiceFacade, times(1)).createClient(any(ClientDto.class));
     }
 
 
@@ -153,20 +152,20 @@ class ClientControllerTest {
                     .delete("/lending/client/{clientId}", 1L))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        verify(clientService, times(1)).deleteClientById(any());
+        verify(clientServiceFacade, times(1)).deleteClientById(any());
     }
 
     @Test
     void testDeleteClientById_ClientNotFoundHttp404() throws Exception {
         // given
-        willThrow(new ClientNotFoundException()).given(clientService).deleteClientById(any());
+        willThrow(new ClientNotFoundException()).given(clientServiceFacade).deleteClientById(any());
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
                     .delete("/lending/client/{clientId}", 1L))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
 
-        verify(clientService, times(1)).deleteClientById(any());
+        verify(clientServiceFacade, times(1)).deleteClientById(any());
 
     }
 
@@ -185,7 +184,7 @@ class ClientControllerTest {
         Gson gson = new Gson();
         String gsonContent = gson.toJson(clientDto);
 
-        when(clientService.updateClient(any(ClientDto.class))).thenReturn(clientDto);
+        when(clientServiceFacade.updateClient(any(ClientDto.class))).thenReturn(clientDto);
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
@@ -213,7 +212,7 @@ class ClientControllerTest {
         Gson gson = new Gson();
         String gsonContent = gson.toJson(clientDto);
 
-        when(clientService.updateClient(any(ClientDto.class))).thenThrow(new ClientNotFoundException());
+        when(clientServiceFacade.updateClient(any(ClientDto.class))).thenThrow(new ClientNotFoundException());
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
@@ -239,7 +238,7 @@ class ClientControllerTest {
         Gson gson = new Gson();
         String gsonContent = gson.toJson(clientDto);
 
-        when(clientService.updateClient(any(ClientDto.class))).thenThrow(new DataIntegrityViolationException(""));
+        when(clientServiceFacade.updateClient(any(ClientDto.class))).thenThrow(new DataIntegrityViolationException(""));
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
