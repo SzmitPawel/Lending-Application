@@ -1,10 +1,7 @@
 package com.lending.application.service.credit.rating;
 
 import com.lending.application.domain.CreditRating;
-import com.lending.application.domain.CreditRatingEnum;
-import com.lending.application.domain.dto.CreditRatingDto;
 import com.lending.application.exception.CreditRatingNotFoundException;
-import com.lending.application.mapper.CreditRatingMapper;
 import com.lending.application.repository.CreditRatingRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,10 +9,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -25,16 +22,6 @@ class CreditRatingServiceTest {
     private CreditRatingService creditRatingService;
     @Mock
     private CreditRatingRepository creditRatingRepository;
-
-    @Test
-    void testGetCreditRatingById_CreditRatingNotFoundException() {
-        // given
-        when(creditRatingRepository.findById(any())).thenReturn(Optional.empty());
-
-        // when & then
-        assertThrows(CreditRatingNotFoundException.class, () -> creditRatingService
-                .getCreditRatingById(1L));
-    }
 
     @Test
     void testSaveCreditRating() {
@@ -50,6 +37,16 @@ class CreditRatingServiceTest {
         verify(creditRatingRepository, times(1)).saveAndFlush(any(CreditRating.class));
 
         assertNotNull(retrievedCreditRating);
+    }
+
+    @Test
+    void testGetCreditRatingById_CreditRatingNotFoundException() {
+        // given
+        when(creditRatingRepository.findById(any())).thenReturn(Optional.empty());
+
+        // when & then
+        assertThrows(CreditRatingNotFoundException.class, () -> creditRatingService
+                .getCreditRatingById(1L));
     }
 
     @Test

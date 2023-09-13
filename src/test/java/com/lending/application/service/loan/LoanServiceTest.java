@@ -1,9 +1,7 @@
 package com.lending.application.service.loan;
 
 import com.lending.application.domain.Loan;
-import com.lending.application.domain.dto.LoanDto;
 import com.lending.application.exception.LoanNotFoundException;
-import com.lending.application.mapper.LoanMapper;
 import com.lending.application.repository.LoanRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,12 +9,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -26,8 +23,22 @@ class LoanServiceTest {
     private LoanService loanService;
     @Mock
     private LoanRepository loanRepository;
-    @Mock
-    private LoanMapper loanMapper;
+
+    @Test
+    void testSaveLoan() {
+        // given
+        Loan loan = new Loan();
+
+        when(loanRepository.saveAndFlush(any(Loan.class))).thenReturn(loan);
+
+        // when
+        Loan retrievedLoan = loanService.saveLoan(loan);
+
+        // then
+        verify(loanRepository,times(1)).saveAndFlush(any(Loan.class));
+
+        assertNotNull(retrievedLoan);
+    }
 
     @Test
     void testGetLoanById_LoanNotFoundException() {
@@ -39,52 +50,19 @@ class LoanServiceTest {
     }
 
     @Test
-    void testDeleteLoanById_LoanNotFoundException() {
-        // given
-        when(loanRepository.findById(any())).thenReturn(Optional.empty());
-
-        // when & then
-        assertThrows(LoanNotFoundException.class, () -> loanService.deleteLoanById(1L));
-    }
-
-    @Test
-    void testCreateLoan() {
-        // given
-        LoanDto loanDto = new LoanDto();
-        Loan loan = new Loan();
-
-        when(loanMapper.mapToLoan(loanDto)).thenReturn(loan);
-        when(loanRepository.saveAndFlush(loan)).thenReturn(loan);
-        when(loanMapper.mapToLoanDto(loan)).thenReturn(loanDto);
-
-        // when
-        LoanDto retrievedLoanDto = loanService.createLoan(loanDto);
-
-        // then
-        verify(loanMapper,times(1)).mapToLoan(any(LoanDto.class));
-        verify(loanRepository,times(1)).saveAndFlush(any(Loan.class));
-        verify(loanMapper,times(1)).mapToLoanDto(any(Loan.class));
-
-        assertNotNull(retrievedLoanDto);
-    }
-
-    @Test
     void testGetLoanById() throws LoanNotFoundException {
         // given
         Loan loan = new Loan();
-        LoanDto loanDto = new LoanDto();
 
         when(loanRepository.findById(any())).thenReturn(Optional.of(loan));
-        when(loanMapper.mapToLoanDto(loan)).thenReturn(loanDto);
 
         // when
-        LoanDto retrievedLoanDto = loanService.getLoanById(1L);
+        Loan retrievedLoan = loanService.getLoanById(1L);
 
         // then
         verify(loanRepository,times(1)).findById(any());
-        verify(loanMapper,times(1)).mapToLoanDto(any(Loan.class));
 
-        assertNotNull(retrievedLoanDto);
+        assertNotNull(retrievedLoan);
     }
 
     @Test
@@ -95,44 +73,24 @@ class LoanServiceTest {
 
         List<Loan> loanList = List.of(loan1,loan2);
 
-        LoanDto loanDto1 = new LoanDto();
-        LoanDto loanDto2 = new LoanDto();
-
-        List<LoanDto> loanDtoList = List.of(loanDto1,loanDto2);
-
         when(loanRepository.findAll()).thenReturn(loanList);
-        when(loanMapper.mapToLoanDtoList(loanList)).thenReturn(loanDtoList);
 
         // when
-        List<LoanDto> retrievedLoanDtoList = loanService.getAllLoan();
+        List<Loan> retrievedLoanList = loanService.getAllLoan();
 
         // then
         verify(loanRepository,times(1)).findAll();
-        verify(loanMapper,times(1)).mapToLoanDtoList(loanList);
 
-        assertNotNull(retrievedLoanDtoList);
+        assertNotNull(retrievedLoanList);
     }
 
     @Test
-    void testUpdateLoan() throws LoanNotFoundException {
+    void testDeleteLoanById_LoanNotFoundException() {
         // given
-        LoanDto loanDto = new LoanDto();
-        loanDto.setLoanId(1L);
-        Loan loan = new Loan();
+        when(loanRepository.findById(any())).thenReturn(Optional.empty());
 
-        when(loanRepository.findById(1l)).thenReturn(Optional.of(loan));
-        when(loanRepository.saveAndFlush(loan)).thenReturn(loan);
-        when(loanMapper.mapToLoanDto(loan)).thenReturn(loanDto);
-
-        // when
-        LoanDto retrievedLoanDto = loanService.updateLoan(loanDto);
-
-        // then
-        verify(loanRepository,times(1)).findById(any());
-        verify(loanRepository,times(1)).saveAndFlush(any(Loan.class));
-        verify(loanMapper,times(1)).mapToLoanDto(any(Loan.class));
-
-        assertNotNull(retrievedLoanDto);
+        // when & then
+        assertThrows(LoanNotFoundException.class, () -> loanService.deleteLoanById(1L));
     }
 
     @Test
