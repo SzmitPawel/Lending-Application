@@ -24,8 +24,6 @@ class CreditRatingServiceTest {
     @InjectMocks
     private CreditRatingService creditRatingService;
     @Mock
-    private CreditRatingMapper creditRatingMapper;
-    @Mock
     private CreditRatingRepository creditRatingRepository;
 
     @Test
@@ -39,6 +37,38 @@ class CreditRatingServiceTest {
     }
 
     @Test
+    void testSaveCreditRating() {
+        // given
+        CreditRating creditRating = new CreditRating();
+
+        when(creditRatingRepository.saveAndFlush(any(CreditRating.class))).thenReturn(creditRating);
+
+        // when
+        CreditRating retrievedCreditRating = creditRatingService.saveCreditRating(creditRating);
+
+        // then
+        verify(creditRatingRepository, times(1)).saveAndFlush(any(CreditRating.class));
+
+        assertNotNull(retrievedCreditRating);
+    }
+
+    @Test
+    void testGetCreditRatingById() throws CreditRatingNotFoundException {
+        // given
+        CreditRating creditRating = new CreditRating();
+
+        when(creditRatingRepository.findById(any())).thenReturn(Optional.of(creditRating));
+
+        // when
+        CreditRating retrievedCreditRating = creditRatingService.getCreditRatingById(1L);
+
+        // then
+        verify(creditRatingRepository, times(1)).findById(any());
+
+        assertNotNull(retrievedCreditRating);
+    }
+
+    @Test
     void testDeleteCreditRatingById_CreditRatingNotFoundException() {
         // given
         when(creditRatingRepository.findById(any())).thenReturn(Optional.empty());
@@ -49,73 +79,11 @@ class CreditRatingServiceTest {
     }
 
     @Test
-    void testCreateCreditRating() {
-        // given
-        CreditRatingDto creditRatingDto = new CreditRatingDto();
-        CreditRating creditRating = new CreditRating();
-
-        when(creditRatingMapper.mapToCreditRating(creditRatingDto)).thenReturn(creditRating);
-        when(creditRatingRepository.saveAndFlush(creditRating)).thenReturn(creditRating);
-        when(creditRatingMapper.mapToCreditRatingDto(creditRating)).thenReturn(creditRatingDto);
-
-        // when
-        CreditRatingDto retrievedCreditRatingDto = creditRatingService.createCreditRating(creditRatingDto);
-
-        // then
-        verify(creditRatingRepository, times(1)).saveAndFlush(any(CreditRating.class));
-        verify(creditRatingMapper,times(1)).mapToCreditRating(any(CreditRatingDto.class));
-        verify(creditRatingMapper,times(1)).mapToCreditRatingDto(any(CreditRating.class));
-
-        assertNotNull(retrievedCreditRatingDto);
-    }
-
-    @Test
-    void testGetCreditRatingById() throws CreditRatingNotFoundException {
-        // given
-        CreditRating creditRating = new CreditRating();
-        CreditRatingDto creditRatingDto = new CreditRatingDto();
-
-        when(creditRatingRepository.findById(1L)).thenReturn(Optional.of(creditRating));
-        when(creditRatingMapper.mapToCreditRatingDto(creditRating)).thenReturn(creditRatingDto);
-
-        // when
-        CreditRatingDto retrievedCreditRatingDto = creditRatingService.getCreditRatingById(1L);
-
-        // then
-        verify(creditRatingRepository, times(1)).findById(any());
-        verify(creditRatingMapper, times(1)).mapToCreditRatingDto(any(CreditRating.class));
-
-        assertNotNull(retrievedCreditRatingDto);
-    }
-
-    @Test
-    void testUpdateCreditRating() throws CreditRatingNotFoundException {
-        // given
-        CreditRatingDto creditRatingDto = new CreditRatingDto();
-        creditRatingDto.setRatingId(1L);
-        CreditRating creditRating = new CreditRating();
-
-        when(creditRatingRepository.findById(1L)).thenReturn(Optional.of(creditRating));
-        when(creditRatingRepository.saveAndFlush(creditRating)).thenReturn(creditRating);
-        when(creditRatingMapper.mapToCreditRatingDto(creditRating)).thenReturn(creditRatingDto);
-
-        // when
-        CreditRatingDto updateCreditRatingDto = creditRatingService.updateCreditRating(creditRatingDto);
-
-        // then
-        verify(creditRatingRepository, times(1)).findById(any());
-        verify(creditRatingRepository, times(1)).saveAndFlush(any(CreditRating.class));
-        verify(creditRatingMapper,times(1)).mapToCreditRatingDto(any(CreditRating.class));
-
-        assertNotNull(updateCreditRatingDto);
-    }
-
-    @Test
     void deleteCreditRatingById() throws CreditRatingNotFoundException {
         // given
         CreditRating creditRating = new CreditRating();
 
-        when(creditRatingRepository.findById(1L)).thenReturn(Optional.of(creditRating));
+        when(creditRatingRepository.findById(any())).thenReturn(Optional.of(creditRating));
 
         // when
         creditRatingService.deleteCreditRatingById(1L);
