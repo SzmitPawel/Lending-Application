@@ -17,8 +17,8 @@ public class RepaymentService {
         return repaymentRepository.saveAndFlush(repayment);
     }
 
-    public Repayment getRepaymentById(final Long repaymentID) throws RepaymentNotFoundException {
-        return repaymentRepository.findById(repaymentID).orElseThrow(RepaymentNotFoundException::new);
+    public Repayment getRepaymentById(final Long repaymentId) throws RepaymentNotFoundException {
+        return repaymentRepository.findById(repaymentId).orElseThrow(RepaymentNotFoundException::new);
     }
 
     public List<Repayment> getAllRepayments() {
