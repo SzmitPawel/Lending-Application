@@ -41,9 +41,14 @@ public class ClientController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClientDto> createClient(@RequestBody ClientDto clientDto) {
-        ClientDto retrievedClientDto = clientServiceFacade.createClient(clientDto);
-        log.info("Successfully created a new client.");
-        return ResponseEntity.status(HttpStatus.CREATED).body(retrievedClientDto);
+        try {
+            ClientDto retrievedClientDto = clientServiceFacade.createClient(clientDto);
+            log.info("Successfully created a new client.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(retrievedClientDto);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Failed to update client due to data integrity violation.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @DeleteMapping("{clientId}")
@@ -64,9 +69,6 @@ public class ClientController {
             ClientDto retrievedClientDto = clientServiceFacade.updateClient(clientDto);
             log.info("Successfully updated client " + clientDto.getClientId());
             return ResponseEntity.status(HttpStatus.OK).body(retrievedClientDto);
-        } catch (ClientNotFoundException e) {
-            log.error("Failed to update client: " + clientDto.getClientId());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (DataIntegrityViolationException e) {
             log.error("Failed to update client due to data integrity violation.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

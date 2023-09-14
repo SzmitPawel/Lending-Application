@@ -29,8 +29,9 @@ public class ClientServiceFacade {
         return clientMapper.mapToClientDtoList(clientService.getAllClientsList());
     }
 
-    public ClientDto updateClient(final ClientDto clientDto) throws ClientNotFoundException {
-        return clientMapper.mapToClientDto(clientService.updateClient(clientDto));
+    public ClientDto updateClient(final ClientDto clientDto) {
+        Client client = clientMapper.mapToClient(clientDto);
+        return clientMapper.mapToClientDto(clientService.saveClient(client));
     }
 
     public void deleteClientById(final Long clientId) throws ClientNotFoundException {

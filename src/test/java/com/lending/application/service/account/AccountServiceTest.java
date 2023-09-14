@@ -1,10 +1,7 @@
 package com.lending.application.service.account;
 
 import com.lending.application.domain.Account;
-import com.lending.application.domain.dto.AccountDto;
 import com.lending.application.exception.AccountNotFoundException;
-import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.mapper.AccountMapper;
 import com.lending.application.repository.AccountRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,10 +9,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,8 +21,6 @@ class AccountServiceTest {
     private AccountService accountService;
     @Mock
     private AccountRepository accountRepository;
-    @Mock
-    private AccountMapper accountMapper;
 
     @Test
     public void testGetAccountById_AccountNotFoundException() {
@@ -37,14 +32,14 @@ class AccountServiceTest {
     }
 
     @Test
-    void testCreateAccount() {
+    void testSaveAccount() {
         // given
         Account account = new Account();
 
         when(accountRepository.saveAndFlush(account)).thenReturn(account);
 
         // when
-        Account retrievedAccount = accountService.createAccount(account);
+        Account retrievedAccount = accountService.saveAccount(account);
 
         // then
         verify(accountRepository,times(1)).saveAndFlush(any(Account.class));
@@ -66,24 +61,6 @@ class AccountServiceTest {
         verify(accountRepository,times(1)).findById(any());
 
         assertNotNull(retrievedAccountDto);
-    }
-
-    @Test
-    void testUpdateAccountBalance() throws AccountNotFoundException {
-        // given
-        Account account = new Account();
-
-        when(accountRepository.findById(any())).thenReturn(Optional.of(account));
-        when(accountRepository.saveAndFlush(account)).thenReturn(account);
-
-        // when
-        Account updatedAccount = accountService.updateAccountBalance(1L, new BigDecimal(20));
-
-        // then
-        verify(accountRepository,times(1)).findById(any());
-        verify(accountRepository,times(1)).saveAndFlush(any(Account.class));
-
-        assertNotNull(updatedAccount);
     }
 
     @Test

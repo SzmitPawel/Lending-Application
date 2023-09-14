@@ -1,7 +1,6 @@
 package com.lending.application.service.client;
 
 import com.lending.application.domain.Client;
-import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.repository.ClientRepository;
 import org.junit.jupiter.api.Test;
@@ -68,19 +67,16 @@ class ClientServiceTest {
     }
 
     @Test
-    void testUpdateClient() throws ClientNotFoundException {
+    void testSaveClient() {
         // given
         Client client = new Client();
-        ClientDto clientDto = new ClientDto();
 
-        when(clientRepository.findById(any())).thenReturn(Optional.of(client));
         when(clientRepository.saveAndFlush(client)).thenReturn(client);
 
         // when
-        Client updateClientClient = clientService.updateClient(clientDto);
+        Client updateClientClient = clientService.saveClient(client);
 
         // then
-        verify(clientRepository,times(1)).findById(any());
         verify(clientRepository,times(1)).saveAndFlush(any(Client.class));
 
         assertNotNull(updateClientClient);

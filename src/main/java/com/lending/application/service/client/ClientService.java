@@ -1,7 +1,6 @@
 package com.lending.application.service.client;
 
 import com.lending.application.domain.Client;
-import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +21,8 @@ public class ClientService {
         return clientRepository.findAll();
     }
 
-    public Client updateClient(final ClientDto clientDto) throws ClientNotFoundException{
-        Client retrievedClient = clientRepository.findById(clientDto.getClientId()).orElseThrow(ClientNotFoundException::new);
-
-        retrievedClient.setName(clientDto.getName());
-        retrievedClient.setLastName(clientDto.getLastName());
-        retrievedClient.setEmailAddress(clientDto.getEmailAddress());
-        retrievedClient.setPhoneNumber(clientDto.getPhoneNumber());
-
-        return clientRepository.saveAndFlush(retrievedClient);
+    public Client saveClient(final Client client) {
+        return clientRepository.saveAndFlush(client);
     }
 
     public void deleteClientById(final Long clientId) throws ClientNotFoundException {
