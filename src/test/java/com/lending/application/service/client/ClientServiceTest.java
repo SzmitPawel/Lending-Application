@@ -1,10 +1,8 @@
 package com.lending.application.service.client;
 
 import com.lending.application.domain.Client;
-import com.lending.application.domain.dto.ClientDto;
-import com.lending.application.mapper.ClientMapper;
-import com.lending.application.repository.ClientRepository;
 import com.lending.application.exception.ClientNotFoundException;
+import com.lending.application.repository.ClientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,18 +12,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ClientServiceTest {
     @InjectMocks
-    ClientService clientService;
+    private ClientService clientService;
     @Mock
-    ClientRepository clientRepository;
-    @Mock
-    ClientMapper clientMapper;
+    private ClientRepository clientRepository;
 
     @Test
     void testGetClientById_ClientNotFoundException() {
@@ -37,114 +33,62 @@ class ClientServiceTest {
     }
 
     @Test
-    void testDeleteClientById_ClientNotFoundException() {
-        // given
-        when(clientRepository.findById(any())).thenReturn(Optional.empty());
-
-        // when & then
-        assertThrows(ClientNotFoundException.class, () -> clientService.deleteClientById(1L));
-    }
-
-    @Test
-    void testCreateClient() {
-        // given
-        ClientDto clientDto = new ClientDto(
-                1L,
-                "Client",
-                "Client last name",
-                null,
-                null,
-                null);
-
-        Client client = new Client();
-
-        when(clientRepository.saveAndFlush(any(Client.class))).thenReturn(client);
-        when(clientMapper.mapToClient(any(ClientDto.class))).thenReturn(client);
-        when(clientMapper.mapToClientDto(any(Client.class))).thenReturn(clientDto);
-
-        // when
-        ClientDto retrievedClientDto = clientService.createClient(clientDto);
-
-        // then
-        assertEquals(1L, retrievedClientDto.getClientId());
-        assertEquals("Client", retrievedClientDto.getName());
-        assertEquals("Client last name", retrievedClientDto.getLastName());
-        verify(clientRepository, times(1)).saveAndFlush(any(Client.class));
-        verify(clientMapper, times(1)).mapToClient(any(ClientDto.class));
-        verify(clientMapper, times(1)).mapToClientDto(any(Client.class));
-    }
-
-    @Test
     void testGetClientById() throws ClientNotFoundException {
         // given
         Client client = new Client();
-        client.setClientID(1L);
-        client.setName("Client");
-        client.setLastName("Client last name");
 
         when(clientRepository.findById(any())).thenReturn(Optional.of(client));
-        when(clientMapper.mapToClientDto(client)).thenCallRealMethod();
 
         // when
-        ClientDto retrievedClientDto = clientService.getClientById(1L);
+        Client retrievedClient = clientService.getClientById(1L);
 
         // then
-        verify(clientRepository, times(1)).findById(1L);
-        verify(clientMapper,times(1)).mapToClientDto(client);
-        assertEquals("Client",retrievedClientDto.getName());
-        assertEquals("Client last name", retrievedClientDto.getLastName());
+        verify(clientRepository,times(1)).findById(any());
+
+        assertNotNull(retrievedClient);
     }
 
     @Test
     void testGetAllClients_shouldReturnListOfClientsDto() {
         // given
         Client client1 = new Client();
-        client1.setClientID(1L);
-        client1.setName("Client");
-        client1.setLastName("Client last name");
-
         Client client2 = new Client();
-        client2.setClientID(2L);
-        client2.setName("Client 2");
-        client2.setLastName("Client 2 last name");
-
         List<Client> clientList = List.of(client1,client2);
 
-        when(clientMapper.mapToClientDtoList(clientList)).thenCallRealMethod();
         when(clientRepository.findAll()).thenReturn(clientList);
 
         // when
-        List<ClientDto> retrievedClientDtoList = clientService.getAllClients();
+        List<Client> retrievedClientList = clientService.getAllClientsList();
 
         // then
-        assertEquals(clientList.size(), retrievedClientDtoList.size());
-        verify(clientMapper, times(1)).mapToClientDtoList(clientList);
-        verify(clientRepository, times(1)).findAll();
+        verify(clientRepository,times(1)).findAll();
+
+        assertNotNull(retrievedClientList);
     }
 
     @Test
-    void testUpdateClient() throws ClientNotFoundException {
+    void testSaveClient() {
         // given
-        ClientDto clientDto = new ClientDto(
-                1L,
-                "Client",
-                "Client last name",
-                null,
-                null,
-                null);
-
         Client client = new Client();
 
-        when(clientRepository.findById(any())).thenReturn(Optional.of(client));
-        when(clientMapper.mapToClientDto(any(Client.class))).thenReturn(clientDto);
+        when(clientRepository.saveAndFlush(client)).thenReturn(client);
 
         // when
-        ClientDto retrievedClientDto = clientService.updateClient(clientDto);
+        Client updateClientClient = clientService.saveClient(client);
 
         // then
-        verify(clientRepository, times(1)).findById(1L);
-        assertEquals("Client", retrievedClientDto.getName());
-        assertEquals("Client last name", retrievedClientDto.getLastName());
+        verify(clientRepository,times(1)).saveAndFlush(any(Client.class));
+
+        assertNotNull(updateClientClient);
+    }
+
+    @Test
+    void testDeleteClientById_ClientNotFoundException() {
+        // given
+        when(clientRepository.findById(any())).thenReturn(Optional.empty());
+
+        // when & then
+        assertThrows(ClientNotFoundException.class, () -> clientService.deleteClientById(1L));
     }
 
     @Test

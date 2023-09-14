@@ -3,8 +3,7 @@ package com.lending.application.controller;
 import com.google.gson.Gson;
 import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.facade.ClientServiceFacade;
-import com.lending.application.service.client.ClientService;
+import com.lending.application.service.client.ClientServiceFacade;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,257 +26,227 @@ import static org.mockito.BDDMockito.*;
 @WebMvcTest(ClientController.class)
 class ClientControllerTest {
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     @MockBean
-    ClientService clientService;
-    @MockBean
-    ClientServiceFacade clientServiceFacade;
+    private ClientServiceFacade clientServiceFacade;
 
-    @Test
-    void testGetClientById_shouldThrowClientNotFoundExceptionAndHttp404() throws  Exception {
-        // given
-        when(clientService.getClientById(any())).thenThrow(new ClientNotFoundException());
+    private final String PATH = "/lending/client";
 
-        // when & then
-        mockMvc.perform((MockMvcRequestBuilders
-                    .get("/lending/client/{clientId}", 1L)))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-    }
-
-    @Test
-    void testGetClientById_shouldReturnOneClientAndHttp200() throws Exception {
-        // given
-        ClientDto clientDto = new ClientDto(
-                1L,
-                "Client",
-                "Last Name",
-                null,
-                null,
-                null
-        );
-        when(clientService.getClientById(1L)).thenReturn(clientDto);
-
-        // when & then
-        mockMvc.perform(MockMvcRequestBuilders
-                    .get("/lending/client/{clientId}",1L)
-                    .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.clientId", Matchers.is(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Client")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName", Matchers.is("Last Name")));
-    }
-
-    @Test
-    void testShouldReturnEmptyClientListAndHttp200() throws Exception {
-        // given
-        when(clientService.getAllClients()).thenReturn(List.of());
-
-        // when & then
-        mockMvc.perform(MockMvcRequestBuilders
-                    .get("/lending/client")
-                    .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(0)));
-    }
-
-    @Test
-    void testGetAllClients_shouldReturnListOfClientsAndHttp200() throws Exception {
-        // given
+    private List<ClientDto> generateClientsList() {
         ClientDto clientDto1 = new ClientDto(
                 1L,
-                "Client 1",
-                "Last Name 1",
+                "John 1",
+                "Doe 1",
                 null,
                 null,
                 null
         );
         ClientDto clientDto2 = new ClientDto(
                 2L,
-                "Client 2",
-                "Last Name 2",
+                "John 2",
+                "Doe 2",
                 null,
                 null,
                 null
         );
 
-        List<ClientDto> clientDtoList = List.of(clientDto1,clientDto2);
+        return List.of(clientDto1,clientDto2);
+    }
 
-        when(clientService.getAllClients()).thenReturn(clientDtoList);
+    private ClientDto generateClient() {
+        return new ClientDto(
+                1L,
+                "John",
+                "Doe",
+                null,
+                null,
+                null
+        );
+    }
+
+    @Test
+    void testGetClientById_ClientNotFoundExceptionHttp404() throws Exception {
+        // given
+        Long clientId = 1L;
+
+        when(clientServiceFacade.getClientById(any())).thenThrow(ClientNotFoundException.class);
+
+        // when & then
+        mockMvc.perform((MockMvcRequestBuilders
+                        .get(PATH + "/{clientId}", clientId)))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        verify(clientServiceFacade,times(1)).getClientById(any());
+    }
+
+    @Test
+    void testGetClientById_succeedHttp200() throws Exception {
+        // given
+        Long clientId = 1L;
+        ClientDto clientDto = generateClient();
+
+        when(clientServiceFacade.getClientById(any())).thenReturn(clientDto);
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/lending/client")
+                    .get(PATH + "/{clientId}",clientId)
+                    .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.clientId", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("John")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName", Matchers.is("Doe")));
+
+        verify(clientServiceFacade,times(1)).getClientById(any());
+    }
+
+    @Test
+    void testGetAllClients_succeedHttp200() throws Exception {
+        // given
+        when(clientServiceFacade.getAllClients()).thenReturn(List.of());
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders
+                    .get(PATH)
+                    .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(0)));
+
+        verify(clientServiceFacade,times(1)).getAllClients();
+    }
+
+    @Test
+    void testGetAllClientsList_succeedHttp200() throws Exception {
+        // given
+        List<ClientDto> clientDtoList = generateClientsList();
+
+        when(clientServiceFacade.getAllClients()).thenReturn(clientDtoList);
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(PATH)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].clientId", Matchers.is(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is("Client 1")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].lastName", Matchers.is("Last Name 1")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is("John 1")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].lastName", Matchers.is("Doe 1")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].clientId", Matchers.is(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name", Matchers.is("Client 2")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].lastName", Matchers.is("Last Name 2")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name", Matchers.is("John 2")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].lastName", Matchers.is("Doe 2")));
+
+        verify(clientServiceFacade,times(1)).getAllClients();
     }
 
     @Test
-    void testAddNewClient_shouldReturnHttp201() throws Exception {
+    void testCreateClient_DataIntegrityViolationExceptionHttp400() throws Exception {
         // given
-        ClientDto clientDto = new ClientDto(
-                1L,
-                "Client 1",
-                "Last name",
-                null,
-                null,
-                null
-        );
+        ClientDto clientDto = generateClient();
+
+        when(clientServiceFacade.createClient(any(ClientDto.class))).thenThrow(DataIntegrityViolationException.class);
 
         Gson gson = new Gson();
         String jsonContent = gson.toJson(clientDto);
 
-        when(clientServiceFacade.CreateNewClient(any(ClientDto.class))).thenReturn(clientDto);
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(PATH)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding(StandardCharsets.UTF_8)
+                    .content(jsonContent))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        verify(clientServiceFacade,times(1)).createClient(any(ClientDto.class));
+    }
+
+    @Test
+    void testCreateClient_succeedHttp201() throws Exception {
+        // given
+        ClientDto clientDto = generateClient();
+
+        Gson gson = new Gson();
+        String jsonContent = gson.toJson(clientDto);
+
+        when(clientServiceFacade.createClient(any(ClientDto.class))).thenReturn(clientDto);
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
-                    .post("/lending/client")
+                        .post(PATH)
                     .contentType(MediaType.APPLICATION_JSON)
                     .characterEncoding(StandardCharsets.UTF_8)
                     .content(jsonContent))
                .andExpect(MockMvcResultMatchers.status().isCreated())
-               .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("Client 1")))
-               .andExpect(MockMvcResultMatchers.jsonPath("$.lastName", Matchers.is("Last name")));
+               .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("John")))
+               .andExpect(MockMvcResultMatchers.jsonPath("$.lastName", Matchers.is("Doe")));
 
-        verify(clientServiceFacade, times(1)).CreateNewClient(any(ClientDto.class));
+        verify(clientServiceFacade, times(1)).createClient(any(ClientDto.class));
     }
 
     @Test
-    void testAddNewClient_shouldReturnHttp400() throws Exception {
+    void testDeleteClientById_ClientNotFoundHttp404() throws Exception {
         // given
-        ClientDto clientDto = new ClientDto(
-                1L,
-                "Client 1",
-                null,
-                null,
-                null,
-                null
-        );
+        Long clientId = 1L;
 
-        Gson gson = new Gson();
-        String gsonContent = gson.toJson(clientDto);
-
-        willThrow(new DataIntegrityViolationException("")).given(clientService).createClient(any());
+        willThrow(ClientNotFoundException.class).given(clientServiceFacade).deleteClientById(any());
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
-                    .post("/lending/client")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .characterEncoding(StandardCharsets.UTF_8)
-                    .content(gsonContent))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                        .delete(PATH + "/{clientId}", clientId))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        verify(clientServiceFacade, times(1)).deleteClientById(any());
     }
 
+
     @Test
-    void testDeleteClientById_shouldReturnHttp200() throws Exception {
-        // given & when & then
+    void testDeleteClientById_succeedHttp200() throws Exception {
+        // given
+        Long clientId = 1L;
+
+        // when & then
         mockMvc.perform(MockMvcRequestBuilders
-                    .delete("/lending/client/{clientId}", 1L))
+                    .delete(PATH + "/{clientId}", clientId))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        verify(clientService, times(1)).deleteClientById(any());
+        verify(clientServiceFacade, times(1)).deleteClientById(any());
     }
 
     @Test
-    void testDeleteClientById_shouldReturnAndHttp404() throws Exception {
+    void testUpdateClient_DataIntegrityViolationExceptionHttp400() throws Exception {
         // given
-        willThrow(new ClientNotFoundException()).given(clientService).deleteClientById(any());
-
-        // when & then
-        mockMvc.perform(MockMvcRequestBuilders
-                    .delete("/lending/client/{clientId}", 1L))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-
-        verify(clientService, times(1)).deleteClientById(any());
-
-    }
-
-    @Test
-    void testUpdateClient_shouldReturnUpdatedClientAndHttp200() throws Exception {
-        // given
-        ClientDto clientDto = new ClientDto(
-                1L,
-                "updated client",
-                "updated last name",
-                null,
-                null,
-                null
-        );
+        ClientDto clientDto = generateClient();
 
         Gson gson = new Gson();
         String gsonContent = gson.toJson(clientDto);
 
-        when(clientService.updateClient(any(ClientDto.class))).thenReturn(clientDto);
+        when(clientServiceFacade.updateClient(any(ClientDto.class))).thenThrow(DataIntegrityViolationException.class);
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders
-                    .put("/lending/client")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .characterEncoding(StandardCharsets.UTF_8)
-                    .content(gsonContent))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("updated client")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName", Matchers.is("updated last name")));
-        verify(clientService, times(1)).updateClient(any(ClientDto.class));
-    }
-
-    @Test
-    void testUpdateClient_shouldThrowClientNotFoundExceptionAndHttp404() throws Exception {
-        // given
-        ClientDto clientDto = new ClientDto(
-                1L,
-                "updated client",
-                "updated last name",
-                null,
-                null,
-                null
-        );
-
-        Gson gson = new Gson();
-        String gsonContent = gson.toJson(clientDto);
-
-        when(clientService.updateClient(any(ClientDto.class))).thenThrow(new ClientNotFoundException());
-
-        // when & then
-        mockMvc.perform(MockMvcRequestBuilders
-                    .put("/lending/client")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .characterEncoding(StandardCharsets.UTF_8)
-                    .content(gsonContent))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-        verify(clientService, times(1)).updateClient(any(ClientDto.class));
-    }
-
-    @Test
-    void testUpdateClient_DataIntegrityViolationExceptionAndHttp400() throws Exception {
-        // given
-        ClientDto clientDto = new ClientDto(
-                1L,
-                "updated client",
-                null,
-                null,
-                null,
-                null
-        );
-
-        Gson gson = new Gson();
-        String gsonContent = gson.toJson(clientDto);
-
-        when(clientService.updateClient(any(ClientDto.class))).thenThrow(new DataIntegrityViolationException(""));
-
-        // when & then
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/lending/client")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(gsonContent))
+                        .put(PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .content(gsonContent))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
-        verify(clientService, times(1)).updateClient(any(ClientDto.class));
+    }
+
+    @Test
+    void testUpdateClient_succeedHttp200() throws Exception {
+        // given
+        ClientDto clientDto = generateClient();
+
+        Gson gson = new Gson();
+        String gsonContent = gson.toJson(clientDto);
+
+        when(clientServiceFacade.updateClient(any(ClientDto.class))).thenReturn(clientDto);
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .content(gsonContent))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("updated John")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName", Matchers.is("updated Doe")));
     }
 }

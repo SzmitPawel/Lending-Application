@@ -1,51 +1,28 @@
 package com.lending.application.service.transaction;
 
 import com.lending.application.domain.Transaction;
-import com.lending.application.domain.dto.TransactionDto;
 import com.lending.application.exception.TransactionNotFoundException;
-import com.lending.application.mapper.TransactionMapper;
-import com.lending.application.repository.CreditRatingRepository;
 import com.lending.application.repository.TransactionRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class TransactionService {
-    TransactionRepository transactionRepository;
-    TransactionMapper transactionMapper;
-    private final CreditRatingRepository creditRatingRepository;
+    private final TransactionRepository transactionRepository;
 
-    public void createTransaction(final TransactionDto transactionDto) {
-        transactionRepository.saveAndFlush(transactionMapper.mapToTransaction(transactionDto));
+    public Transaction createTransaction(final Transaction transaction) {
+       return transactionRepository.saveAndFlush(transaction);
     }
 
-    public TransactionDto getTransactionById(final Long transactionId) throws TransactionNotFoundException {
-        Transaction transaction = transactionRepository
-                .findById(transactionId)
-                .orElseThrow(TransactionNotFoundException::new);
-
-        return transactionMapper.mapToTransactionDto(transaction);
+    public Transaction getTransactionById(final Long transactionId) throws TransactionNotFoundException {
+        return transactionRepository.findById(transactionId).orElseThrow(TransactionNotFoundException::new);
     }
 
-    public List<TransactionDto> getAllTransactions() {
-        List<Transaction> transactionList = transactionRepository.findAll();
-
-        return transactionMapper.mapToTransactionDtoList(transactionList);
-    }
-
-    public void updateTransaction(final TransactionDto transactionDto) throws TransactionNotFoundException {
-        Transaction transaction = transactionRepository
-                .findById(transactionDto.getTransactionID())
-                .orElseThrow(TransactionNotFoundException::new);
-
-        transaction.setTransactionAmount(transactionDto.getTransactionAmount());
-        transaction.setTransactionDate(transactionDto.getTransactionDate());
-        transaction.setTransactionMethodEnum(transactionDto.getTransactionMethodEnum());
-
-        transactionRepository.saveAndFlush(transaction);
+    public List<Transaction> getAllTransactions() {
+        return transactionRepository.findAll();
     }
 
     public void deleteTransactionById(final Long transactionId) throws TransactionNotFoundException {

@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 @Table(name = "CLIENT")
 public class Client {
-    private Long clientID;
+    private Long clientId;
     private String name;
     private String lastName;
     private String address;
@@ -38,8 +38,8 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true)
-    public Long getClientID() {
-        return clientID;
+    public Long getClientId() {
+        return clientId;
     }
 
     @Column(name = "NAME", nullable = false)
@@ -84,8 +84,8 @@ public class Client {
         return loanList;
     }
 
-    public void setClientID(Long clientID) {
-        this.clientID = clientID;
+    public void setClientId(Long clientID) {
+        this.clientId = clientID;
     }
 
     public void setName(String name) {

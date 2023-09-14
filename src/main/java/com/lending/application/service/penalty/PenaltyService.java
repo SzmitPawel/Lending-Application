@@ -1,40 +1,22 @@
 package com.lending.application.service.penalty;
 
 import com.lending.application.domain.Penalty;
-import com.lending.application.domain.dto.PenaltyDto;
 import com.lending.application.exception.PenaltyNotFoundException;
-import com.lending.application.mapper.PenaltyMapper;
 import com.lending.application.repository.PenaltyRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class PenaltyService {
-    PenaltyRepository penaltyRepository;
-    PenaltyMapper penaltyMapper;
+    private final PenaltyRepository penaltyRepository;
 
-    public void createPenalty(final PenaltyDto penaltyDto) {
-        penaltyRepository.saveAndFlush(penaltyMapper.mapToPenalty(penaltyDto));
+    public Penalty savePenalty(final Penalty penalty) {
+        return penaltyRepository.saveAndFlush(penalty);
     }
 
-    public PenaltyDto getPenaltyById(final Long penaltyId) throws PenaltyNotFoundException {
-        Penalty penalty = penaltyRepository
-                .findById(penaltyId)
-                .orElseThrow(PenaltyNotFoundException::new);
-
-        return penaltyMapper.mapToPenaltyDto(penalty);
-    }
-
-    public void updatePenalty(final PenaltyDto penaltyDto) throws PenaltyNotFoundException {
-        Penalty penalty = penaltyRepository
-                .findById(penaltyDto.getPenaltyId())
-                .orElseThrow(PenaltyNotFoundException::new);
-
-        penalty.setPenaltyPercentage(penaltyDto.getPenaltyPercentage());
-        penalty.setPenaltyDate(penaltyDto.getPenaltyDate());
-
-        penaltyRepository.saveAndFlush(penalty);
+    public Penalty getPenaltyById(final Long penaltyId) throws PenaltyNotFoundException {
+        return penaltyRepository.findById(penaltyId).orElseThrow(PenaltyNotFoundException::new);
     }
 
     public void deletePenaltyById(final Long penaltyId) throws PenaltyNotFoundException {

@@ -42,7 +42,7 @@ class ClientTest {
 
         // when
         Client retrievedClient = clientRepository
-                .findById(client.getClientID())
+                .findById(client.getClientId())
                 .orElse(null);
 
         // then
@@ -66,7 +66,7 @@ class ClientTest {
         clientRepository.delete(client);
 
         Client retrievedClientAfterDelete = clientRepository
-                .findById(client.getClientID())
+                .findById(client.getClientId())
                 .orElse(null);
 
         // then
@@ -95,7 +95,7 @@ class ClientTest {
         clientRepository.saveAndFlush(client);
 
         Client retrievedClientAfterUpdate = clientRepository
-                .findById(client.getClientID())
+                .findById(client.getClientId())
                 .orElse(null);
 
         // then
@@ -121,7 +121,7 @@ class ClientTest {
 
         // when
         Client retrievedClient = clientRepository
-                .findById(client.getClientID())
+                .findById(client.getClientId())
                 .orElse(null);
 
         // when & then

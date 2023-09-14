@@ -1,46 +1,28 @@
 package com.lending.application.service.repayment;
 
 import com.lending.application.domain.Repayment;
-import com.lending.application.domain.dto.RepaymentDto;
 import com.lending.application.exception.RepaymentNotFoundException;
-import com.lending.application.mapper.RepaymentMapper;
 import com.lending.application.repository.RepaymentRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class RepaymentService {
-    RepaymentRepository repaymentRepository;
-    RepaymentMapper repaymentMapper;
+    private final RepaymentRepository repaymentRepository;
 
-    public void createRepayment(final RepaymentDto repaymentDto) {
-        repaymentRepository.saveAndFlush(repaymentMapper.mapToRepayment(repaymentDto));
+    public Repayment saveRepayment(final Repayment repayment) {
+        return repaymentRepository.saveAndFlush(repayment);
     }
 
-    public RepaymentDto getRepaymentById(final Long repaymentID) throws RepaymentNotFoundException {
-        Repayment repayment = repaymentRepository
-                .findById(repaymentID)
-                .orElseThrow(RepaymentNotFoundException::new);
-
-        return repaymentMapper.mapToRepaymentDto(repayment);
+    public Repayment getRepaymentById(final Long repaymentId) throws RepaymentNotFoundException {
+        return repaymentRepository.findById(repaymentId).orElseThrow(RepaymentNotFoundException::new);
     }
 
-    public List<RepaymentDto> getAllRepayments() {
-        return repaymentMapper.mapToRepaymentDtoList(repaymentRepository.findAll());
-    }
-
-    public void updateRepayment(RepaymentDto repaymentDto) throws RepaymentNotFoundException {
-        Repayment repayment = repaymentRepository
-                .findById(repaymentDto.getRepaymentId())
-                .orElseThrow(RepaymentNotFoundException::new);
-
-        repayment.setRepaymentAmount(repaymentDto.getRepaymentAmount());
-        repayment.setRepaymentDate(repaymentDto.getRepaymentDate());
-
-        repaymentRepository.saveAndFlush(repayment);
+    public List<Repayment> getAllRepayments() {
+        return repaymentRepository.findAll();
     }
 
     public void deleteRepaymentById(final Long repaymentId) throws RepaymentNotFoundException {

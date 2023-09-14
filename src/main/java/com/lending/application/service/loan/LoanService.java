@@ -1,46 +1,28 @@
 package com.lending.application.service.loan;
 
 import com.lending.application.domain.Loan;
-import com.lending.application.domain.dto.LoanDto;
 import com.lending.application.exception.LoanNotFoundException;
-import com.lending.application.mapper.LoanMapper;
 import com.lending.application.repository.LoanRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class LoanService {
-    LoanRepository loanRepository;
-    LoanMapper loanMapper;
+    private final LoanRepository loanRepository;
 
-    public void createLoan(final LoanDto loanDto) {
-        loanRepository.saveAndFlush(loanMapper.mapToLoan(loanDto));
+    public Loan saveLoan(final Loan loan) {
+        return loanRepository.saveAndFlush(loan);
     }
 
-    public LoanDto getLoanById(final Long loanId) throws LoanNotFoundException {
-        Loan loan = loanRepository.findById(loanId).orElseThrow(LoanNotFoundException::new);
-
-        return loanMapper.mapToLoanDto(loan);
+    public Loan getLoanById(final Long loanId) throws LoanNotFoundException {
+        return loanRepository.findById(loanId).orElseThrow(LoanNotFoundException::new);
     }
 
-    public List<LoanDto> getAllLoan() {
-        List<Loan> loanList = loanRepository.findAll();
-
-        return loanMapper.mapToLoanDtoList(loanList);
-    }
-
-    public void updateLoan(final LoanDto loanDto) throws LoanNotFoundException {
-        Loan loan = loanRepository.findById(loanDto.getLoanId()).orElseThrow(LoanNotFoundException::new);
-
-        loan.setLoanAmount(loanDto.getLoanAmount());
-        loan.setInterest(loanDto.getInterest());
-        loan.setLoanStartDate(loanDto.getLoanStartDate());
-        loan.setRepaymentPeriod(loanDto.getRepaymentPeriod());
-
-        loanRepository.saveAndFlush(loan);
+    public List<Loan> getAllLoan() {
+        return loanRepository.findAll();
     }
 
     public void deleteLoanById(final Long loanId) throws LoanNotFoundException {

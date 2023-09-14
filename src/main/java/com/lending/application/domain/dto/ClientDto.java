@@ -1,13 +1,12 @@
 package com.lending.application.domain.dto;
 
 import com.lending.application.domain.Account;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class ClientDto {
     private Long clientId;
     private String name;
