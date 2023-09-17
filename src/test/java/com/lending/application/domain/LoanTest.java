@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +19,16 @@ class LoanTest {
 
     @Autowired
     LoanRepository loanRepository;
+
+    private Loan prepareLoan() {
+        return new Loan(
+                BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(200),
+                5.0F,
+                LocalDate.now(),
+                22
+        );
+    }
 
     @Test
     void createLoanWithoutLoanAmountInterestLoanStartRepaymentPeriod_shouldReturnDataIntegrityViolationException() {
@@ -31,12 +42,7 @@ class LoanTest {
     @Test
     void createLoan_shouldReturnLoan() {
         // given
-        Loan loan = new Loan(
-                new BigDecimal(1000),
-                5.0F,
-                LocalDate.now(),
-                22
-        );
+        Loan loan = prepareLoan();
         loanRepository.saveAndFlush(loan);
 
         // then
@@ -52,12 +58,7 @@ class LoanTest {
     @Test
     void deleteLoan_shouldReturn0() {
         // given
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.now(),
-                22
-        );
+        Loan loan = prepareLoan();
         loanRepository.saveAndFlush(loan);
 
         // when
@@ -75,17 +76,13 @@ class LoanTest {
     @Test
     void updateLoan_shouldReturnUpdatedData() {
         // given
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.of(2023,01,01),
-                22
-        );
+        Loan loan = prepareLoan();
         loanRepository.saveAndFlush(loan);
 
         // when
         loan.setLoanAmount(new BigDecimal(3000.00));
         loan.setLoanStartDate(LocalDate.now());
+        loan.setMonthlyPayment(new BigDecimal(250));
         loan.setInterest(2.0F);
         loan.setRepaymentPeriod(10);
         loanRepository.saveAndFlush(loan);
@@ -97,6 +94,7 @@ class LoanTest {
         // then
         assertNotNull(retrievedLoanAfterUpdate);
         assertEquals(new BigDecimal(3000.00), retrievedLoanAfterUpdate.getLoanAmount());
+        assertEquals(new BigDecimal(250), retrievedLoanAfterUpdate.getMonthlyPayment());
         assertEquals(2.0F, retrievedLoanAfterUpdate.getInterest());
         assertEquals(LocalDate.now(), retrievedLoanAfterUpdate.getLoanStartDate());
         assertEquals(10, retrievedLoanAfterUpdate.getRepaymentPeriod());
@@ -105,12 +103,7 @@ class LoanTest {
     @Test
     void readLoan_shouldReturnAllData() {
         // given
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.of(2023,01,01),
-                22
-        );
+        Loan loan = prepareLoan();
         loanRepository.saveAndFlush(loan);
 
         // when
@@ -119,8 +112,9 @@ class LoanTest {
         // when & then
         assertNotNull(retrievedLoan);
         assertEquals(new BigDecimal(1000.00), retrievedLoan.getLoanAmount());
+        assertEquals(new BigDecimal(200), retrievedLoan.getMonthlyPayment());
         assertEquals(5.0F, retrievedLoan.getInterest());
-        assertEquals(LocalDate.of(2023,01,01), retrievedLoan.getLoanStartDate());
+        assertEquals(LocalDate.now(), retrievedLoan.getLoanStartDate());
         assertEquals(22, retrievedLoan.getRepaymentPeriod());
     }
 }

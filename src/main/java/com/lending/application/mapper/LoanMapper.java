@@ -13,6 +13,7 @@ public class LoanMapper {
         return new LoanDto(
                 loan.getLoanId(),
                 loan.getLoanAmount(),
+                loan.getMonthlyPayment(),
                 loan.getInterest(),
                 loan.getLoanStartDate(),
                 loan.getRepaymentPeriod()
@@ -23,6 +24,7 @@ public class LoanMapper {
         Loan loan = new Loan();
         loan.setLoanId(loanDto.getLoanId());
         loan.setLoanAmount(loanDto.getLoanAmount());
+        loan.setMonthlyPayment(loanDto.getMonthlyPayment());
         loan.setInterest(loanDto.getInterest());
         loan.setLoanStartDate(loanDto.getLoanStartDate());
         loan.setRepaymentPeriod(loanDto.getRepaymentPeriod());

@@ -15,6 +15,7 @@ import java.time.LocalDate;
 public class LoanDto {
     private Long loanId;
     private BigDecimal loanAmount;
+    private BigDecimal monthlyPayment;
     private Float interest;
     private LocalDate loanStartDate;
     private Integer repaymentPeriod;
