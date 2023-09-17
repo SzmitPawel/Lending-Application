@@ -22,19 +22,29 @@ public class ClientToLoanRelationsTest {
     @Autowired
     LoanRepository loanRepository;
 
-    @Test
-    void createClientWithLoan_shouldReturn1ClientAnd1Loan() {
-        // given
+    private Client prepareClient() {
         Client client = new Client();
-        client.setName("Client");
-        client.setLastName("Last name");
+        client.setName("John");
+        client.setLastName("Doe");
 
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
+        return client;
+    }
+
+    private Loan prepareLoan() {
+        return new Loan(
+                BigDecimal.valueOf(1000.00),
+                BigDecimal.valueOf(250),
                 5.0F,
                 LocalDate.now(),
                 22
         );
+    }
+
+    @Test
+    void createClientWithLoan_shouldReturn1ClientAnd1Loan() {
+        // given
+        Client client = prepareClient();
+        Loan loan = prepareLoan();
 
         clientRepository.saveAndFlush(client);
         loanRepository.saveAndFlush(loan);
@@ -54,16 +64,8 @@ public class ClientToLoanRelationsTest {
     @Test
     void deleteLoanFromClient_shouldReturn1ClientAnd0Loans() {
         // given
-        Client client = new Client();
-        client.setName("Client");
-        client.setLastName("Last name");
-
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.now(),
-                22
-        );
+        Client client = prepareClient();
+        Loan loan = prepareLoan();
 
         client.getLoanList().add(loan);
         clientRepository.saveAndFlush(client);
@@ -91,16 +93,8 @@ public class ClientToLoanRelationsTest {
     @Test
     void deleteClientWithLoan_shouldDeleteClientWithLoan() {
         // given
-        Client client = new Client();
-        client.setName("Client");
-        client.setLastName("Last name");
-
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.now(),
-                22
-        );
+        Client client = prepareClient();
+        Loan loan = prepareLoan();
 
         client.getLoanList().add(loan);
         clientRepository.saveAndFlush(client);
@@ -121,22 +115,14 @@ public class ClientToLoanRelationsTest {
     @Test
     void updateClientLoan_shouldReturnUpdatedData() {
         // given
-        Client client = new Client();
-        client.setName("Client");
-        client.setLastName("Last name");
-
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.now(),
-                22
-        );
+        Client client = prepareClient();
+        Loan loan = prepareLoan();
 
         client.getLoanList().add(loan);
         clientRepository.saveAndFlush(client);
 
         // when
-        loan.setLoanAmount(new BigDecimal(2000.00));
+        loan.setLoanAmount(BigDecimal.valueOf(2000.00));
         loan.setInterest(10.0F);
         loanRepository.saveAndFlush(loan);
 
@@ -146,7 +132,7 @@ public class ClientToLoanRelationsTest {
 
         // then
         assertNotNull(retrievedClientAfterUpdate);
-        assertEquals(new BigDecimal(2000.00), retrievedClientAfterUpdate
+        assertEquals(BigDecimal.valueOf(2000.00), retrievedClientAfterUpdate
                 .getLoanList()
                 .get(0)
                 .getLoanAmount());
@@ -157,16 +143,8 @@ public class ClientToLoanRelationsTest {
     @Test
     void readLoanFromClient_shouldReturnAllData() {
         // given
-        Client client = new Client();
-        client.setName("Client");
-        client.setLastName("Last name");
-
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.now(),
-                22
-        );
+        Client client = prepareClient();
+        Loan loan = prepareLoan();
 
         client.getLoanList().add(loan);
         clientRepository.saveAndFlush(client);
@@ -178,7 +156,7 @@ public class ClientToLoanRelationsTest {
 
         // then
         assertNotNull(retrievedClient);
-        assertEquals(new BigDecimal(1000.00), retrievedClient
+        assertEquals(BigDecimal.valueOf(1000.00), retrievedClient
                 .getLoanList()
                 .get(0)
                 .getLoanAmount());

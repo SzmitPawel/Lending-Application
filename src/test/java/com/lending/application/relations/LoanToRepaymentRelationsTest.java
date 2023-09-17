@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,18 +24,25 @@ public class LoanToRepaymentRelationsTest {
     @Autowired
     RepaymentRepository repaymentRepository;
 
-    @Test
-    void createLoanWithTwoRepayments_shouldReturn1LoanAnd2Repayments() {
-        // given
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
+    private Loan prepareLoan() {
+        return new Loan(
+                BigDecimal.valueOf(1000.00),
+                BigDecimal.valueOf(200),
                 5.0F,
-                LocalDate.of(2023,01,01),
+                LocalDate.now(),
                 22
         );
+    }
 
+    private Repayment prepareRepayment() {
+        return new Repayment(
+                BigDecimal.valueOf(100.00),
+                LocalDate.of(2023, 01, 01));
+    }
+
+    private List<Repayment> prepareRepaymentList() {
         Repayment repayment1 = new Repayment(
-                new BigDecimal(100.00),
+                BigDecimal.valueOf(100.00),
                 LocalDate.of(2023,01,01)
         );
         Repayment repayment2 = new Repayment(
@@ -42,9 +50,16 @@ public class LoanToRepaymentRelationsTest {
                 LocalDate.of(2023,02,01)
         );
 
-        loan.getRepaymentList().addAll(List.of(repayment1,repayment2));
-        repayment1.setLoan(loan);
-        repayment2.setLoan(loan);
+        return List.of(repayment1,repayment2);
+    }
+
+    @Test
+    void createLoanWithTwoRepayments_shouldReturn1LoanAnd2Repayments() {
+        // given
+        Loan loan = prepareLoan();
+        loan.getRepaymentList().addAll(prepareRepaymentList());
+
+        loan.getRepaymentList().stream().forEach(repayment -> repayment.setLoan(loan));
         loanRepository.saveAndFlush(loan);
 
         // when
@@ -60,25 +75,10 @@ public class LoanToRepaymentRelationsTest {
     @Test
     void deleteRepayment_shouldReturn1LoanAnd1repayment() {
         // given
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.of(2023,01,01),
-                22
-        );
+        Loan loan = prepareLoan();
+        loan.getRepaymentList().addAll(prepareRepaymentList());
 
-        Repayment repayment1 = new Repayment(
-                new BigDecimal(100.00),
-                LocalDate.of(2023,01,01)
-        );
-        Repayment repayment2 = new Repayment(
-                new BigDecimal(100.00),
-                LocalDate.of(2023,02,01)
-        );
-
-        loan.getRepaymentList().addAll(List.of(repayment1,repayment2));
-        repayment1.setLoan(loan);
-        repayment2.setLoan(loan);
+        loan.getRepaymentList().stream().forEach(repayment -> repayment.setLoan(loan));
         loanRepository.saveAndFlush(loan);
 
         // when
@@ -104,25 +104,10 @@ public class LoanToRepaymentRelationsTest {
     @Test
     void deleteLoanAndRepayments_shouldDeleteLoanWithAllRepayments() {
         // given
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.of(2023,01,01),
-                22
-        );
+        Loan loan = prepareLoan();
+        loan.getRepaymentList().addAll(prepareRepaymentList());
 
-        Repayment repayment1 = new Repayment(
-                new BigDecimal(100.00),
-                LocalDate.of(2023,01,01)
-        );
-        Repayment repayment2 = new Repayment(
-                new BigDecimal(100.00),
-                LocalDate.of(2023,02,01)
-        );
-
-        loan.getRepaymentList().addAll(List.of(repayment1,repayment2));
-        repayment1.setLoan(loan);
-        repayment2.setLoan(loan);
+        loan.getRepaymentList().stream().forEach(repayment -> repayment.setLoan(loan));
         loanRepository.saveAndFlush(loan);
 
         // when
@@ -141,17 +126,8 @@ public class LoanToRepaymentRelationsTest {
     @Test
     void updateRepayment_shouldReturnUpdatedData() {
         // given
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.of(2023, 01, 01),
-                22
-        );
-
-        Repayment repayment = new Repayment(
-                new BigDecimal(100.00),
-                LocalDate.of(2023, 01, 01)
-        );
+        Loan loan = prepareLoan();
+        Repayment repayment = prepareRepayment();
 
         loan.getRepaymentList().add(repayment);
         repayment.setLoan(loan);
@@ -159,7 +135,7 @@ public class LoanToRepaymentRelationsTest {
 
         // when
         repayment.setRepaymentDate(LocalDate.now());
-        repayment.setRepaymentAmount(new BigDecimal(200.00));
+        repayment.setRepaymentAmount(BigDecimal.valueOf(200.00));
         repaymentRepository.saveAndFlush(repayment);
 
         Loan retrievedLoanAfterUpdate = loanRepository
@@ -168,7 +144,7 @@ public class LoanToRepaymentRelationsTest {
 
         // then
         assertNotNull(retrievedLoanAfterUpdate);
-        assertEquals(new BigDecimal(200.00), retrievedLoanAfterUpdate
+        assertEquals(BigDecimal.valueOf(200.00), retrievedLoanAfterUpdate
                 .getRepaymentList()
                 .get(0)
                 .getRepaymentAmount());
@@ -181,17 +157,8 @@ public class LoanToRepaymentRelationsTest {
     @Test
     void readRepaymentFromLoan_shouldReturnAllData() {
         // given
-        Loan loan = new Loan(
-                new BigDecimal(1000.00),
-                5.0F,
-                LocalDate.of(2023, 01, 01),
-                22
-        );
-
-        Repayment repayment = new Repayment(
-                new BigDecimal(100.00),
-                LocalDate.of(2023, 01, 01)
-        );
+        Loan loan = prepareLoan();
+        Repayment repayment = prepareRepayment();
 
         loan.getRepaymentList().add(repayment);
         repayment.setLoan(loan);
@@ -204,7 +171,7 @@ public class LoanToRepaymentRelationsTest {
 
         // then
         assertNotNull(retrievedLoan);
-        assertEquals(new BigDecimal(100.00), retrievedLoan
+        assertEquals(BigDecimal.valueOf(100.00), retrievedLoan
                 .getRepaymentList()
                 .get(0)
                 .getRepaymentAmount());

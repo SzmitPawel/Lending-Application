@@ -17,14 +17,73 @@ class LoanMapperTest {
     @Autowired
     LoanMapper loanMapper;
 
-    @Test
-    void testMapToLoanDto() {
-        // given
-        Loan loan = new Loan(
-                new BigDecimal(1),
+    private Loan prepareLoan() {
+        return new Loan(
+                BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(200),
                 22.00F,
                 LocalDate.now(),
                 5);
+    }
+
+    private LoanDto prepareLoanDto() {
+        return new LoanDto(
+                1L,
+                BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(200),
+                22.00F,
+                LocalDate.now(),
+                5
+        );
+    }
+
+    private List<Loan> prepareLoanList() {
+        Loan loan1 = new Loan(
+                BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(200),
+                22.00F,
+                LocalDate.now(),
+                5
+        );
+        loan1.setLoanId(1L);
+
+        Loan loan2 = new Loan(
+                BigDecimal.valueOf(2000),
+                BigDecimal.valueOf(500),
+                33.00F,
+                LocalDate.now(),
+                6
+        );
+        loan2.setLoanId(2L);
+
+        return List.of(loan1,loan2);
+    }
+
+    private List<LoanDto> prepareLoanDtoList() {
+        LoanDto loanDto1 = new LoanDto(
+                1L,
+                BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(200),
+                22.00F,
+                LocalDate.now(),
+                1
+        );
+        LoanDto loanDto2 = new LoanDto(
+                2L,
+                BigDecimal.valueOf(2000),
+                BigDecimal.valueOf(500),
+                33.00F,
+                LocalDate.now(),
+                2
+        );
+
+        return List.of(loanDto1,loanDto2);
+    }
+
+    @Test
+    void testMapToLoanDto() {
+        // given
+        Loan loan = prepareLoan();
         loan.setLoanId(1L);
 
         // when
@@ -32,7 +91,8 @@ class LoanMapperTest {
 
         // then
         assertEquals(1L, retrievedLoanDto.getLoanId());
-        assertEquals(new BigDecimal(1), retrievedLoanDto.getLoanAmount());
+        assertEquals(new BigDecimal(1000), retrievedLoanDto.getLoanAmount());
+        assertEquals(new BigDecimal(200), retrievedLoanDto.getMonthlyPayment());
         assertEquals(22.00F, retrievedLoanDto.getInterest());
         assertEquals(LocalDate.now(),retrievedLoanDto.getLoanStartDate());
         assertEquals(5, retrievedLoanDto.getRepaymentPeriod());
@@ -41,20 +101,15 @@ class LoanMapperTest {
     @Test
     void testMapToLoan() {
         // given
-        LoanDto loanDto = new LoanDto(
-                1L,
-                new BigDecimal(1),
-                22.00F,
-                LocalDate.now(),
-                5
-        );
+        LoanDto loanDto = prepareLoanDto();
 
         // when
         Loan retrievedLoan = loanMapper.mapToLoan(loanDto);
 
         // then
         assertEquals(1L, retrievedLoan.getLoanId());
-        assertEquals(new BigDecimal(1), retrievedLoan.getLoanAmount());
+        assertEquals(new BigDecimal(1000), retrievedLoan.getLoanAmount());
+        assertEquals(new BigDecimal(200), retrievedLoan.getMonthlyPayment());
         assertEquals(22.00F, retrievedLoan.getInterest());
         assertEquals(LocalDate.now(),retrievedLoan.getLoanStartDate());
         assertEquals(5, retrievedLoan.getRepaymentPeriod());
@@ -63,23 +118,7 @@ class LoanMapperTest {
     @Test
     void testMapToLoanDtoList() {
         // given
-        Loan loan1 = new Loan(
-                new BigDecimal(1),
-                22.00F,
-                LocalDate.now(),
-                5
-        );
-        loan1.setLoanId(1L);
-
-        Loan loan2 = new Loan(
-                new BigDecimal(2),
-                33.00F,
-                LocalDate.now(),
-                6
-        );
-        loan2.setLoanId(2L);
-
-        List<Loan> loanList = List.of(loan1,loan2);
+        List<Loan> loanList = prepareLoanList();
 
         // when
         List<LoanDto> retrievedLoanDtoList = loanMapper.mapToLoanDtoList(loanList);
@@ -87,12 +126,14 @@ class LoanMapperTest {
         // then
         assertEquals(2, retrievedLoanDtoList.size());
         assertEquals(1L, retrievedLoanDtoList.get(0).getLoanId());
-        assertEquals(new BigDecimal(1), retrievedLoanDtoList.get(0).getLoanAmount());
+        assertEquals(new BigDecimal(1000), retrievedLoanDtoList.get(0).getLoanAmount());
+        assertEquals(new BigDecimal(200), retrievedLoanDtoList.get(0).getMonthlyPayment());
         assertEquals(22.00F, retrievedLoanDtoList.get(0).getInterest());
         assertEquals(LocalDate.now(),retrievedLoanDtoList.get(0).getLoanStartDate());
         assertEquals(5, retrievedLoanDtoList.get(0).getRepaymentPeriod());
         assertEquals(2L, retrievedLoanDtoList.get(1).getLoanId());
-        assertEquals(new BigDecimal(2), retrievedLoanDtoList.get(1).getLoanAmount());
+        assertEquals(new BigDecimal(2000), retrievedLoanDtoList.get(1).getLoanAmount());
+        assertEquals(new BigDecimal(500), retrievedLoanDtoList.get(1).getMonthlyPayment());
         assertEquals(33.00F, retrievedLoanDtoList.get(1).getInterest());
         assertEquals(LocalDate.now(),retrievedLoanDtoList.get(1).getLoanStartDate());
         assertEquals(6, retrievedLoanDtoList.get(1).getRepaymentPeriod());
@@ -101,22 +142,7 @@ class LoanMapperTest {
     @Test
     void testMapToLoanList() {
         // given
-        LoanDto loanDto1 = new LoanDto(
-                1L,
-                new BigDecimal(1),
-                22.00F,
-                LocalDate.now(),
-                1
-        );
-        LoanDto loanDto2 = new LoanDto(
-                2L,
-                new BigDecimal(2),
-                33.00F,
-                LocalDate.now(),
-                2
-        );
-
-        List<LoanDto> loanDtoList = List.of(loanDto1,loanDto2);
+        List<LoanDto> loanDtoList = prepareLoanDtoList();
 
         // when
         List<Loan> retrievedLoanList = loanMapper.mapToLoanList(loanDtoList);
@@ -124,12 +150,14 @@ class LoanMapperTest {
         // then
         assertEquals(2, retrievedLoanList.size());
         assertEquals(1L, retrievedLoanList.get(0).getLoanId());
-        assertEquals(new BigDecimal(1), retrievedLoanList.get(0).getLoanAmount());
+        assertEquals(new BigDecimal(1000), retrievedLoanList.get(0).getLoanAmount());
+        assertEquals(new BigDecimal(200), retrievedLoanList.get(0).getMonthlyPayment());
         assertEquals(22.00F, retrievedLoanList.get(0).getInterest());
         assertEquals(LocalDate.now(),retrievedLoanList.get(0).getLoanStartDate());
         assertEquals(1, retrievedLoanList.get(0).getRepaymentPeriod());
         assertEquals(2L, retrievedLoanList.get(1).getLoanId());
-        assertEquals(new BigDecimal(2), retrievedLoanList.get(1).getLoanAmount());
+        assertEquals(new BigDecimal(2000), retrievedLoanList.get(1).getLoanAmount());
+        assertEquals(new BigDecimal(500), retrievedLoanList.get(1).getMonthlyPayment());
         assertEquals(33.00F, retrievedLoanList.get(1).getInterest());
         assertEquals(LocalDate.now(),retrievedLoanList.get(1).getLoanStartDate());
         assertEquals(2, retrievedLoanList.get(1).getRepaymentPeriod());

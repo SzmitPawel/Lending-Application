@@ -12,6 +12,7 @@ import java.util.List;
 public class Loan {
     private Long loanId;
     private BigDecimal loanAmount;
+    private BigDecimal monthlyPayment;
     private Float interest;
     private LocalDate loanStartDate;
     private Integer repaymentPeriod;
@@ -23,11 +24,13 @@ public class Loan {
 
     public Loan(
             final BigDecimal loanAmount,
+            final BigDecimal installmentAmount,
             final Float interest,
             final LocalDate loanStartDate,
             final Integer repaymentPeriod
     ) {
         this.loanAmount = loanAmount;
+        this.monthlyPayment = installmentAmount;
         this.interest = interest;
         this.loanStartDate = loanStartDate;
         this.repaymentPeriod = repaymentPeriod;
@@ -43,6 +46,11 @@ public class Loan {
     @Column(name = "LOAN_AMOUNT", nullable = false)
     public BigDecimal getLoanAmount() {
         return loanAmount;
+    }
+
+    @Column(name = "INSTALLMENT_AMOUNT")
+    public BigDecimal getMonthlyPayment() {
+        return monthlyPayment;
     }
 
     @Column(name = "INTEREST", nullable = false)
@@ -77,6 +85,10 @@ public class Loan {
 
     public void setLoanAmount(BigDecimal loanAmount) {
         this.loanAmount = loanAmount;
+    }
+
+    public void setMonthlyPayment(BigDecimal installmentAmount) {
+        this.monthlyPayment = installmentAmount;
     }
 
     public void setInterest(Float interest) {

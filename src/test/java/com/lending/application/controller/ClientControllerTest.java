@@ -232,7 +232,9 @@ class ClientControllerTest {
     @Test
     void testUpdateClient_succeedHttp200() throws Exception {
         // given
-        ClientDto clientDto = generateClient();
+        ClientDto clientDto = new ClientDto();
+        clientDto.setName("updated John");
+        clientDto.setLastName("updated Doe");
 
         Gson gson = new Gson();
         String gsonContent = gson.toJson(clientDto);
