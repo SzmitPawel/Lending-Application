@@ -6,10 +6,10 @@ import com.lending.application.domain.TransactionMethodEnum;
 import com.lending.application.exception.TransactionNotFoundException;
 import com.lending.application.repository.AccountRepository;
 import com.lending.application.repository.TransactionRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,8 +17,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@SpringBootTest
+@Transactional
 class TransactionServiceTest {
     @Autowired
     private TransactionService transactionService;
