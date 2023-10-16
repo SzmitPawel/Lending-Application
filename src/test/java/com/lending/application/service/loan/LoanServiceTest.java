@@ -3,107 +3,129 @@ package com.lending.application.service.loan;
 import com.lending.application.domain.Loan;
 import com.lending.application.exception.LoanNotFoundException;
 import com.lending.application.repository.LoanRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
 class LoanServiceTest {
-    @InjectMocks
+    @Autowired
     private LoanService loanService;
-    @Mock
+    @Autowired
     private LoanRepository loanRepository;
+
+    private Loan prepareLoan(final BigDecimal loanAmount, final BigDecimal monthlyPayment) {
+        Loan loan = new Loan();
+        loan.setLoanStartDate(LocalDate.now());
+        loan.setLoanAmount(loanAmount);
+        loan.setMonthlyPayment(monthlyPayment);
+        loan.setRepaymentPeriod(10);
+        loan.setInterest(3F);
+
+        return loan;
+    }
 
     @Test
     void testSaveLoan() {
         // given
-        Loan loan = new Loan();
-
-        when(loanRepository.saveAndFlush(any(Loan.class))).thenReturn(loan);
+        Loan loan = prepareLoan(BigDecimal.valueOf(2500.00), BigDecimal.valueOf(250.00));
 
         // when
         Loan retrievedLoan = loanService.saveLoan(loan);
 
         // then
-        verify(loanRepository,times(1)).saveAndFlush(any(Loan.class));
-
         assertNotNull(retrievedLoan);
+        assertEquals(loan.getLoanAmount(),retrievedLoan.getLoanAmount());
+        assertEquals(loan.getLoanStartDate(), retrievedLoan.getLoanStartDate());
     }
 
     @Test
     void testGetLoanById_LoanNotFoundException() {
         // given
-        when(loanRepository.findById(any())).thenReturn(Optional.empty());
+        Long loanId = 999L;
 
         // when & then
-        assertThrows(LoanNotFoundException.class, () -> loanService.getLoanById(1L));
+        assertThrows(LoanNotFoundException.class, () -> loanService.getLoanById(loanId));
     }
 
     @Test
     void testGetLoanById() throws LoanNotFoundException {
         // given
-        Loan loan = new Loan();
-
-        when(loanRepository.findById(any())).thenReturn(Optional.of(loan));
+        Loan loan = loanRepository.saveAndFlush(prepareLoan(BigDecimal.valueOf(2500.00), BigDecimal.valueOf(250.00)));
 
         // when
-        Loan retrievedLoan = loanService.getLoanById(1L);
+        Loan retrievedLoan = loanService.getLoanById(loan.getLoanId());
 
         // then
-        verify(loanRepository,times(1)).findById(any());
-
         assertNotNull(retrievedLoan);
+        assertEquals(loan.getLoanAmount(),retrievedLoan.getLoanAmount());
+        assertEquals(loan.getLoanStartDate(), retrievedLoan.getLoanStartDate());
     }
 
     @Test
     void testGetAllLoan() {
         // given
-        Loan loan1 = new Loan();
-        Loan loan2 = new Loan();
+        Loan loan1 = prepareLoan(BigDecimal.valueOf(1500.00), BigDecimal.valueOf(150.00));
+        Loan loan2 = prepareLoan(BigDecimal.valueOf(2500.00), BigDecimal.valueOf(250.00));
+        Loan loan3 = prepareLoan(BigDecimal.valueOf(3500.00), BigDecimal.valueOf(350.00));
 
-        List<Loan> loanList = List.of(loan1,loan2);
+        loanRepository.saveAndFlush(loan1);
+        loanRepository.saveAndFlush(loan2);
+        loanRepository.saveAndFlush(loan3);
 
-        when(loanRepository.findAll()).thenReturn(loanList);
+        List<Loan> expectedLoanList = List.of(loan1,loan2,loan3);
 
         // when
         List<Loan> retrievedLoanList = loanService.getAllLoan();
 
         // then
-        verify(loanRepository,times(1)).findAll();
-
         assertNotNull(retrievedLoanList);
+        assertEquals(expectedLoanList.size(), retrievedLoanList.size());
+        assertEquals(expectedLoanList.get(0).getLoanStartDate(),retrievedLoanList.get(0).getLoanStartDate());
+        assertEquals(expectedLoanList.get(0).getLoanAmount(),retrievedLoanList.get(0).getLoanAmount());
+        assertEquals(expectedLoanList.get(0).getInterest(),retrievedLoanList.get(0).getInterest());
+        assertEquals(expectedLoanList.get(0).getMonthlyPayment(),retrievedLoanList.get(0).getMonthlyPayment());
+        assertEquals(expectedLoanList.get(0).getInterest(),retrievedLoanList.get(0).getInterest());
+
+        assertEquals(expectedLoanList.get(1).getLoanStartDate(),retrievedLoanList.get(1).getLoanStartDate());
+        assertEquals(expectedLoanList.get(1).getLoanAmount(),retrievedLoanList.get(1).getLoanAmount());
+        assertEquals(expectedLoanList.get(1).getInterest(),retrievedLoanList.get(1).getInterest());
+        assertEquals(expectedLoanList.get(1).getMonthlyPayment(),retrievedLoanList.get(1).getMonthlyPayment());
+        assertEquals(expectedLoanList.get(1).getInterest(),retrievedLoanList.get(1).getInterest());
+
+        assertEquals(expectedLoanList.get(2).getLoanStartDate(),retrievedLoanList.get(2).getLoanStartDate());
+        assertEquals(expectedLoanList.get(2).getLoanAmount(),retrievedLoanList.get(2).getLoanAmount());
+        assertEquals(expectedLoanList.get(2).getInterest(),retrievedLoanList.get(2).getInterest());
+        assertEquals(expectedLoanList.get(2).getMonthlyPayment(),retrievedLoanList.get(2).getMonthlyPayment());
+        assertEquals(expectedLoanList.get(2).getInterest(),retrievedLoanList.get(2).getInterest());
     }
 
     @Test
     void testDeleteLoanById_LoanNotFoundException() {
         // given
-        when(loanRepository.findById(any())).thenReturn(Optional.empty());
+        Long loanId = 999L;
 
         // when & then
-        assertThrows(LoanNotFoundException.class, () -> loanService.deleteLoanById(1L));
+        assertThrows(LoanNotFoundException.class, () -> loanService.deleteLoanById(loanId));
     }
 
     @Test
     void testDeleteLoanById() throws LoanNotFoundException {
         // given
-        Loan loan = new Loan();
-
-        when(loanRepository.findById(any())).thenReturn(Optional.of(loan));
+        Loan loan = loanRepository.saveAndFlush(prepareLoan(BigDecimal.valueOf(2500.00), BigDecimal.valueOf(250.00)));
 
         // when
-        loanService.deleteLoanById(1L);
+        loanService.deleteLoanById(loan.getLoanId());
 
         // then
-        verify(loanRepository, times(1)).deleteById(1L);
+        assertThrows(LoanNotFoundException.class, () -> loanService.getLoanById(loan.getLoanId()));
     }
 }
