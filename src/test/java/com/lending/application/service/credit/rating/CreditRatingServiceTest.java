@@ -2,32 +2,27 @@ package com.lending.application.service.credit.rating;
 
 import com.lending.application.domain.CreditRating;
 import com.lending.application.domain.CreditRatingEnum;
-import com.lending.application.domain.dto.CreditRatingDto;
 import com.lending.application.exception.CreditRatingNotFoundException;
 import com.lending.application.repository.CreditRatingRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
 class CreditRatingServiceTest {
-    @InjectMocks
+    @Autowired
     private CreditRatingService creditRatingService;
-    @Mock
+    @Autowired
     private CreditRatingRepository creditRatingRepository;
 
     private CreditRating prepareCreditRating() {
         CreditRating creditRating = new CreditRating();
-        creditRating.setRatingId(1L);
         creditRating.setCreditRating(CreditRatingEnum.ONE);
         creditRating.setDateOfRating(LocalDate.now());
 
@@ -39,16 +34,11 @@ class CreditRatingServiceTest {
         // given
         CreditRating creditRating = prepareCreditRating();
 
-        when(creditRatingRepository.saveAndFlush(any(CreditRating.class))).thenReturn(creditRating);
-
         // when
         CreditRating retrievedCreditRating = creditRatingService.saveCreditRating(creditRating);
 
-        // then
-        verify(creditRatingRepository, times(1)).saveAndFlush(any(CreditRating.class));
-
+        // then;
         assertNotNull(retrievedCreditRating);
-        assertEquals(creditRating.getRatingId(), retrievedCreditRating.getRatingId());
         assertEquals(creditRating.getCreditRating(), retrievedCreditRating.getCreditRating());
         assertEquals(creditRating.getDateOfRating(), retrievedCreditRating.getDateOfRating());
     }
@@ -56,26 +46,23 @@ class CreditRatingServiceTest {
     @Test
     void testGetCreditRatingById_CreditRatingNotFoundException() {
         // given
-        when(creditRatingRepository.findById(any())).thenReturn(Optional.empty());
+        Long creditRatingId = 999L;
 
         // when & then
-        assertThrows(CreditRatingNotFoundException.class, () -> creditRatingService
-                .getCreditRatingById(1L));
+        assertThrows(CreditRatingNotFoundException.class,
+                () -> creditRatingService.getCreditRatingById(creditRatingId));
     }
 
     @Test
     void testGetCreditRatingById() throws CreditRatingNotFoundException {
         // given
-        CreditRating creditRating = prepareCreditRating();
-
-        when(creditRatingRepository.findById(any())).thenReturn(Optional.of(creditRating));
+        CreditRating creditRating = creditRatingRepository.saveAndFlush(prepareCreditRating());
 
         // when
-        CreditRating retrievedCreditRating = creditRatingService.getCreditRatingById(1L);
+        CreditRating retrievedCreditRating = creditRatingService.getCreditRatingById(creditRating.getRatingId());
 
         // then
         assertNotNull(retrievedCreditRating);
-        assertEquals(creditRating.getRatingId(), retrievedCreditRating.getRatingId());
         assertEquals(creditRating.getCreditRating(), retrievedCreditRating.getCreditRating());
         assertEquals(creditRating.getDateOfRating(), retrievedCreditRating.getDateOfRating());
     }
@@ -83,64 +70,49 @@ class CreditRatingServiceTest {
     @Test
     void testDeleteCreditRatingById_CreditRatingNotFoundException() {
         // given
-        when(creditRatingRepository.findById(any())).thenReturn(Optional.empty());
+        Long creditRatingId = 999L;
 
         // when & then
-        verify(creditRatingRepository, never()).deleteById(any());
-
-        assertThrows(CreditRatingNotFoundException.class, () -> creditRatingService
-                .deleteCreditRatingById(1L));
+        assertThrows(CreditRatingNotFoundException.class,
+                () -> creditRatingService.deleteCreditRatingById(creditRatingId));
     }
 
     @Test
     void deleteCreditRatingById() throws CreditRatingNotFoundException {
         // given
-        CreditRating creditRating = prepareCreditRating();
-
-        when(creditRatingRepository.findById(any())).thenReturn(Optional.of(creditRating));
+        CreditRating creditRating = creditRatingRepository.saveAndFlush(prepareCreditRating());
 
         // when
-        creditRatingService.deleteCreditRatingById(1L);
+        creditRatingService.deleteCreditRatingById(creditRating.getRatingId());
 
         // then
-        verify(creditRatingRepository, times(1)).deleteById(any());
+        assertThrows(CreditRatingNotFoundException.class,
+                () -> creditRatingService.getCreditRatingById(creditRating.getRatingId()));
     }
 
     @Test
     void updateCreditRatingById_shouldThrowCreditRatingNotFoundException() {
         // given
-        CreditRating creditRating = new CreditRating();
-        when(creditRatingRepository.findById(any())).thenReturn(Optional.empty());
+        CreditRating creditRating = prepareCreditRating();
+        creditRating.setRatingId(999L);
 
         // when & then
-        verify(creditRatingRepository,never()).saveAndFlush(any(CreditRating.class));
-
-        assertThrows(CreditRatingNotFoundException.class, () -> creditRatingService.updateCreditRatingById(creditRating));
+        assertThrows(CreditRatingNotFoundException.class,
+                () -> creditRatingService.updateCreditRatingById(creditRating));
     }
 
     @Test
     void updateCreditRatingById_shouldReturnUpdatedCreditRating() throws CreditRatingNotFoundException {
         // given
-        CreditRating creditRating = new CreditRating();
-        creditRating.setRatingId(1L);
-        creditRating.setCreditRating(CreditRatingEnum.ONE);
-        creditRating.setDateOfRating(LocalDate.now());
-
-        CreditRating newCreditRating = new CreditRating();
-        newCreditRating.setRatingId(1L);
-        newCreditRating.setCreditRating(CreditRatingEnum.FIVE);
-        newCreditRating.setDateOfRating(LocalDate.of(2023,1,1));
-
-        when(creditRatingRepository.findById(newCreditRating.getRatingId())).thenReturn(Optional.of(creditRating));
+        CreditRating creditRating = creditRatingRepository.saveAndFlush(prepareCreditRating());
 
         // when
-        CreditRating retrievedCreditRating = creditRatingService.updateCreditRatingById(newCreditRating);
+        creditRating.setCreditRating(CreditRatingEnum.FIVE);
+        CreditRating retrievedCreditRating = creditRatingService.updateCreditRatingById(creditRating);
 
         // then
-        verify(creditRatingRepository, times(1)).saveAndFlush(any(CreditRating.class));
-
-        assertEquals(newCreditRating.getRatingId(), retrievedCreditRating.getRatingId());
-        assertEquals(newCreditRating.getCreditRating(), retrievedCreditRating.getCreditRating());
-        assertEquals(newCreditRating.getDateOfRating(), retrievedCreditRating.getDateOfRating());
+        assertNotNull(retrievedCreditRating);
+        assertEquals(creditRating.getCreditRating(), retrievedCreditRating.getCreditRating());
+        assertEquals(creditRating.getDateOfRating(), retrievedCreditRating.getDateOfRating());
     }
 }
