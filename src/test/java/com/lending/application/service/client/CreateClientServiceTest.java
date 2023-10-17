@@ -1,37 +1,54 @@
 package com.lending.application.service.client;
 
+import com.lending.application.domain.Account;
 import com.lending.application.domain.Client;
 import com.lending.application.repository.ClientRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.math.BigDecimal;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
 class CreateClientServiceTest {
-    @InjectMocks
+    @Autowired
     private CreateClientService createClientService;
-    @Mock
+    @Autowired
     private ClientRepository clientRepository;
+
+    private Client prepareClient(final String name, final String lastName) {
+        Client client = new Client();
+        client.setName(name);
+        client.setLastName(lastName);
+        client.setPhoneNumber("999-999-999");
+        client.setAddress("Avenue Street 33A");
+
+        return client;
+    }
 
     @Test
     void createClient_succeed() {
         // given
-        Client client = new Client();
-
-        when(clientRepository.saveAndFlush(client)).thenReturn(client);
+        Client client = prepareClient("John", "Doe");
 
         // when
         Client createdClient = createClientService.createClient(client);
 
         // then
-        verify(clientRepository,times(1)).saveAndFlush(any(Client.class));
-
         assertNotNull(createdClient);
+        assertEquals(client.getName(),createdClient.getName());
+        assertEquals(client.getLastName(),createdClient.getLastName());
+        assertNotNull(createdClient.getAccount());
+        assertEquals(BigDecimal.ZERO,createdClient.getAccount().getBalance());
     }
 }
