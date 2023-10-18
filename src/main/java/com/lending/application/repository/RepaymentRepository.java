@@ -8,5 +8,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public interface RepaymentRepository extends JpaRepository<Repayment,Long> {
-    Repayment saveAndFlush(Repayment repayment);
 }
