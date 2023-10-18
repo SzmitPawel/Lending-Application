@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Transactional
 public interface ClientRepository extends JpaRepository<Client,Long> {
-    Client saveAndFlush(Client client);
 }

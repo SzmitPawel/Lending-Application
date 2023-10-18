@@ -8,5 +8,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public interface PenaltyRepository extends JpaRepository<Penalty,Long> {
-    Penalty saveAndFlush(Penalty penalty);
 }
