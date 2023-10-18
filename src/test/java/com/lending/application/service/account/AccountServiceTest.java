@@ -3,85 +3,82 @@ package com.lending.application.service.account;
 import com.lending.application.domain.Account;
 import com.lending.application.exception.AccountNotFoundException;
 import com.lending.application.repository.AccountRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
+import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
 class AccountServiceTest {
-    @InjectMocks
+    @Autowired
     private AccountService accountService;
-    @Mock
+    @Autowired
     private AccountRepository accountRepository;
 
-    @Test
-    public void testGetAccountById_AccountNotFoundException() {
-        // given
-        when(accountRepository.findById(any())).thenReturn(Optional.empty());
+    private Account prepareAccount() {
+        Account account = new Account(BigDecimal.ZERO);
 
-        // when & then
-        assertThrows(AccountNotFoundException.class, () -> accountService.getAccountById(1L));
+        return account;
     }
 
     @Test
-    void testSaveAccount() {
+    public void testGetAccountById_shouldThrowAccountNotFoundException() {
         // given
-        Account account = new Account();
+        Long accountID = 999L;
 
-        when(accountRepository.saveAndFlush(account)).thenReturn(account);
+        // when & then
+        assertThrows(AccountNotFoundException.class, () -> accountService.getAccountById(accountID));
+    }
+
+    @Test
+    void testSaveAccount_shouldSaveAccount() {
+        // given
+        Account account = accountRepository.saveAndFlush(prepareAccount());
 
         // when
         Account retrievedAccount = accountService.saveAccount(account);
 
         // then
-        verify(accountRepository,times(1)).saveAndFlush(any(Account.class));
-
         assertNotNull(retrievedAccount);
+        assertEquals(account.getBalance(), retrievedAccount.getBalance());
     }
 
     @Test
-    void testGetAccountById() throws AccountNotFoundException {
+    void testGetAccountById_shouldReturnAccount() throws AccountNotFoundException {
         // given
-        Account account = new Account();
-
-        when(accountRepository.findById(any())).thenReturn(Optional.of(account));
+        Account account = accountRepository.saveAndFlush(prepareAccount());
 
         // when
-        Account retrievedAccountDto = accountService.getAccountById(1L);
+        Account retrievedAccount = accountService.getAccountById(account.getAccountId());
 
         // then
-        verify(accountRepository,times(1)).findById(any());
-
-        assertNotNull(retrievedAccountDto);
+        assertNotNull(retrievedAccount);
+        assertEquals(account.getBalance(),retrievedAccount.getBalance());
     }
 
     @Test
-    void testDeleteAccountById_AccountNotFoundException() {
+    void testDeleteAccountById_shouldThrowAccountNotFoundException() {
         // given
-        when(accountRepository.findById(any())).thenReturn(Optional.empty());
+        Long accountId = 999L;
 
         // when & then
-        assertThrows(AccountNotFoundException.class, () -> accountService.deleteAccount(1L));
+        assertThrows(AccountNotFoundException.class, () -> accountService.deleteAccount(accountId));
     }
 
     @Test
     void testDeleteAccountById() throws AccountNotFoundException {
         // given
-        Account account = new Account();
+        Account account = accountRepository.saveAndFlush(prepareAccount());
 
-        when(accountRepository.findById(any())).thenReturn(Optional.of(account));
+        // when
+        accountService.deleteAccount(account.getAccountId());
 
-        accountService.deleteAccount(1L);
-
-        // when & then
-        verify(accountRepository, times(1)).deleteById(any());
+        // & then
+        assertThrows(AccountNotFoundException.class, () -> accountService.getAccountById(account.getAccountId()));
     }
 }
