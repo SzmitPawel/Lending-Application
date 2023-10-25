@@ -2,7 +2,8 @@ package com.lending.application.controller;
 
 import com.lending.application.exception.AccountNotFoundException;
 import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.service.account.AccountServiceFacade;
+import com.lending.application.exception.InsufficientFundsException;
+import com.lending.application.facade.AccountServiceFacade;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,9 +22,9 @@ import static org.mockito.Mockito.*;
 @WebMvcTest(AccountController.class)
 class AccountControllerTest {
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     @MockBean
-    AccountServiceFacade accountServiceFacade;
+    private AccountServiceFacade accountServiceFacade;
 
     private final String PATH = "/lending/account";
 
@@ -137,6 +138,19 @@ class AccountControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
 
         verify(accountServiceFacade, times(1)).withdraw(any(),any(BigDecimal.class));
+    }
+
+    @Test
+    void testWithdraw_InsufficientFundsExceptionHttp402() throws Exception {
+        // given
+        Long clientId = 1L;
+        BigDecimal withdrawAmount = BigDecimal.valueOf(20.00);
+        when(accountServiceFacade.withdraw(any(),any(BigDecimal.class))).thenThrow(InsufficientFundsException.class);
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders.put(
+                PATH + "/withdraw/{clientId}/{withdraw}",clientId,withdrawAmount))
+                .andExpect(MockMvcResultMatchers.status().isPaymentRequired());
     }
 
     @Test

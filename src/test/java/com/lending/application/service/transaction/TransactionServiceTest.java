@@ -37,6 +37,22 @@ class TransactionServiceTest {
     }
 
     @Test
+    void testSaveTransaction_shouldReturnSavedTransaction() {
+        // given
+        Transaction transaction = transactionRepository
+                .saveAndFlush(prepareTransaction(BigDecimal.valueOf(10),TransactionMethodEnum.DEPOSIT));
+
+        // when
+        Transaction retrievedTransaction = transactionService.saveTransaction(transaction);
+
+        // then
+        assertNotNull(retrievedTransaction);
+        assertEquals(transaction.getTransactionAmount(),retrievedTransaction.getTransactionAmount());
+        assertEquals(transaction.getTransactionDate(),retrievedTransaction.getTransactionDate());
+        assertEquals(transaction.getTransactionMethodEnum(),retrievedTransaction.getTransactionMethodEnum());
+    }
+
+    @Test
     void testGetTransactionById_shouldThrowTransactionNotFoundException() {
         // given
         Long transactionId = 999L;
@@ -108,7 +124,7 @@ class TransactionServiceTest {
 
         // when
         List<Transaction> retrievedTransactionList = transactionService
-                .getAllByAccountId(retrievedAccount.getAccountId());
+                .findAllByAccountId(retrievedAccount.getAccountId());
 
         // then
         assertNotNull(retrievedTransactionList);
@@ -127,7 +143,7 @@ class TransactionServiceTest {
     }
 
     @Test
-    void testGetTransactionsByMethodForAccount_shouldReturnCorrectTransactions() {
+    void testFindTransactionsByMethodAndAccount_shouldReturnCorrectTransactions() {
         // given
         Transaction transaction1 = prepareTransaction(BigDecimal.valueOf(10), TransactionMethodEnum.DEPOSIT);
         Transaction transaction2 = prepareTransaction(BigDecimal.valueOf(20), TransactionMethodEnum.WITHDRAWAL);
@@ -151,7 +167,7 @@ class TransactionServiceTest {
 
         // when
         List<Transaction> retrievedTransactionList = transactionService
-                .getTransactionsByMethodForAccount(transactionMethod, retrievedAccount.getAccountId());
+                .findTransactionsByMethodAndAccount(transactionMethod, retrievedAccount.getAccountId());
 
         // then
         assertNotNull(retrievedTransactionList);
