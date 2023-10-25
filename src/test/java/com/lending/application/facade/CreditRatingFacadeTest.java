@@ -1,4 +1,4 @@
-package com.lending.application.service.credit.rating;
+package com.lending.application.facade;
 
 import com.lending.application.domain.Client;
 import com.lending.application.domain.CreditRating;
@@ -6,10 +6,11 @@ import com.lending.application.domain.CreditRatingEnum;
 import com.lending.application.domain.dto.CreditRatingDto;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.CreditRatingNotFoundException;
+import com.lending.application.facade.CreditRatingFacade;
 import com.lending.application.mapper.CreditRatingMapper;
 import com.lending.application.service.client.ClientService;
+import com.lending.application.service.credit.rating.CreditRatingService;
 import com.lending.application.service.credit.rating.calculate.rating.CreditRatingEvaluator;
-import org.apache.el.stream.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

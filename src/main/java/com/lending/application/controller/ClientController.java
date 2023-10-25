@@ -2,7 +2,7 @@ package com.lending.application.controller;
 
 import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.service.client.ClientServiceFacade;
+import com.lending.application.facade.ClientServiceFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

@@ -7,7 +7,7 @@ import com.lending.application.domain.CreditRatingEnum;
 import com.lending.application.domain.dto.CreditRatingDto;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.CreditRatingNotFoundException;
-import com.lending.application.service.credit.rating.CreditRatingFacade;
+import com.lending.application.facade.CreditRatingFacade;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +31,9 @@ import static org.mockito.Mockito.*;
 @WebMvcTest(CreditRatingController.class)
 class CreditRatingControllerTest {
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     @MockBean
-    CreditRatingFacade creditRatingFacade;
+    private CreditRatingFacade creditRatingFacade;
 
     private final String PATH = "/lending/credit";
 

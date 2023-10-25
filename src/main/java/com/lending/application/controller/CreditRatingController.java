@@ -3,7 +3,7 @@ package com.lending.application.controller;
 import com.lending.application.domain.dto.CreditRatingDto;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.CreditRatingNotFoundException;
-import com.lending.application.service.credit.rating.CreditRatingFacade;
+import com.lending.application.facade.CreditRatingFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.lending.application.service.credit.rating;
+package com.lending.application.facade;
 
 import com.lending.application.domain.Client;
 import com.lending.application.domain.CreditRating;
@@ -8,6 +8,7 @@ import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.CreditRatingNotFoundException;
 import com.lending.application.mapper.CreditRatingMapper;
 import com.lending.application.service.client.ClientService;
+import com.lending.application.service.credit.rating.CreditRatingService;
 import com.lending.application.service.credit.rating.calculate.rating.CreditRatingEvaluator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
