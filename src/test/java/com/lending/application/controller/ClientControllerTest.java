@@ -3,7 +3,7 @@ package com.lending.application.controller;
 import com.google.gson.Gson;
 import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.service.client.ClientServiceFacade;
+import com.lending.application.facade.ClientServiceFacade;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

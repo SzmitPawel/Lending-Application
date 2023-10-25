@@ -1,9 +1,11 @@
-package com.lending.application.service.client;
+package com.lending.application.facade;
 
 import com.lending.application.domain.Client;
 import com.lending.application.domain.dto.ClientDto;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.mapper.ClientMapper;
+import com.lending.application.service.client.ClientService;
+import com.lending.application.service.client.CreateClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

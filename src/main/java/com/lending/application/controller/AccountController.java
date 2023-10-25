@@ -2,7 +2,8 @@ package com.lending.application.controller;
 
 import com.lending.application.exception.AccountNotFoundException;
 import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.service.account.AccountServiceFacade;
+import com.lending.application.exception.InsufficientFundsException;
+import com.lending.application.facade.AccountServiceFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -57,6 +58,9 @@ public class AccountController {
         } catch (ClientNotFoundException e) {
             log.error("Failed to withdraw for client: " + clientId + " client not found.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (InsufficientFundsException e) {
+            log.error("There are insufficient funds in the account for client: " + clientId);
+            return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build();
         }
     }
 }
