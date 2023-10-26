@@ -42,7 +42,7 @@ public class AccountServiceFacade {
         Account account = client.getAccount();
         BigDecimal currentBalance = account.getBalance();
 
-        if (withdraw.compareTo(currentBalance) > 1) {
+        if (withdraw.compareTo(currentBalance) == -1) {
             BigDecimal newBalance = currentBalance.subtract(withdraw);
             account.setBalance(newBalance);
             transactionServiceFacade.createTransaction(account,withdraw,TransactionMethodEnum.WITHDRAWAL);
