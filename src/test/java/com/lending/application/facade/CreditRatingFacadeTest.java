@@ -5,10 +5,8 @@ import com.lending.application.domain.CreditRating;
 import com.lending.application.domain.CreditRatingEnum;
 import com.lending.application.domain.dto.CreditRatingDto;
 import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.exception.CreditRatingNotFoundException;
 import com.lending.application.mapper.CreditRatingMapper;
 import com.lending.application.service.client.ClientService;
-import com.lending.application.service.credit.rating.CreditRatingService;
 import com.lending.application.service.credit.rating.calculate.rating.CreditRatingEvaluator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,22 +26,11 @@ class CreditRatingFacadeTest {
     @InjectMocks
     private CreditRatingFacade creditRatingFacade;
     @Mock
-    private CreditRatingService creditRatingService;
-    @Mock
     private CreditRatingMapper creditRatingMapper;
     @Mock
     private CreditRatingEvaluator creditRatingEvaluator;
     @Mock
     private ClientService clientService;
-
-    private CreditRating prepareCreditRating() {
-        CreditRating creditRating = new CreditRating();
-        creditRating.setRatingId(1L);
-        creditRating.setCreditRating(CreditRatingEnum.ONE);
-        creditRating.setDateOfRating(LocalDate.now());
-
-        return creditRating;
-    }
 
     private Client prepareClient() {
         Client client = new Client();
