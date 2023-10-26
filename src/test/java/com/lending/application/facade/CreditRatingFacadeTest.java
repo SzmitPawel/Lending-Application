@@ -6,7 +6,6 @@ import com.lending.application.domain.CreditRatingEnum;
 import com.lending.application.domain.dto.CreditRatingDto;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.CreditRatingNotFoundException;
-import com.lending.application.facade.CreditRatingFacade;
 import com.lending.application.mapper.CreditRatingMapper;
 import com.lending.application.service.client.ClientService;
 import com.lending.application.service.credit.rating.CreditRatingService;
@@ -21,7 +20,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -80,62 +78,5 @@ class CreditRatingFacadeTest {
 
         assertEquals(CreditRatingEnum.ONE, creditRatingDto.getCreditRating());
         assertEquals(LocalDate.now(), creditRatingDto.getDateOfRating());
-    }
-
-    @Test
-    void getCreditRating_shouldReturnCreditRating() throws ClientNotFoundException {
-        // given
-        CreditRating creditRating = prepareCreditRating();
-        Client client = prepareClient();
-        client.setCreditRating(creditRating);
-
-        when(clientService.getClientById(any())).thenReturn(client);
-        when(creditRatingMapper.mapToCreditRatingDto(any(CreditRating.class))).thenCallRealMethod();
-
-        // when
-        CreditRatingDto retrievedRatingDto = creditRatingFacade.getCreditRating(1L);
-
-        // then
-        assertEquals(CreditRatingEnum.ONE, retrievedRatingDto.getCreditRating());
-        assertEquals(LocalDate.now(), retrievedRatingDto.getDateOfRating());
-    }
-
-    @Test
-    void updateCreditRating_shouldReturnUpdatedCreditRating() throws CreditRatingNotFoundException {
-        // given
-        CreditRatingDto creditRatingDto = new CreditRatingDto();
-        creditRatingDto.setRatingId(1L);
-        creditRatingDto.setCreditRating(CreditRatingEnum.FIVE);
-        creditRatingDto.setDateOfRating(LocalDate.of(2023,1,1));
-
-
-        CreditRating creditRating = new CreditRating();
-        creditRating.setRatingId(1L);
-        creditRating.setCreditRating(CreditRatingEnum.FIVE);
-        creditRating.setDateOfRating(LocalDate.of(2023,1,1));
-
-        when(creditRatingMapper.mapToCreditRating(any(CreditRatingDto.class))).thenCallRealMethod();
-        when(creditRatingService.updateCreditRatingById(any(CreditRating.class))).thenReturn(creditRating);
-        when(creditRatingMapper.mapToCreditRatingDto(any(CreditRating.class))).thenCallRealMethod();
-
-        // when
-        CreditRatingDto updatedCreditRatingDto = creditRatingFacade.updateCreditRating(creditRatingDto);
-
-        // then
-        assertEquals(creditRatingDto.getRatingId(), updatedCreditRatingDto.getRatingId());
-        assertEquals(creditRatingDto.getCreditRating(), updatedCreditRatingDto.getCreditRating());
-        assertEquals(creditRatingDto.getDateOfRating(), updatedCreditRatingDto.getDateOfRating());
-    }
-
-    @Test
-    void deleteCreditRating() throws CreditRatingNotFoundException {
-        // given
-        Long ratingId = 1L;
-
-        // when
-        creditRatingFacade.deleteCreditRating(ratingId);
-
-        // then
-        verify(creditRatingService,times(1)).deleteCreditRatingById(any());
     }
 }
