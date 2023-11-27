@@ -24,13 +24,13 @@ public class Loan {
 
     public Loan(
             final BigDecimal loanAmount,
-            final BigDecimal installmentAmount,
+            final BigDecimal monthlyPayment,
             final Float interest,
             final LocalDate loanStartDate,
             final Integer repaymentPeriod
     ) {
         this.loanAmount = loanAmount;
-        this.monthlyPayment = installmentAmount;
+        this.monthlyPayment = monthlyPayment;
         this.interest = interest;
         this.loanStartDate = loanStartDate;
         this.repaymentPeriod = repaymentPeriod;
