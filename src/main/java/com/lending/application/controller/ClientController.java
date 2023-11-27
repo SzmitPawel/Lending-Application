@@ -29,6 +29,8 @@ public class ClientController {
         } catch (ClientNotFoundException e) {
             log.error("Failed to retrieve client: " + clientId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return null;
         }
     }
 
