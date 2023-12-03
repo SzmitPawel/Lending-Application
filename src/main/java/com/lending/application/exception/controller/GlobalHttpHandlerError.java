@@ -5,6 +5,7 @@ import com.lending.application.exception.CreditRatingNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -57,5 +58,19 @@ public class GlobalHttpHandlerError extends ResponseEntityExceptionHandler {
 
         log.error(apiError.message());
         return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrityException(HttpServletRequest request) {
+
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                "Data integrity violation.",
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now()
+        );
+
+        log.error(apiError.message());
+        return new ResponseEntity<>(apiError,HttpStatus.BAD_REQUEST);
     }
 }
