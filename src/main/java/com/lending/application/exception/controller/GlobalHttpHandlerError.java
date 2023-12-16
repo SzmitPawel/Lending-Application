@@ -46,6 +46,20 @@ public class GlobalHttpHandlerError extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<ApiError> handleAccountNotFoundException(HttpServletRequest request) {
+
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                "Account not found.",
+                HttpStatus.NOT_FOUND.value(),
+                LocalDateTime.now()
+        );
+
+        log.error(apiError.message());
+        return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(CreditRatingNotFoundException.class)
     public ResponseEntity<ApiError> handleRatingNotFoundException(HttpServletRequest request) {
 
@@ -142,5 +156,19 @@ public class GlobalHttpHandlerError extends ResponseEntityExceptionHandler {
 
         log.error(apiError.message());
         return new ResponseEntity<>(apiError,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ResponseEntity<ApiError> handleInsufficientFundsException(HttpServletRequest request) {
+
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                "Insufficient funds.",
+                HttpStatus.PAYMENT_REQUIRED.value(),
+                LocalDateTime.now()
+        );
+
+        log.error(apiError.message());
+        return new ResponseEntity<>(apiError,HttpStatus.PAYMENT_REQUIRED);
     }
 }
