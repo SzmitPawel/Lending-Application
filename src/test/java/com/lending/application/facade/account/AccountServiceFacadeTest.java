@@ -1,4 +1,4 @@
-package com.lending.application.facade;
+package com.lending.application.facade.account;
 
 import com.lending.application.domain.Account;
 import com.lending.application.domain.Client;
@@ -6,8 +6,12 @@ import com.lending.application.domain.TransactionMethodEnum;
 import com.lending.application.exception.AccountNotFoundException;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.InsufficientFundsException;
+import com.lending.application.exception.LoanNotFoundException;
+import com.lending.application.facade.TransactionServiceFacade;
 import com.lending.application.service.account.AccountService;
 import com.lending.application.service.client.ClientService;
+import com.lending.application.service.loan.LoanService;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,8 +35,12 @@ class AccountServiceFacadeTest {
     private ClientService clientService;
     @Mock
     private TransactionServiceFacade transactionServiceFacade;
+    @Mock
+    private RepaymentCommand repaymentCommand;
+    @Mock
+    private LoanService loanService;
 
-    private Client prepareClient() {
+    private Client prepareClient(final BigDecimal accountBalance) {
         Client client = new Client();
         client.setClientId(1L);
         client.setName("John");
@@ -40,7 +48,7 @@ class AccountServiceFacadeTest {
 
         Account account = new Account();
         account.setAccountId(1L);
-        account.setBalance(BigDecimal.valueOf(1000.00));
+        account.setBalance(accountBalance);
 
         client.setAccount(account);
 
@@ -50,7 +58,8 @@ class AccountServiceFacadeTest {
     @Test
     void testDeposit_shouldReturnAccountBalance() throws ClientNotFoundException, AccountNotFoundException {
         // given
-        Client client = prepareClient();
+        BigDecimal accountBalance = BigDecimal.valueOf(1000.00);
+        Client client = prepareClient(accountBalance);
 
         BigDecimal deposit = BigDecimal.valueOf(100.00);
         BigDecimal expectedAccountBalance = BigDecimal.valueOf(1100.00);
@@ -70,8 +79,8 @@ class AccountServiceFacadeTest {
 
     @Test
     void testWithdraw_shouldThrowInsufficientFundsException() throws ClientNotFoundException {
-        Client client = prepareClient();
-        client.getAccount().setBalance(BigDecimal.ZERO);
+        BigDecimal accountBalance = BigDecimal.ZERO;
+        Client client = prepareClient(accountBalance);;
 
         BigDecimal withdraw = BigDecimal.valueOf(100.00);
 
@@ -84,7 +93,8 @@ class AccountServiceFacadeTest {
     @Test
     void testWithdraw_shouldReturnAccountBalance() throws ClientNotFoundException, InsufficientFundsException {
         // given
-        Client client = prepareClient();
+        BigDecimal accountBalance = BigDecimal.valueOf(1000.00);
+        Client client = prepareClient(accountBalance);
 
         BigDecimal withdraw = BigDecimal.valueOf(100.00);
         BigDecimal expectedAccountBalance = BigDecimal.valueOf(900.00);
@@ -105,7 +115,8 @@ class AccountServiceFacadeTest {
     @Test
     void testGetBalance_shouldReturnAccountBalance() throws ClientNotFoundException, AccountNotFoundException {
         // given
-        Client client = prepareClient();
+        BigDecimal accountBalance = BigDecimal.valueOf(1000.00);
+        Client client = prepareClient(accountBalance);
 
         BigDecimal expectedAccountBalance = BigDecimal.valueOf(1000.00);
 
@@ -117,5 +128,54 @@ class AccountServiceFacadeTest {
 
         // then
         assertEquals(expectedAccountBalance,retrievedBalance);
+    }
+
+    @Nested
+    class Repayment {
+        @Test
+        void repayment_should_throw_loan_not_found_exception_if_loan_not_exist()
+                throws LoanNotFoundException, InsufficientFundsException {
+
+            // given
+            Long loanId = 999L;
+            BigDecimal repaymentAmount = BigDecimal.ONE;
+
+            when(repaymentCommand.doRepayment(loanId,repaymentAmount)).thenThrow(LoanNotFoundException.class);
+
+            // When & then
+            assertThrows(LoanNotFoundException.class, () -> accountServiceFacade.repayment(loanId,repaymentAmount));
+        }
+
+        @Test
+        void repayment_should_throw_insufficient_funds_exception_if_account_balance_is_too_low()
+                throws InsufficientFundsException, LoanNotFoundException {
+
+            // given
+            Long loanId = 1L;
+            BigDecimal repaymentAmount = BigDecimal.TEN;
+
+            when(repaymentCommand.doRepayment(loanId,repaymentAmount)).thenThrow(InsufficientFundsException.class);
+
+            // when & then
+            assertThrows(InsufficientFundsException.class, () -> repaymentCommand.doRepayment(loanId,repaymentAmount));
+        }
+
+        @Test
+        void repayment_should_return_repayment_amount_if_repayment_succeed()
+                throws InsufficientFundsException, LoanNotFoundException {
+
+            // given
+            Long loanId = 1L;
+            BigDecimal repaymentAmount = BigDecimal.TEN;
+
+            when(repaymentCommand.doRepayment(loanId,repaymentAmount)).thenReturn(repaymentAmount);
+
+            // when
+            BigDecimal retrievedRepaymentAmount = accountServiceFacade.repayment(loanId,repaymentAmount);
+            BigDecimal expectedResult = BigDecimal.TEN;
+
+            // then
+            assertEquals(expectedResult,retrievedRepaymentAmount);
+        }
     }
 }
