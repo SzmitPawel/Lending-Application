@@ -1,8 +1,9 @@
-package com.lending.application.service.account;
+package com.lending.application.service.repayment;
 
 import com.lending.application.domain.*;
 import com.lending.application.exception.InsufficientFundsException;
 import com.lending.application.exception.LoanNotFoundException;
+import com.lending.application.service.account.AccountService;
 import com.lending.application.service.loan.LoanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
