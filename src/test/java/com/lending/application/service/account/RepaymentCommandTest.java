@@ -1,9 +1,8 @@
-package com.lending.application.facade.account;
+package com.lending.application.service.account;
 
 import com.lending.application.domain.*;
 import com.lending.application.exception.InsufficientFundsException;
 import com.lending.application.exception.LoanNotFoundException;
-import com.lending.application.service.account.AccountService;
 import com.lending.application.service.loan.LoanService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
