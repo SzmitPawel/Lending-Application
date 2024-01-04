@@ -2,10 +2,10 @@ package com.lending.application.service.account;
 
 import com.lending.application.domain.Account;
 import com.lending.application.domain.Client;
-import com.lending.application.domain.Transaction;
 import com.lending.application.domain.TransactionMethodEnum;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.service.client.ClientService;
+import com.lending.application.service.transaction.TransactionCommand;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,11 +13,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DepositCommandTest {
@@ -25,6 +23,10 @@ class DepositCommandTest {
     private DepositCommand depositCommand;
     @Mock
     private ClientService clientService;
+    @Mock
+    private AccountService accountService;
+    @Mock
+    private TransactionCommand transactionCommand;
 
     private Client prepareClient(final BigDecimal accountBalance) {
         Client client = new Client();
@@ -70,33 +72,12 @@ class DepositCommandTest {
         BigDecimal retrievedAccountBalance = depositCommand.doDeposit(clientId,depositAmount);
 
         // then
+        verify(transactionCommand,times(1))
+                .doTransaction(any(Account.class),any(BigDecimal.class),any(TransactionMethodEnum.class));
+        verify(accountService,times(1))
+                .saveAccount(any(Account.class));
+
+        assertNotNull(retrievedAccountBalance);
         assertEquals(expectedResult,retrievedAccountBalance);
-    }
-
-    @Test
-    public void deposit_should_create_transaction_if_do_deposit_succeed()
-            throws ClientNotFoundException {
-
-        // given
-        BigDecimal accountBalance = BigDecimal.TEN;
-        Client client = prepareClient(accountBalance);
-        BigDecimal depositAmount = BigDecimal.TEN;
-        Long clientId = client.getClientId();
-
-        Transaction expectedTransaction = new Transaction();
-        expectedTransaction.setTransactionAmount(BigDecimal.TEN);
-        expectedTransaction.setTransactionDate(LocalDate.now());
-        expectedTransaction.setTransactionMethodEnum(TransactionMethodEnum.DEPOSIT);
-
-        when(clientService.getClientById(clientId)).thenReturn(client);
-
-        // when
-        depositCommand.doDeposit(clientId,depositAmount);
-        Transaction retrievedTransaction = client.getAccount().getTransactionList().get(0);
-
-        // then
-        assertEquals(expectedTransaction.getTransactionDate(),retrievedTransaction.getTransactionDate());
-        assertEquals(expectedTransaction.getTransactionAmount(),retrievedTransaction.getTransactionAmount());
-        assertEquals(expectedTransaction.getTransactionMethodEnum(),retrievedTransaction.getTransactionMethodEnum());
     }
 }

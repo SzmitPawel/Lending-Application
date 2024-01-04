@@ -3,27 +3,20 @@ package com.lending.application.service.transaction;
 import com.lending.application.domain.Account;
 import com.lending.application.domain.Transaction;
 import com.lending.application.domain.TransactionMethodEnum;
-import com.lending.application.service.account.AccountService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Component
-@RequiredArgsConstructor
 public class TransactionCommand {
-    private final AccountService accountService;
 
-    public Transaction doTransaction(
+    public void doTransaction(
             Account account,
             final BigDecimal transactionAmount,
             final TransactionMethodEnum methodEnum
     ) {
-        Transaction transaction = createTransaction(transactionAmount, methodEnum);
-        makeTransaction(account, transaction);
-
-        return transaction;
+        makeTransaction(account, createTransaction(transactionAmount,methodEnum));
     }
 
     private Transaction createTransaction(
@@ -44,6 +37,5 @@ public class TransactionCommand {
     ) {
         account.getTransactionList().add(transaction);
         transaction.setAccount(account);
-        accountService.saveAccount(account);
     }
 }

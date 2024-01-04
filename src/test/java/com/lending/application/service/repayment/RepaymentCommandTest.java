@@ -5,7 +5,7 @@ import com.lending.application.exception.InsufficientFundsException;
 import com.lending.application.exception.LoanNotFoundException;
 import com.lending.application.service.account.AccountService;
 import com.lending.application.service.loan.LoanService;
-import com.lending.application.service.repayment.RepaymentCommand;
+import com.lending.application.service.transaction.TransactionCommand;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,9 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RepaymentCommandTest {
@@ -27,6 +26,8 @@ class RepaymentCommandTest {
     private LoanService loanService;
     @Mock
     private AccountService accountService;
+    @Mock
+    private TransactionCommand transactionCommand;
 
     private Client prepareClient(final BigDecimal accountBalance) {
         Client client = new Client();
@@ -53,9 +54,9 @@ class RepaymentCommandTest {
     }
 
     @Test
-    void repayment_should_throw_insufficient_funds_exception_if_account_balance_is_low()
-            throws LoanNotFoundException {
-
+    void doRepayment_should_throw_insufficient_funds_exception_if_account_balance_is_low()
+            throws LoanNotFoundException
+    {
         // given
         BigDecimal accountBalance = BigDecimal.ONE;
 
@@ -70,14 +71,21 @@ class RepaymentCommandTest {
         when(loanService.getLoanById(loan.getLoanId())).thenReturn(loan);
 
         // when & then
-        assertThrows(InsufficientFundsException.class, () -> repaymentCommand
-                .doRepayment(loan.getLoanId(),repaymentAmount));
+        assertThrows(InsufficientFundsException.class,
+                () -> repaymentCommand.doRepayment(loan.getLoanId(),repaymentAmount));
+
+        verify(transactionCommand,
+                never()).doTransaction(any(Account.class),any(BigDecimal.class),any(TransactionMethodEnum.class));
+        verify(accountService,
+                never()).saveAccount(any(Account.class));
+        verify(loanService,
+                never()).saveLoan(any(Loan.class));
     }
 
     @Test
-    void repayment_should_throw_loan_not_found_exception_if_loan_not_exist()
-            throws LoanNotFoundException {
-
+    void doRepayment_should_throw_loan_not_found_exception_if_loan_not_exist()
+            throws LoanNotFoundException
+    {
         // given
         Long loanId = 999L;
         BigDecimal repaymentAmount = BigDecimal.ZERO;
@@ -85,13 +93,22 @@ class RepaymentCommandTest {
         when(loanService.getLoanById(loanId)).thenThrow(LoanNotFoundException.class);
 
         // when & then
-        assertThrows(LoanNotFoundException.class, () -> repaymentCommand.doRepayment(loanId,repaymentAmount));
+        assertThrows(LoanNotFoundException.class,
+                () -> repaymentCommand.doRepayment(loanId,repaymentAmount));
+
+        verify(transactionCommand,
+                never()).doTransaction(any(Account.class),any(BigDecimal.class),any(TransactionMethodEnum.class));
+        verify(accountService,
+                never()).saveAccount(any(Account.class));
+        verify(loanService,
+                never()).saveLoan(any(Loan.class));
     }
 
     @Test
-    void repayment_should_return_repayment_amount_if_do_repayment_succeed()
-            throws LoanNotFoundException, InsufficientFundsException {
-
+    void doRepayment_should_return_correct_account_balance()
+            throws LoanNotFoundException,
+                   InsufficientFundsException
+    {
         // given
         BigDecimal accountBalance = BigDecimal.valueOf(100.00);
 
@@ -102,21 +119,30 @@ class RepaymentCommandTest {
         loan.setClient(client);
 
         BigDecimal repaymentAmount = BigDecimal.TEN;
-        BigDecimal expectedResult = BigDecimal.TEN;
+        BigDecimal expectedResult = BigDecimal.valueOf(90.00);
 
         when(loanService.getLoanById(loan.getLoanId())).thenReturn(loan);
 
         // when
-        BigDecimal retrievedRepaymentAmount = repaymentCommand.doRepayment(loan.getLoanId(),repaymentAmount);
+        BigDecimal retrievedAccountBalance = repaymentCommand.doRepayment(loan.getLoanId(),repaymentAmount);
 
         // then
-        assertEquals(expectedResult,retrievedRepaymentAmount);
+        assertNotNull(retrievedAccountBalance);
+        assertEquals(expectedResult,retrievedAccountBalance);
+
+        verify(transactionCommand,
+                times(1)).doTransaction(any(Account.class),any(BigDecimal.class),any(TransactionMethodEnum.class));
+        verify(accountService,
+                times(1)).saveAccount(any(Account.class));
+        verify(loanService,
+                times(1)).saveLoan(any(Loan.class));
     }
 
     @Test
-    void repayment_should_create_repayment_if_do_repayment_succeed()
-            throws LoanNotFoundException, InsufficientFundsException {
-
+    void doRepayment_should_create_repayment()
+            throws LoanNotFoundException,
+                   InsufficientFundsException
+    {
         // given
         BigDecimal accountBalance = BigDecimal.valueOf(100.00);
 
@@ -136,17 +162,25 @@ class RepaymentCommandTest {
 
         // when
         repaymentCommand.doRepayment(loan.getLoanId(),repaymentAmount);
-        Repayment retrievedRepayment = loan.getRepaymentList().get(0);
 
-        // when
-        assertEquals(expectedRepayment.getRepaymentAmount(),retrievedRepayment.getRepaymentAmount());
-        assertEquals(expectedRepayment.getRepaymentDate(),retrievedRepayment.getRepaymentDate());
+        // then
+        assertEquals(1,loan.getRepaymentList().size());
+        assertEquals(expectedRepayment.getRepaymentAmount(),loan.getRepaymentList().get(0).getRepaymentAmount());
+        assertEquals(expectedRepayment.getRepaymentDate(),loan.getRepaymentList().get(0).getRepaymentDate());
+
+        verify(transactionCommand,
+                times(1)).doTransaction(any(Account.class),any(BigDecimal.class),any(TransactionMethodEnum.class));
+        verify(accountService,
+                times(1)).saveAccount(any(Account.class));
+        verify(loanService,
+                times(1)).saveLoan(any(Loan.class));
     }
 
     @Test
-    void repayment_should_create_transaction_if_do_repayment_succeed()
-            throws LoanNotFoundException, InsufficientFundsException {
-
+    void doRepayment_should_created_repayment_and_be_correctly_associated_with_loan()
+            throws LoanNotFoundException,
+                   InsufficientFundsException
+    {
         // given
         BigDecimal accountBalance = BigDecimal.valueOf(100.00);
 
@@ -158,46 +192,20 @@ class RepaymentCommandTest {
 
         BigDecimal repaymentAmount = BigDecimal.TEN;
 
-        Transaction expectedTransaction = new Transaction();
-        expectedTransaction.setTransactionAmount(BigDecimal.TEN);
-        expectedTransaction.setTransactionDate(LocalDate.now());
-        expectedTransaction.setTransactionMethodEnum(TransactionMethodEnum.REPAYMENT);
-
         when(loanService.getLoanById(loan.getLoanId())).thenReturn(loan);
 
         // when
         repaymentCommand.doRepayment(loan.getLoanId(),repaymentAmount);
-        Transaction retrievedTransaction = client.getAccount().getTransactionList().get(0);
 
         // then
-        assertEquals(expectedTransaction.getTransactionDate(),retrievedTransaction.getTransactionDate());
-        assertEquals(expectedTransaction.getTransactionAmount(),retrievedTransaction.getTransactionAmount());
-        assertEquals(expectedTransaction.getTransactionMethodEnum(),retrievedTransaction.getTransactionMethodEnum());
-    }
+        assertEquals(1,loan.getRepaymentList().size());
+        assertEquals(loan,loan.getRepaymentList().get(0).getLoan());
 
-    @Test
-    void repayment_should_update_account_balance_if_do_repayment_succeed()
-            throws LoanNotFoundException, InsufficientFundsException {
-
-        // given
-        BigDecimal accountBalance = BigDecimal.valueOf(100.00);
-
-        Client client = prepareClient(accountBalance);
-        Loan loan = prepareLoan();
-
-        client.getLoanList().add(loan);
-        loan.setClient(client);
-
-        BigDecimal repaymentAmount = BigDecimal.TEN;
-        BigDecimal expectedAccountBalance = BigDecimal.valueOf(90.00);
-
-        when(loanService.getLoanById(loan.getLoanId())).thenReturn(loan);
-
-        // when
-        repaymentCommand.doRepayment(loan.getLoanId(),repaymentAmount);
-        BigDecimal retrievedAccountBalance = client.getAccount().getBalance();
-
-        // then
-        assertEquals(expectedAccountBalance,retrievedAccountBalance);
+        verify(transactionCommand,
+                times(1)).doTransaction(any(Account.class),any(BigDecimal.class),any(TransactionMethodEnum.class));
+        verify(accountService,
+                times(1)).saveAccount(any(Account.class));
+        verify(loanService,
+                times(1)).saveLoan(any(Loan.class));
     }
 }
