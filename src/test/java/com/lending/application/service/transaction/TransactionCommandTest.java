@@ -3,28 +3,22 @@ package com.lending.application.service.transaction;
 import com.lending.application.domain.Account;
 import com.lending.application.domain.Transaction;
 import com.lending.application.domain.TransactionMethodEnum;
-import com.lending.application.service.account.AccountService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class TransactionCommandTest {
-    @InjectMocks
+    @Autowired
     private TransactionCommand transactionCommand;
-    @Mock
-    private AccountService accountService;
 
     @Test
-    void transaction_should_return_transaction_if_succeed() {
+    void transaction_should_create_transaction_if_succeed() {
         // given
         Account account = new Account(BigDecimal.TEN);
         BigDecimal transactionAmount = BigDecimal.ONE;
@@ -35,18 +29,16 @@ class TransactionCommandTest {
         expectedTransaction.setTransactionMethodEnum(methodEnum);
         expectedTransaction.setTransactionAmount(transactionAmount);
 
-        when(accountService.saveAccount(account)).thenReturn(account);
-
         // when
-        Transaction retrievedTransaction = transactionCommand.doTransaction(account,transactionAmount,methodEnum);
+        transactionCommand.doTransaction(account,transactionAmount,methodEnum);
 
         // then
-        verify(accountService,times(1)).saveAccount(account);
-
-        assertNotNull(retrievedTransaction);
-        assertEquals(expectedTransaction.getTransactionAmount(),retrievedTransaction.getTransactionAmount());
-        assertEquals(expectedTransaction.getTransactionDate(),retrievedTransaction.getTransactionDate());
-        assertEquals(expectedTransaction.getTransactionMethodEnum(),retrievedTransaction.getTransactionMethodEnum());
+        assertEquals(expectedTransaction.getTransactionAmount(),
+                account.getTransactionList().get(0).getTransactionAmount());
+        assertEquals(expectedTransaction.getTransactionDate(),
+                account.getTransactionList().get(0).getTransactionDate());
+        assertEquals(expectedTransaction.getTransactionMethodEnum()
+                ,account.getTransactionList().get(0).getTransactionMethodEnum());
     }
 
     @Test
@@ -56,18 +48,11 @@ class TransactionCommandTest {
         BigDecimal transactionAmount = BigDecimal.ONE;
         TransactionMethodEnum methodEnum = TransactionMethodEnum.WITHDRAWAL;
 
-        Transaction expectedTransaction = new Transaction();
-        expectedTransaction.setTransactionDate(LocalDate.now());
-        expectedTransaction.setTransactionMethodEnum(methodEnum);
-        expectedTransaction.setTransactionAmount(transactionAmount);
-
-        when(accountService.saveAccount(account)).thenReturn(account);
-
         // when
-        Transaction retrievedTransaction = transactionCommand.doTransaction(account,transactionAmount,methodEnum);
+        transactionCommand.doTransaction(account,transactionAmount,methodEnum);
 
         // then
-        assertNotNull(retrievedTransaction);
-        assertTrue(account.getTransactionList().contains(retrievedTransaction));
+        assertEquals(1,account.getTransactionList().size());
+        assertEquals(account,account.getTransactionList().get(0).getAccount());
     }
 }

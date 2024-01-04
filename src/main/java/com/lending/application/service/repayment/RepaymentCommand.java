@@ -5,6 +5,7 @@ import com.lending.application.exception.InsufficientFundsException;
 import com.lending.application.exception.LoanNotFoundException;
 import com.lending.application.service.account.AccountService;
 import com.lending.application.service.loan.LoanService;
+import com.lending.application.service.transaction.TransactionCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,33 +17,30 @@ import java.time.LocalDate;
 public class RepaymentCommand {
     private final LoanService loanService;
     private final AccountService accountService;
+    private final TransactionCommand transactionCommand;
 
-    public BigDecimal doRepayment(final Long loanId, final BigDecimal repaymentAmount)
+    public BigDecimal doRepayment(final Long loanId,final BigDecimal repaymentAmount)
             throws LoanNotFoundException,
-                   InsufficientFundsException {
+                   InsufficientFundsException
+    {
+        Loan loan = loanService.getLoanById(loanId);
+        Client client = loan.getClient();
+        Account account = client.getAccount();
 
-        Loan retrievedLoan = loanService.getLoanById(loanId);
-        Client retrievedClient = retrievedLoan.getClient();
+        if (checkAccountBalance(account,repaymentAmount)) {
+            makeRepayment(loan,createRepayment(repaymentAmount));
+            transactionCommand.doTransaction(account,repaymentAmount,TransactionMethodEnum.REPAYMENT);
+            updateAccountBalance(account,repaymentAmount);
+            accountService.saveAccount(account);
+            loanService.saveLoan(loan);
 
-        boolean checkAccountBalance = checkAccountBalance(retrievedClient,repaymentAmount);
-
-        if (checkAccountBalance) {
-            Repayment repayment = createRepayment(repaymentAmount);
-            Transaction transaction = createTransaction(repaymentAmount);
-
-            makeRepayment(retrievedLoan,repayment);
-            makeTransaction(retrievedClient.getAccount(),transaction);
-            updateAccountBalance(retrievedClient.getAccount(),repaymentAmount);
-            saveToDataBase(retrievedClient.getAccount(),retrievedLoan);
-
-            return repaymentAmount;
+            return account.getBalance();
         } else {
             throw new InsufficientFundsException();
         }
     }
 
-    private boolean checkAccountBalance(final Client client, final BigDecimal repaymentAmount) {
-        Account account = client.getAccount();
+    private boolean checkAccountBalance(final Account account, final BigDecimal repaymentAmount) {
         BigDecimal accountBalance = account.getBalance();
 
         return accountBalance.compareTo(repaymentAmount) >= 0 ? true : false;
@@ -56,33 +54,14 @@ public class RepaymentCommand {
         return repayment;
     }
 
-    private Transaction createTransaction(final BigDecimal repaymentAmount) {
-        Transaction transaction = new Transaction();
-        transaction.setTransactionDate(LocalDate.now());
-        transaction.setTransactionAmount(repaymentAmount);
-        transaction.setTransactionMethodEnum(TransactionMethodEnum.REPAYMENT);
-
-        return transaction;
-    }
-
     private void makeRepayment(Loan retrievedLoan, Repayment repayment) {
         retrievedLoan.getRepaymentList().add(repayment);
         repayment.setLoan(retrievedLoan);
-    }
-
-    private void makeTransaction(Account account, Transaction transaction) {
-        account.getTransactionList().add(transaction);
-        transaction.setAccount(account);
     }
 
     private void updateAccountBalance(Account account, BigDecimal repaymentAmount) {
         BigDecimal balance = account.getBalance();
         BigDecimal newBalance = balance.subtract(repaymentAmount);
         account.setBalance(newBalance);
-    }
-
-    private void saveToDataBase(final Account account, final Loan loan) {
-        loanService.saveLoan(loan);
-        accountService.saveAccount(account);
     }
 }
