@@ -46,20 +46,6 @@ public class GlobalHttpHandlerError extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(AccountNotFoundException.class)
-    public ResponseEntity<ApiError> handleAccountNotFoundException(HttpServletRequest request) {
-
-        ApiError apiError = new ApiError(
-                request.getRequestURI(),
-                "Account not found.",
-                HttpStatus.NOT_FOUND.value(),
-                LocalDateTime.now()
-        );
-
-        log.error(apiError.message());
-        return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(CreditRatingNotFoundException.class)
     public ResponseEntity<ApiError> handleRatingNotFoundException(HttpServletRequest request) {
 
