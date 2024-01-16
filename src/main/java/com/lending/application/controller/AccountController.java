@@ -5,6 +5,10 @@ import com.lending.application.exception.InsufficientFundsException;
 import com.lending.application.service.account.BalanceCommand;
 import com.lending.application.service.account.DepositCommand;
 import com.lending.application.service.account.WithdrawCommand;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +35,13 @@ public class AccountController {
     private final static int MAX_DEPOSIT_VALID = 10000;
     private final static int MAX_WITHDRAW_VALID = 10000;
 
+    @Operation(summary = "Get account balance")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "get account balance")
+    })
     @GetMapping("/balance")
     public ResponseEntity<BigDecimal> getAccountBalance(
-            @RequestParam("clientId") @Min(MIN_CLIENT_VALID) final Long clientId)
+            @Parameter(description = "Id of client")@RequestParam("clientId") @Min(MIN_CLIENT_VALID) final Long clientId)
             throws ClientNotFoundException {
 
         BigDecimal balance = balanceCommand.getBalance(clientId);

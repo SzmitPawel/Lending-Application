@@ -29,10 +29,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
 	implementation group: 'com.mysql', name: 'mysql-connector-j'
 	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
 	implementation group: 'org.jsoup', name: 'jsoup', version: '1.16.2'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.1.5'
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
 
 	compileOnly 'org.projectlombok:lombok'
 
