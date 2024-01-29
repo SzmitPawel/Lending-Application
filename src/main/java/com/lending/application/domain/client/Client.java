@@ -1,5 +1,8 @@
-package com.lending.application.domain;
+package com.lending.application.domain.client;
 
+import com.lending.application.domain.Account;
+import com.lending.application.domain.CreditRating;
+import com.lending.application.domain.Loan;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -79,7 +82,7 @@ public class Client {
         return creditRating;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,mappedBy = "client",targetEntity = Loan.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client", targetEntity = Loan.class)
     public List<Loan> getLoanList() {
         return loanList;
     }

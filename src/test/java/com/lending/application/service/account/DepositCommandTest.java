@@ -1,7 +1,7 @@
 package com.lending.application.service.account;
 
 import com.lending.application.domain.Account;
-import com.lending.application.domain.Client;
+import com.lending.application.domain.client.Client;
 import com.lending.application.domain.TransactionMethodEnum;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.service.client.ClientService;

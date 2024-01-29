@@ -1,7 +1,7 @@
 package com.lending.application.relations;
 
 import com.lending.application.domain.Account;
-import com.lending.application.domain.Client;
+import com.lending.application.domain.client.Client;
 import com.lending.application.repository.AccountRepository;
 import com.lending.application.repository.ClientRepository;
 import com.lending.application.repository.CreditRatingRepository;
