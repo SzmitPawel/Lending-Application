@@ -1,6 +1,6 @@
 package com.lending.application.service.client;
 
-import com.lending.application.domain.Client;
+import com.lending.application.domain.client.Client;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.repository.ClientRepository;
 import jakarta.transaction.Transactional;

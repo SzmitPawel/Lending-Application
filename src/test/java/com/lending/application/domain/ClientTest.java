@@ -1,5 +1,6 @@
 package com.lending.application.domain;
 
+import com.lending.application.domain.client.Client;
 import com.lending.application.repository.AccountRepository;
 import com.lending.application.repository.ClientRepository;
 import jakarta.transaction.Transactional;

@@ -1,7 +1,7 @@
 package com.lending.application.service.client;
 
 import com.lending.application.domain.Account;
-import com.lending.application.domain.Client;
+import com.lending.application.domain.client.Client;
 import com.lending.application.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

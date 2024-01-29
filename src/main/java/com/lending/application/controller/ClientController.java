@@ -1,6 +1,7 @@
 package com.lending.application.controller;
 
-import com.lending.application.domain.dto.ClientDto;
+import com.lending.application.domain.client.ClientRequestDTO;
+import com.lending.application.domain.client.ClientResponseDTO;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.controller.ApiError;
 import com.lending.application.facade.ClientServiceFacade;
@@ -40,7 +41,7 @@ public class ClientController {
                     responseCode = "200",
                     description = "Succeed received client.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ClientDto.class))),
+                            schema = @Schema(implementation = ClientResponseDTO.class))),
             @ApiResponse(
                     responseCode = "404",
                     description = "When client not found in the database.",
@@ -52,18 +53,21 @@ public class ClientController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ApiError.class)))
     })
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ClientDto> getClientById(
+    @GetMapping(
+            value = "/{clientId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<ClientResponseDTO> getClientById(
             @Parameter(
                     description = "Client id, minimum: 1",
                     example = "1",
                     required = true)
-            @RequestParam("clientId") @Min(MIN_CLIENT_VALID) final Long clientId)
+            @PathVariable("clientId") @Min(MIN_CLIENT_VALID) final Long clientId)
             throws ClientNotFoundException {
 
-        ClientDto retrievedClientDto = clientServiceFacade.getClientById(clientId);
+        ClientResponseDTO clientResponseDTO = clientServiceFacade.getClientById(clientId);
         log.info("Successfully retrieved client: " + clientId);
-        return ResponseEntity.ok(retrievedClientDto);
+        return ResponseEntity.ok(clientResponseDTO);
     }
 
     @Operation(summary = "Get list of all clients.")
@@ -71,14 +75,17 @@ public class ClientController {
             responseCode = "200",
             description = "Succeed received all clients.",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-            array = @ArraySchema(schema = @Schema(implementation = ClientDto.class)))
+                    array = @ArraySchema(schema = @Schema(implementation = ClientResponseDTO.class)))
     )
-    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ClientDto>> getAllClients() {
+    @GetMapping(
+            value = "/all",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
 
-        List<ClientDto> retrievedClientDtoList = clientServiceFacade.getAllClients();
+        List<ClientResponseDTO> clientResponseDTOList = clientServiceFacade.getAllClients();
         log.info("Successfully retrieved clients list.");
-        return ResponseEntity.status(HttpStatus.OK).body(retrievedClientDtoList);
+        return ResponseEntity.status(HttpStatus.OK).body(clientResponseDTOList);
     }
 
     @Operation(summary = "Create client.")
@@ -86,20 +93,23 @@ public class ClientController {
             responseCode = "200",
             description = "Succeed created client.",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ClientDto.class))
+                    schema = @Schema(implementation = ClientResponseDTO.class))
     )
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ClientDto> createClient(
+    @PostMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<ClientResponseDTO> createClient(
             @Parameter(
                     description = "Client to add.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ClientDto.class)),
+                            schema = @Schema(implementation = ClientRequestDTO.class)),
                     required = true)
-            @RequestBody final ClientDto clientDto) {
+            @RequestBody final ClientRequestDTO clientRequestDTO) {
 
-        ClientDto retrievedClientDto = clientServiceFacade.createClient(clientDto);
+        ClientResponseDTO clientResponseDTO = clientServiceFacade.createClient(clientRequestDTO);
         log.info("Successfully created a new client.");
-        return ResponseEntity.status(HttpStatus.CREATED).body(retrievedClientDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(clientResponseDTO);
     }
 
     @Operation(summary = "Delete client.")
@@ -118,13 +128,13 @@ public class ClientController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ApiError.class)))
     })
-    @DeleteMapping()
+    @DeleteMapping(value = "/{clientId}")
     public ResponseEntity<Void> deleteClientById(
             @Parameter(
                     description = "Client id, minimum: 1",
                     example = "1",
                     required = true)
-            @RequestParam("clientId") @Min(MIN_CLIENT_VALID) final Long clientId)
+            @PathVariable("clientId") @Min(MIN_CLIENT_VALID) final Long clientId)
             throws ClientNotFoundException {
 
         clientServiceFacade.deleteClientById(clientId);
@@ -133,22 +143,49 @@ public class ClientController {
     }
 
     @Operation(summary = "Update client.")
-    @ApiResponse(
-            responseCode = "200",
-            description = "Succeed update."
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Succeed update.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ClientResponseDTO.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "When client not found in the database.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ApiError.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid input, validation error.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ApiError.class))
+            )
+    })
+    @PutMapping(
+            value = "/{clientId}",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ClientDto> updateClient(
+    public ResponseEntity<ClientResponseDTO> updateClient(
+            @Parameter(
+                    description = "Client id, minimum: 1",
+                    example = "1",
+                    required = true
+            )
+            @PathVariable("clientId") @Min(MIN_CLIENT_VALID) final Long clientId,
             @Parameter(
                     description = "Client to update",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ClientDto.class)),
+                            schema = @Schema(implementation = ClientRequestDTO.class)),
                     required = true
             )
-            @RequestBody final ClientDto clientDto) {
-
-        ClientDto retrievedClientDto = clientServiceFacade.updateClient(clientDto);
-        log.info("Successfully updated client " + clientDto.getClientId());
-        return ResponseEntity.status(HttpStatus.OK).body(retrievedClientDto);
+            @RequestBody final ClientRequestDTO clientRequestDTO)
+            throws ClientNotFoundException {
+        ClientResponseDTO clientResponseDTO = clientServiceFacade
+                .updateClient(clientId, clientRequestDTO);
+        log.info("Successfully updated client " + clientResponseDTO.getClientId());
+        return ResponseEntity.status(HttpStatus.OK).body(clientResponseDTO);
     }
 }
