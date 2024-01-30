@@ -1,6 +1,6 @@
 package com.lending.application.domain.client;
 
-import com.lending.application.domain.Account;
+import com.lending.application.domain.account.Account;
 import com.lending.application.domain.CreditRating;
 import com.lending.application.domain.Loan;
 import jakarta.persistence.*;

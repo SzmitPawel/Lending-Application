@@ -1,6 +1,6 @@
 package com.lending.application.service.account;
 
-import com.lending.application.domain.Account;
+import com.lending.application.domain.account.Account;
 import com.lending.application.domain.client.Client;
 import com.lending.application.domain.TransactionMethodEnum;
 import com.lending.application.exception.ClientNotFoundException;
@@ -21,14 +21,13 @@ public class WithdrawCommand {
 
     public BigDecimal doWithdraw(final Long clientId, final BigDecimal withdrawAmount)
             throws ClientNotFoundException,
-                   InsufficientFundsException
-    {
+            InsufficientFundsException {
         Client client = clientService.getClientById(clientId);
         Account account = client.getAccount();
 
-        if (checkAccountBalance(account,withdrawAmount)) {
-            transactionCommand.doTransaction(account,withdrawAmount,TransactionMethodEnum.WITHDRAWAL);
-            updateAccountBalance(account,withdrawAmount);
+        if (checkAccountBalance(account, withdrawAmount)) {
+            transactionCommand.doTransaction(account, withdrawAmount, TransactionMethodEnum.WITHDRAWAL);
+            updateAccountBalance(account, withdrawAmount);
             accountService.saveAccount(account);
 
             return account.getBalance();

@@ -1,5 +1,6 @@
 package com.lending.application.domain;
 
+import com.lending.application.domain.account.Account;
 import com.lending.application.repository.AccountRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;

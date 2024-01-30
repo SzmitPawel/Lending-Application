@@ -1,5 +1,6 @@
 package com.lending.application.domain;
 
+import com.lending.application.domain.account.Account;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

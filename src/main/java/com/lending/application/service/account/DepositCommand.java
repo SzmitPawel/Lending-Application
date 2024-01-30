@@ -1,6 +1,6 @@
 package com.lending.application.service.account;
 
-import com.lending.application.domain.Account;
+import com.lending.application.domain.account.Account;
 import com.lending.application.domain.TransactionMethodEnum;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.service.client.ClientService;
@@ -21,12 +21,11 @@ public class DepositCommand {
             final Long clientId,
             final BigDecimal depositAmount
     )
-            throws ClientNotFoundException
-    {
+            throws ClientNotFoundException {
         Account account = clientService.getClientById(clientId).getAccount();
 
-        addDepositToAccount(account,depositAmount);
-        transactionCommand.doTransaction(account,depositAmount,TransactionMethodEnum.DEPOSIT);
+        addDepositToAccount(account, depositAmount);
+        transactionCommand.doTransaction(account, depositAmount, TransactionMethodEnum.DEPOSIT);
         accountService.saveAccount(account);
 
         return account.getBalance();
