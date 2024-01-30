@@ -1,6 +1,6 @@
 package com.lending.application.service.account;
 
-import com.lending.application.domain.Account;
+import com.lending.application.domain.account.Account;
 import com.lending.application.domain.client.Client;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.service.client.ClientService;
@@ -15,8 +15,7 @@ public class BalanceCommand {
     private final ClientService clientService;
 
     public BigDecimal getBalance(final Long clientId)
-            throws ClientNotFoundException
-    {
+            throws ClientNotFoundException {
         Client client = clientService.getClientById(clientId);
         Account account = client.getAccount();
 

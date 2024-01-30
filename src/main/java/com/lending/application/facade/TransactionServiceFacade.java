@@ -1,6 +1,6 @@
 package com.lending.application.facade;
 
-import com.lending.application.domain.Account;
+import com.lending.application.domain.account.Account;
 import com.lending.application.domain.Transaction;
 import com.lending.application.domain.TransactionMethodEnum;
 import com.lending.application.domain.dto.TransactionDto;
@@ -20,7 +20,7 @@ public class TransactionServiceFacade {
     private final TransactionMapper transactionMapper;
 
     public void createTransaction(Account account, final BigDecimal amount, final TransactionMethodEnum methodEnum) {
-        Transaction transaction = new Transaction(amount, LocalDate.now(),methodEnum);
+        Transaction transaction = new Transaction(amount, LocalDate.now(), methodEnum);
         transaction.setAccount(account);
         account.getTransactionList().add(transaction);
     }

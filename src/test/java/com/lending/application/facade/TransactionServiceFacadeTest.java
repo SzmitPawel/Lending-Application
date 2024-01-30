@@ -1,8 +1,7 @@
 package com.lending.application.facade;
 
-import com.lending.application.domain.Account;
+import com.lending.application.domain.account.Account;
 import com.lending.application.domain.TransactionMethodEnum;
-import com.lending.application.facade.TransactionServiceFacade;
 import com.lending.application.mapper.TransactionMapper;
 import com.lending.application.service.transaction.TransactionService;
 import org.junit.jupiter.api.Test;

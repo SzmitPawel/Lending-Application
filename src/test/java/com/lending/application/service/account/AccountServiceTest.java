@@ -1,6 +1,6 @@
 package com.lending.application.service.account;
 
-import com.lending.application.domain.Account;
+import com.lending.application.domain.account.Account;
 import com.lending.application.exception.AccountNotFoundException;
 import com.lending.application.repository.AccountRepository;
 import jakarta.transaction.Transactional;
