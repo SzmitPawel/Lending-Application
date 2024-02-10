@@ -1,12 +1,12 @@
 package com.lending.application.facade;
 
 import com.lending.application.domain.client.Client;
-import com.lending.application.domain.CreditRating;
-import com.lending.application.domain.CreditRatingEnum;
-import com.lending.application.domain.dto.CreditRatingDto;
+import com.lending.application.domain.credit.rating.CreditRating;
+import com.lending.application.domain.credit.rating.CreditRatingEnum;
+import com.lending.application.domain.credit.rating.CreditRatingResponseDTO;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.CreditRatingNotFoundException;
-import com.lending.application.mapper.CreditRatingMapper;
+import com.lending.application.mapper.credit.rating.CreditRatingResponseMapper;
 import com.lending.application.service.client.ClientService;
 import com.lending.application.service.credit.rating.CreditRatingService;
 import com.lending.application.service.credit.rating.calculate.rating.CreditRatingEvaluator;
@@ -20,17 +20,17 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class CreditRatingFacade {
     private final CreditRatingService creditRatingService;
-    private final CreditRatingMapper creditRatingMapper;
+    private final CreditRatingResponseMapper responseMapper;
     private final CreditRatingEvaluator creditRatingEvaluator;
     private final ClientService clientService;
 
-    public CreditRatingDto createNewCreditRating(
+    public CreditRatingResponseDTO createNewCreditRating(
             final Long clientId,
             final BigDecimal customerMonthlyIncome,
             final BigDecimal customerMonthlyExpenses) throws ClientNotFoundException {
 
         CreditRatingEnum creditRatingEnum = creditRatingEvaluator
-                .getCreditRatingEnum(clientId,customerMonthlyExpenses,customerMonthlyIncome);
+                .getCreditRatingEnum(clientId, customerMonthlyExpenses, customerMonthlyIncome);
 
         CreditRating creditRating = new CreditRating();
         creditRating.setDateOfRating(LocalDate.now());
@@ -40,22 +40,13 @@ public class CreditRatingFacade {
         client.setCreditRating(creditRating);
         clientService.saveClient(client);
 
-        return creditRatingMapper.mapToCreditRatingDto(client.getCreditRating());
+        return responseMapper.mapToCreditRatingDTO(client.getCreditRating());
     }
 
-    public CreditRatingDto getCreditRating(final Long clientId) throws ClientNotFoundException {
+    public CreditRatingResponseDTO getCreditRating(final Long clientId) throws ClientNotFoundException {
         Client client = clientService.getClientById(clientId);
 
-        return creditRatingMapper.mapToCreditRatingDto(client.getCreditRating());
-    }
-
-    public CreditRatingDto updateCreditRating(final CreditRatingDto creditRatingDto) throws CreditRatingNotFoundException {
-        CreditRating creditRating = creditRatingMapper.mapToCreditRating(creditRatingDto);
-
-        CreditRatingDto updatedCreditRatingDto = creditRatingMapper
-                .mapToCreditRatingDto(creditRatingService.updateCreditRatingById(creditRating));
-
-        return updatedCreditRatingDto;
+        return responseMapper.mapToCreditRatingDTO(client.getCreditRating());
     }
 
     public void deleteCreditRating(final Long ratingId) throws CreditRatingNotFoundException {

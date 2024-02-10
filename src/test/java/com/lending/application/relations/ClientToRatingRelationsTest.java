@@ -1,8 +1,8 @@
 package com.lending.application.relations;
 
 import com.lending.application.domain.client.Client;
-import com.lending.application.domain.CreditRating;
-import com.lending.application.domain.CreditRatingEnum;
+import com.lending.application.domain.credit.rating.CreditRating;
+import com.lending.application.domain.credit.rating.CreditRatingEnum;
 import com.lending.application.repository.ClientRepository;
 import com.lending.application.repository.CreditRatingRepository;
 import jakarta.transaction.Transactional;

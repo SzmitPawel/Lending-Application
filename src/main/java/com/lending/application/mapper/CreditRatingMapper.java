@@ -1,24 +1,24 @@
 package com.lending.application.mapper;
 
-import com.lending.application.domain.CreditRating;
-import com.lending.application.domain.dto.CreditRatingDto;
+import com.lending.application.domain.credit.rating.CreditRating;
+import com.lending.application.domain.credit.rating.CreditRatingResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CreditRatingMapper {
-    public CreditRatingDto mapToCreditRatingDto(final CreditRating creditRating) {
-        return new CreditRatingDto(
+    public CreditRatingResponseDTO mapToCreditRatingDto(final CreditRating creditRating) {
+        return new CreditRatingResponseDTO(
                 creditRating.getRatingId(),
                 creditRating.getCreditRating(),
                 creditRating.getDateOfRating()
         );
     }
 
-    public CreditRating mapToCreditRating(final CreditRatingDto creditRatingDto) {
+    public CreditRating mapToCreditRating(final CreditRatingResponseDTO creditRatingResponseDto) {
         CreditRating creditRating = new CreditRating();
-        creditRating.setRatingId(creditRatingDto.getRatingId());
-        creditRating.setCreditRating(creditRatingDto.getCreditRating());
-        creditRating.setDateOfRating(creditRatingDto.getDateOfRating());
+        creditRating.setRatingId(creditRatingResponseDto.getRatingId());
+        creditRating.setCreditRating(creditRatingResponseDto.getCreditRating());
+        creditRating.setDateOfRating(creditRatingResponseDto.getDateOfRating());
 
         return creditRating;
     }

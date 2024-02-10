@@ -1,6 +1,6 @@
 package com.lending.application.controller;
 
-import com.lending.application.domain.dto.CreditRatingDto;
+import com.lending.application.domain.credit.rating.CreditRatingResponseDTO;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.CreditRatingNotFoundException;
 import com.lending.application.exception.controller.ApiError;
@@ -59,7 +59,7 @@ public class CreditRatingController {
             value = "/{clientId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<CreditRatingDto> createCreditRating(
+    public ResponseEntity<CreditRatingResponseDTO> createCreditRating(
             @Parameter(
                     description = "Client id, minimum: 1",
                     example = "1",
@@ -77,11 +77,11 @@ public class CreditRatingController {
             @RequestParam("expenses") @Min(MIN_EXPENSES_VALID) final BigDecimal expenses)
             throws ClientNotFoundException {
 
-        CreditRatingDto createdCreditRatingDto = creditRatingFacade
+        CreditRatingResponseDTO createdCreditRatingResponseDTO = creditRatingFacade
                 .createNewCreditRating(clientId, income, expenses);
 
         log.info("Successfully created credit rating for client: " + clientId);
-        return ResponseEntity.status(HttpStatus.OK).body(createdCreditRatingDto);
+        return ResponseEntity.status(HttpStatus.OK).body(createdCreditRatingResponseDTO);
     }
 
     @Operation(summary = "Get Credit Rating for client.")
@@ -90,7 +90,7 @@ public class CreditRatingController {
                     responseCode = "200",
                     description = "Succeed received Credit Rating for clint.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = CreditRatingDto.class))),
+                            schema = @Schema(implementation = CreditRatingResponseDTO.class))),
             @ApiResponse(
                     responseCode = "400",
                     description = "Invalid input, validation error.",
@@ -106,7 +106,7 @@ public class CreditRatingController {
             value = "/{clientId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<CreditRatingDto> getCreditRating(
+    public ResponseEntity<CreditRatingResponseDTO> getCreditRating(
             @Parameter(
                     description = "Client id, minimum: 1",
                     example = "1",
@@ -114,41 +114,10 @@ public class CreditRatingController {
             @PathVariable("clientId") @Min(MIN_CLIENT_VALID) final Long clientId)
             throws ClientNotFoundException {
 
-        CreditRatingDto retrievedCreditRatingDto = creditRatingFacade.getCreditRating(clientId);
+        CreditRatingResponseDTO retrievedCreditRatingResponseDTO = creditRatingFacade.getCreditRating(clientId);
 
-        log.info("Successfully retrieved credit rating: " + retrievedCreditRatingDto.getRatingId());
-        return ResponseEntity.status(HttpStatus.OK).body(retrievedCreditRatingDto);
-    }
-
-    @Operation(summary = "Update Credit Rating")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Succeed updated Credit Rating.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = CreditRatingDto.class))),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "When Credit Rating not found.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ApiError.class)))
-    })
-    @PutMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<CreditRatingDto> updateCreditRating(
-            @Parameter(
-                    description = "Credit Rating to update.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = CreditRatingDto.class)),
-                    required = true)
-            @RequestBody final CreditRatingDto creditRatingDto)
-            throws CreditRatingNotFoundException {
-
-        CreditRatingDto updatedCreditRatingDto = creditRatingFacade.updateCreditRating(creditRatingDto);
-        log.info("Successfully updated credit rating: " + updatedCreditRatingDto.getRatingId());
-        return ResponseEntity.status(HttpStatus.OK).body(updatedCreditRatingDto);
+        log.info("Successfully retrieved credit rating: " + retrievedCreditRatingResponseDTO.getRatingId());
+        return ResponseEntity.status(HttpStatus.OK).body(retrievedCreditRatingResponseDTO);
     }
 
     @Operation(summary = "Delete Credit Rating.")

@@ -1,6 +1,6 @@
 package com.lending.application.service.credit.rating.calculate.rating;
 
-import com.lending.application.domain.CreditRatingEnum;
+import com.lending.application.domain.credit.rating.CreditRatingEnum;
 import com.lending.application.exception.ClientNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

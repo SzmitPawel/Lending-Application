@@ -1,5 +1,7 @@
 package com.lending.application.domain;
 
+import com.lending.application.domain.credit.rating.CreditRating;
+import com.lending.application.domain.credit.rating.CreditRatingEnum;
 import com.lending.application.repository.CreditRatingRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;

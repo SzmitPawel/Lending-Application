@@ -1,6 +1,5 @@
-package com.lending.application.domain.dto;
+package com.lending.application.domain.credit.rating;
 
-import com.lending.application.domain.CreditRatingEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreditRatingDto {
+public class CreditRatingResponseDTO {
     @Schema(description = "Credit Rating id.", example = "1")
     private Long ratingId;
     @Schema(description = "Credit Rating.", example = "FIVE")
