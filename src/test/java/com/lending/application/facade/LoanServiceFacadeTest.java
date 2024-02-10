@@ -1,8 +1,8 @@
 package com.lending.application.facade;
 
 import com.lending.application.domain.client.Client;
-import com.lending.application.domain.CreditRating;
-import com.lending.application.domain.CreditRatingEnum;
+import com.lending.application.domain.credit.rating.CreditRating;
+import com.lending.application.domain.credit.rating.CreditRatingEnum;
 import com.lending.application.domain.Loan;
 import com.lending.application.domain.dto.LoanDto;
 import com.lending.application.exception.ClientNotFoundException;

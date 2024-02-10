@@ -1,9 +1,9 @@
 package com.lending.application.facade;
 
 import com.lending.application.domain.client.Client;
-import com.lending.application.domain.CreditRating;
-import com.lending.application.domain.CreditRatingEnum;
-import com.lending.application.domain.dto.CreditRatingDto;
+import com.lending.application.domain.credit.rating.CreditRating;
+import com.lending.application.domain.credit.rating.CreditRatingEnum;
+import com.lending.application.domain.credit.rating.CreditRatingResponseDTO;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.mapper.CreditRatingMapper;
 import com.lending.application.service.client.ClientService;
@@ -57,13 +57,13 @@ class CreditRatingFacadeTest {
         when(creditRatingMapper.mapToCreditRatingDto(any(CreditRating.class))).thenCallRealMethod();
 
         // when
-        CreditRatingDto creditRatingDto = creditRatingFacade
+        CreditRatingResponseDTO creditRatingResponseDto = creditRatingFacade
                 .createNewCreditRating(client.getClientId(),customerMonthlyIncome,customerMonthlyExpenses);
 
         // then
         verify(clientService, times(1)).saveClient(any(Client.class));
 
-        assertEquals(CreditRatingEnum.ONE, creditRatingDto.getCreditRating());
-        assertEquals(LocalDate.now(), creditRatingDto.getDateOfRating());
+        assertEquals(CreditRatingEnum.ONE, creditRatingResponseDto.getCreditRating());
+        assertEquals(LocalDate.now(), creditRatingResponseDto.getDateOfRating());
     }
 }

@@ -1,4 +1,4 @@
-package com.lending.application.domain;
+package com.lending.application.domain.credit.rating;
 
 import jakarta.persistence.*;
 

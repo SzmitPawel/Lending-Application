@@ -1,10 +1,7 @@
 package com.lending.application.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.lending.application.controller.json.LocalDateSerializer;
-import com.lending.application.domain.CreditRatingEnum;
-import com.lending.application.domain.dto.CreditRatingDto;
+import com.lending.application.domain.credit.rating.CreditRatingEnum;
+import com.lending.application.domain.credit.rating.CreditRatingResponseDTO;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.CreditRatingNotFoundException;
 import com.lending.application.facade.CreditRatingFacade;
@@ -14,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -22,7 +18,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.LinkedMultiValueMap;
 
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -39,8 +34,8 @@ class CreditRatingControllerTest {
 
     private final String PATH = "/lending/credit";
 
-    private CreditRatingDto prepareCreditRatingDto() {
-        return new CreditRatingDto(1L, CreditRatingEnum.TWO, LocalDate.now());
+    private CreditRatingResponseDTO prepareCreditRatingDto() {
+        return new CreditRatingResponseDTO(1L, CreditRatingEnum.TWO, LocalDate.now());
     }
 
     private LinkedMultiValueMap<String, String> prepareParamsMap(
@@ -135,11 +130,11 @@ class CreditRatingControllerTest {
 
             LinkedMultiValueMap<String, String> linkedMultiValueMap = prepareParamsMap(income, expenses);
 
-            CreditRatingDto creditRatingDto = prepareCreditRatingDto();
+            CreditRatingResponseDTO creditRatingResponseDto = prepareCreditRatingDto();
 
             when(creditRatingFacade
                     .createNewCreditRating(clientId, income, expenses))
-                    .thenReturn(creditRatingDto);
+                    .thenReturn(creditRatingResponseDto);
 
             // when & then
             mockMvc.perform(MockMvcRequestBuilders
@@ -185,9 +180,9 @@ class CreditRatingControllerTest {
                 throws Exception {
             // given
             Long clientId = 1L;
-            CreditRatingDto creditRatingDto = prepareCreditRatingDto();
+            CreditRatingResponseDTO creditRatingResponseDto = prepareCreditRatingDto();
 
-            when(creditRatingFacade.getCreditRating(clientId)).thenReturn(creditRatingDto);
+            when(creditRatingFacade.getCreditRating(clientId)).thenReturn(creditRatingResponseDto);
 
             // when & then
             mockMvc.perform(MockMvcRequestBuilders
@@ -196,60 +191,6 @@ class CreditRatingControllerTest {
                     .andExpect(MockMvcResultMatchers.jsonPath("$.ratingId", Matchers.is(1)))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.creditRating", Matchers.is("TWO")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.dateOfRating", Matchers.is(LocalDate.now().toString())));
-        }
-
-    }
-
-    @Nested
-    class UpdateCreditRating {
-        @Test
-        void update_credit_rating_should_return_http_status_not_found_404_if_credit_rating_is_not_found()
-                throws Exception {
-            // given
-            CreditRatingDto creditRatingDto = prepareCreditRatingDto();
-
-            willThrow(CreditRatingNotFoundException.class).given(creditRatingFacade).updateCreditRating(any());
-
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateSerializer());
-            Gson gson = gsonBuilder.setPrettyPrinting().create();
-            String jsonContent = gson.toJson(creditRatingDto);
-
-            // when & then
-            mockMvc.perform(MockMvcRequestBuilders
-                            .put(PATH)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .characterEncoding(StandardCharsets.UTF_8)
-                            .content(jsonContent))
-                    .andExpect(MockMvcResultMatchers.status().isNotFound());
-        }
-
-        @Test
-        void update_credit_rating_should_return_http_status_ok_200_if_succeed()
-                throws Exception {
-            // given
-            CreditRatingDto creditRatingDto = new CreditRatingDto();
-            creditRatingDto.setRatingId(1L);
-            creditRatingDto.setDateOfRating(LocalDate.now());
-            creditRatingDto.setCreditRating(CreditRatingEnum.FIVE);
-
-            when(creditRatingFacade.updateCreditRating(any(CreditRatingDto.class))).thenReturn(creditRatingDto);
-
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateSerializer());
-            Gson gson = gsonBuilder.setPrettyPrinting().create();
-            String jsonContent = gson.toJson(creditRatingDto);
-
-            // when & then
-            mockMvc.perform(MockMvcRequestBuilders
-                            .put(PATH)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .characterEncoding(StandardCharsets.UTF_8)
-                            .content(jsonContent))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.ratingId", Matchers.is(1)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.dateOfRating", Matchers.is(LocalDate.now().toString())))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.creditRating", Matchers.is("FIVE")));
         }
 
     }
