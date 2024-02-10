@@ -8,10 +8,10 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class CreditRatingResponseDTO {
     @Schema(description = "Credit Rating id.", example = "1")
     private Long ratingId;
