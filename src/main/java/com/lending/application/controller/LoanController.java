@@ -1,6 +1,6 @@
 package com.lending.application.controller;
 
-import com.lending.application.domain.dto.LoanDto;
+import com.lending.application.domain.loan.LoanResponseDTO;
 import com.lending.application.exception.*;
 import com.lending.application.facade.LoanServiceFacade;
 import com.lending.application.service.loan.dto.LoanCalculationDto;
@@ -33,52 +33,52 @@ public class LoanController {
     private final static int MAX_AMOUNT = 100000;
     private final static int MAX_MONTH = 120;
 
-    @GetMapping()
-    public ResponseEntity<LoanDto> getLoanById(
-            @RequestParam @Min(MIN_LOAN_ID) final Long loanId)
+    @GetMapping(value = "/{loanId}")
+    public ResponseEntity<LoanResponseDTO> getLoanById(
+            @PathVariable @Min(MIN_LOAN_ID) final Long loanId)
             throws LoanNotFoundException {
 
-        LoanDto retrievedLoanDto = loanServiceFacade.getLoanById(loanId);
+        LoanResponseDTO retrievedLoanResponseDTO = loanServiceFacade.getLoanById(loanId);
         log.info("Successfully retrieved loan: " + loanId);
-        return ResponseEntity.status(HttpStatus.OK).body(retrievedLoanDto);
+        return ResponseEntity.status(HttpStatus.OK).body(retrievedLoanResponseDTO);
     }
 
-    @GetMapping(value = "/all")
-    public ResponseEntity<List<LoanDto>> getAllClientLoans(
-            @RequestParam @Min(MIN_CLIENT_ID) final Long clientId)
+    @GetMapping(value = "/all/{clientId}")
+    public ResponseEntity<List<LoanResponseDTO>> getAllClientLoans(
+            @PathVariable @Min(MIN_CLIENT_ID) final Long clientId)
             throws ClientNotFoundException {
 
-        List<LoanDto> retrievedLoanDtoList = loanServiceFacade.getAllClientLoans(clientId);
+        List<LoanResponseDTO> retrievedLoanResponseDTOList = loanServiceFacade.getAllClientLoans(clientId);
         log.info("Successfully retrieved client: " + clientId + " loans list.");
-        return ResponseEntity.status(HttpStatus.OK).body(retrievedLoanDtoList);
+        return ResponseEntity.status(HttpStatus.OK).body(retrievedLoanResponseDTOList);
     }
 
-    @GetMapping( "/calculate")
+    @GetMapping("/calculate")
     public ResponseEntity<LoanCalculationDto> calculateLoan(
             @RequestParam("amount") @Min(MIN_AMOUNT) @Max(MAX_AMOUNT) final BigDecimal amount,
             @RequestParam("months") @Min(MIN_MONTH) @Max(MAX_MONTH) final int months)
             throws InvalidLoanAmountOfCreditException,
-                   IOException,
-                   InvalidLoanMonthsException {
+            IOException,
+            InvalidLoanMonthsException {
 
-        LoanCalculationDto retrievedLoanCalculationDto = loanServiceFacade.calculateLoan(amount,months);
+        LoanCalculationDto retrievedLoanCalculationDto = loanServiceFacade.calculateLoan(amount, months);
         log.info("Successfully calculated loan.");
         return ResponseEntity.status(HttpStatus.OK).body(retrievedLoanCalculationDto);
     }
 
-    @PostMapping(value = "/create")
-    public ResponseEntity<LoanDto> createLoan(
-            @RequestParam("clientId") @Min(MIN_CLIENT_ID) final Long clientId,
+    @PostMapping(value = "/create/{clientId}")
+    public ResponseEntity<LoanResponseDTO> createLoan(
+            @PathVariable("clientId") @Min(MIN_CLIENT_ID) final Long clientId,
             @RequestParam("amount") @Min(MIN_AMOUNT) @Max(MAX_AMOUNT) final BigDecimal amount,
             @RequestParam("months") @Min(MIN_MONTH) @Max(MAX_MONTH) final int months)
             throws LowCreditRatingException,
-                   ClientNotFoundException,
-                   InvalidLoanAmountOfCreditException,
-                   IOException,
-                   InvalidLoanMonthsException {
+            ClientNotFoundException,
+            InvalidLoanAmountOfCreditException,
+            IOException,
+            InvalidLoanMonthsException {
 
-        LoanDto retrievedLoanDto = loanServiceFacade.createNewLoan(clientId, amount, months);
-        log.info("Successfully create loan: " + retrievedLoanDto.getLoanId());
-        return ResponseEntity.status(HttpStatus.OK).body(retrievedLoanDto);
+        LoanResponseDTO retrievedLoanResponseDTO = loanServiceFacade.createNewLoan(clientId, amount, months);
+        log.info("Successfully create loan: " + retrievedLoanResponseDTO.getLoanId());
+        return ResponseEntity.status(HttpStatus.OK).body(retrievedLoanResponseDTO);
     }
 }

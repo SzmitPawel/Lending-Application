@@ -2,7 +2,7 @@ package com.lending.application.domain.client;
 
 import com.lending.application.domain.account.Account;
 import com.lending.application.domain.credit.rating.CreditRating;
-import com.lending.application.domain.Loan;
+import com.lending.application.domain.loan.Loan;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package com.lending.application.service.loan;
 
-import com.lending.application.domain.Loan;
+import com.lending.application.domain.loan.Loan;
 import com.lending.application.exception.LoanNotFoundException;
 import com.lending.application.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
