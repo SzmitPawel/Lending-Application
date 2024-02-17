@@ -3,13 +3,13 @@ package com.lending.application.facade;
 import com.lending.application.domain.client.Client;
 import com.lending.application.domain.credit.rating.CreditRating;
 import com.lending.application.domain.credit.rating.CreditRatingEnum;
-import com.lending.application.domain.Loan;
-import com.lending.application.domain.dto.LoanDto;
+import com.lending.application.domain.loan.Loan;
+import com.lending.application.domain.loan.LoanResponseDTO;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.InvalidLoanAmountOfCreditException;
 import com.lending.application.exception.InvalidLoanMonthsException;
 import com.lending.application.exception.LowCreditRatingException;
-import com.lending.application.mapper.LoanMapper;
+import com.lending.application.mapper.loan.LoanResponseMapper;
 import com.lending.application.service.client.ClientService;
 import com.lending.application.service.loan.LoanCalculatorService;
 import com.lending.application.service.loan.LoanService;
@@ -25,8 +25,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +35,7 @@ class LoanServiceFacadeTest {
     @Mock
     private LoanService loanService;
     @Mock
-    private LoanMapper loanMapper;
+    private LoanResponseMapper loanResponseMapper;
     @Mock
     private ClientService clientService;
     @Mock
@@ -61,8 +60,30 @@ class LoanServiceFacadeTest {
         return client;
     }
 
+    private LoanCalculationDto prepareLoanCalculationDTO() {
+        LoanCalculationDto loanCalculationDto = new LoanCalculationDto();
+        loanCalculationDto.setAmountOfCredit(BigDecimal.valueOf(1000.00));
+        loanCalculationDto.setInterestRate(BigDecimal.valueOf(5.75));
+        loanCalculationDto.setNumberOfMonths(12);
+        loanCalculationDto.setMonthlyPayment(BigDecimal.valueOf(150.00));
+
+        return loanCalculationDto;
+    }
+
+    private Loan prepareLoan() {
+        Loan loan = new Loan();
+        loan.setLoanId(1L);
+        loan.setLoanAmount(BigDecimal.valueOf(1000.00));
+        loan.setMonthlyPayment(BigDecimal.valueOf(150.00));
+        loan.setInterest(5.75F);
+        loan.setLoanStartDate(LocalDate.now());
+        loan.setRepaymentPeriod(12);
+
+        return loan;
+    }
+
     @Test
-    void testCreateNewLoan_shouldCreateNewLoan() throws
+    void create_new_loan_should_return_loan_response_dto() throws
             InvalidLoanAmountOfCreditException,
             IOException,
             InvalidLoanMonthsException,
@@ -70,44 +91,34 @@ class LoanServiceFacadeTest {
             LowCreditRatingException {
 
         // given
-        Long clientId = 1L;
         Client client = prepareClient();
-        BigDecimal amountOfCredit = BigDecimal.valueOf(1000.00);
-        BigDecimal interest = BigDecimal.valueOf(5.75);
-        BigDecimal monthlyPayment = new BigDecimal(150.00);
+        LoanCalculationDto loanCalculationDto = prepareLoanCalculationDTO();
+        Loan loan = prepareLoan();
+
         int months = 12;
+        BigDecimal amountOfCredit = BigDecimal.valueOf(1000.00);
 
-        LoanCalculationDto loanCalculationDto = new LoanCalculationDto();
-        loanCalculationDto.setAmountOfCredit(amountOfCredit);
-        loanCalculationDto.setInterestRate(interest);
-        loanCalculationDto.setNumberOfMonths(months);
-        loanCalculationDto.setMonthlyPayment(monthlyPayment);
-
-        Loan loan = new Loan();
-        loan.setLoanAmount(amountOfCredit);
-        loan.setMonthlyPayment(monthlyPayment);
-        loan.setInterest(interest.floatValue());
-        loan.setLoanStartDate(LocalDate.now());
-        loan.setRepaymentPeriod(months);
-
-        when(clientService.getClientById(clientId)).thenReturn(client);
-        when(loanCalculatorService.calculateLoan(amountOfCredit,months)).thenReturn(loanCalculationDto);
+        when(clientService.getClientById(anyLong())).thenReturn(client);
+        when(loanCalculatorService.calculateLoan(any(BigDecimal.class), anyInt())).thenReturn(loanCalculationDto);
         when(loanService.saveLoan(any(Loan.class))).thenReturn(loan);
-        when(loanMapper.mapToLoanDto(any(Loan.class))).thenCallRealMethod();
+        when(loanResponseMapper.mapToLoanDTO(any(Loan.class))).thenCallRealMethod();
 
         // when
-        LoanDto retrievedLoanDto = loanServiceFacade.createNewLoan(clientId,amountOfCredit,months);
+        LoanResponseDTO retrievedLoanResponseDTO = loanServiceFacade
+                .createNewLoan(client.getClientId(), amountOfCredit, months);
 
         // then
-        assertNotNull(retrievedLoanDto);
-        assertEquals(amountOfCredit,retrievedLoanDto.getLoanAmount());
-        assertEquals(interest.floatValue(),retrievedLoanDto.getInterest());
-        assertEquals(months,retrievedLoanDto.getRepaymentPeriod());
-        assertEquals(monthlyPayment,retrievedLoanDto.getMonthlyPayment());
+        assertNotNull(retrievedLoanResponseDTO);
+        assertEquals(loan.getLoanId(), retrievedLoanResponseDTO.getLoanId());
+        assertEquals(loan.getLoanAmount(), retrievedLoanResponseDTO.getLoanAmount());
+        assertEquals(loan.getInterest(), retrievedLoanResponseDTO.getInterest());
+        assertEquals(loan.getRepaymentPeriod(), retrievedLoanResponseDTO.getRepaymentPeriod());
+        assertEquals(loan.getMonthlyPayment(), retrievedLoanResponseDTO.getMonthlyPayment());
     }
 
     @Test
-    void testCreateNewLoan_shouldThrowLowCreditRatingExceptionTheWorstRating() throws ClientNotFoundException {
+    void create_new_loan_should_throw_low_credit_rating_exception_if_rating_is_five()
+            throws ClientNotFoundException {
         // given
         Long clientId = 1L;
         BigDecimal amountOfCredit = BigDecimal.valueOf(1000.00);
@@ -120,11 +131,12 @@ class LoanServiceFacadeTest {
 
         // when & then
         assertThrows(LowCreditRatingException.class, () -> loanServiceFacade
-                .createNewLoan(clientId,amountOfCredit,months));
+                .createNewLoan(clientId, amountOfCredit, months));
     }
 
     @Test
-    void testCreateNewLoan_shouldThrowLowCreditRatingExceptionMinimumBadRating() throws ClientNotFoundException {
+    void create_new_loan_should_throw_low_credit_rating_exception_if_rating_is_four()
+            throws ClientNotFoundException {
         // given
         Long clientId = 1L;
         BigDecimal amountOfCredit = BigDecimal.valueOf(1000.00);
@@ -137,6 +149,6 @@ class LoanServiceFacadeTest {
 
         // when & then
         assertThrows(LowCreditRatingException.class, () -> loanServiceFacade
-                .createNewLoan(clientId,amountOfCredit,months));
+                .createNewLoan(clientId, amountOfCredit, months));
     }
 }

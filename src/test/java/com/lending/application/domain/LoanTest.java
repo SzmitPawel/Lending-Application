@@ -1,5 +1,6 @@
 package com.lending.application.domain;
 
+import com.lending.application.domain.loan.Loan;
 import com.lending.application.repository.LoanRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -9,7 +10,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

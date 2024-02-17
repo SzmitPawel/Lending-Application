@@ -1,6 +1,5 @@
-package com.lending.application.domain.dto;
+package com.lending.application.domain.loan;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,11 +7,10 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@NoArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class LoanDto {
+public class LoanResponseDTO {
     private Long loanId;
     private BigDecimal loanAmount;
     private BigDecimal monthlyPayment;

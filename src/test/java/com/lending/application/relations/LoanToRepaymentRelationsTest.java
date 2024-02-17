@@ -1,6 +1,6 @@
 package com.lending.application.relations;
 
-import com.lending.application.domain.Loan;
+import com.lending.application.domain.loan.Loan;
 import com.lending.application.domain.Repayment;
 import com.lending.application.repository.LoanRepository;
 import com.lending.application.repository.RepaymentRepository;
@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 

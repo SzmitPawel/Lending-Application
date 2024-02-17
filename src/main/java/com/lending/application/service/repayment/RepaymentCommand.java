@@ -3,6 +3,7 @@ package com.lending.application.service.repayment;
 import com.lending.application.domain.*;
 import com.lending.application.domain.account.Account;
 import com.lending.application.domain.client.Client;
+import com.lending.application.domain.loan.Loan;
 import com.lending.application.exception.InsufficientFundsException;
 import com.lending.application.exception.LoanNotFoundException;
 import com.lending.application.service.account.AccountService;

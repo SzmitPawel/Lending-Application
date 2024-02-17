@@ -6,6 +6,8 @@ import com.lending.application.mapper.client.ClientRequestMapper;
 import com.lending.application.mapper.client.ClientResponseMapper;
 import com.lending.application.mapper.credit.rating.CreditRatingRequestMapper;
 import com.lending.application.mapper.credit.rating.CreditRatingResponseMapper;
+import com.lending.application.mapper.loan.LoanResponseMapper;
+import loan.LoanResponseMapperImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import rating.CreditRatingRequestMapperImpl;
@@ -31,5 +33,10 @@ public class MapStructMappersConfiguration {
     @Bean
     CreditRatingResponseMapper creditRatingResponseMapper() {
         return new CreditRatingResponseMapperImpl();
+    }
+
+    @Bean
+    LoanResponseMapper loanResponseMapper() {
+        return new LoanResponseMapperImpl();
     }
 }
