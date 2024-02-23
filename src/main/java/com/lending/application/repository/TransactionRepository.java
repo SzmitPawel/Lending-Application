@@ -1,7 +1,7 @@
 package com.lending.application.repository;
 
-import com.lending.application.domain.Transaction;
-import com.lending.application.domain.TransactionMethodEnum;
+import com.lending.application.domain.transaction.Transaction;
+import com.lending.application.domain.transaction.TransactionMethodEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
