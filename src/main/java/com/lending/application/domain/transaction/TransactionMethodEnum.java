@@ -1,4 +1,4 @@
-package com.lending.application.domain;
+package com.lending.application.domain.transaction;
 
 public enum TransactionMethodEnum {
     WITHDRAWAL,

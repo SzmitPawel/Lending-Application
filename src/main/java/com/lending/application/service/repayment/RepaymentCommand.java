@@ -4,6 +4,7 @@ import com.lending.application.domain.*;
 import com.lending.application.domain.account.Account;
 import com.lending.application.domain.client.Client;
 import com.lending.application.domain.loan.Loan;
+import com.lending.application.domain.transaction.TransactionMethodEnum;
 import com.lending.application.exception.InsufficientFundsException;
 import com.lending.application.exception.LoanNotFoundException;
 import com.lending.application.service.account.AccountService;
@@ -32,7 +33,7 @@ public class RepaymentCommand {
 
         if (checkAccountBalance(account,repaymentAmount)) {
             makeRepayment(loan,createRepayment(repaymentAmount));
-            transactionCommand.doTransaction(account,repaymentAmount,TransactionMethodEnum.REPAYMENT);
+            transactionCommand.doTransaction(account,repaymentAmount, TransactionMethodEnum.REPAYMENT);
             updateAccountBalance(account,repaymentAmount);
             accountService.saveAccount(account);
             loanService.saveLoan(loan);

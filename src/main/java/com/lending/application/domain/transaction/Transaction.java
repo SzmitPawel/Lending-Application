@@ -1,4 +1,4 @@
-package com.lending.application.domain;
+package com.lending.application.domain.transaction;
 
 import com.lending.application.domain.account.Account;
 import jakarta.persistence.*;

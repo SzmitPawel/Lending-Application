@@ -1,8 +1,8 @@
 package com.lending.application.service.transaction;
 
 import com.lending.application.domain.account.Account;
-import com.lending.application.domain.Transaction;
-import com.lending.application.domain.TransactionMethodEnum;
+import com.lending.application.domain.transaction.Transaction;
+import com.lending.application.domain.transaction.TransactionMethodEnum;
 import com.lending.application.exception.TransactionNotFoundException;
 import com.lending.application.repository.AccountRepository;
 import com.lending.application.repository.TransactionRepository;

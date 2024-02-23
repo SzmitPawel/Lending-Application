@@ -1,8 +1,8 @@
 package com.lending.application.service.transaction;
 
 import com.lending.application.domain.account.Account;
-import com.lending.application.domain.Transaction;
-import com.lending.application.domain.TransactionMethodEnum;
+import com.lending.application.domain.transaction.Transaction;
+import com.lending.application.domain.transaction.TransactionMethodEnum;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
