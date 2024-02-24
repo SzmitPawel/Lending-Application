@@ -79,6 +79,7 @@ public class LoanServiceFacade {
         LoanCalculationDto loanCalculationDto = loanCalculatorService.calculateLoan(amountOfCredit, months);
         Loan loan = prepareLoan(loanCalculationDto);
         loan.setClient(client);
+        client.getLoanList().add(loan);
 
         return loanResponseMapper.mapToLoanDTO(loanService.saveLoan(loan));
     }

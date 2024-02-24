@@ -84,8 +84,7 @@ class TransactionControllerTest {
             Long accountId = 0L;
 
             // when & then
-            mockMvc.perform(MockMvcRequestBuilders.get(PATH + "/all")
-                            .param("accountId", accountId.toString()))
+            mockMvc.perform(MockMvcRequestBuilders.get(PATH + "/all/{accountId}", accountId))
                     .andExpect(MockMvcResultMatchers.status().isBadRequest());
         }
 
@@ -100,26 +99,26 @@ class TransactionControllerTest {
             when(transactionServiceFacade.getAllAccountTransactions(accountId)).thenReturn(transactionResponseDTOList);
 
             // when & then
-            mockMvc.perform(MockMvcRequestBuilders.get(PATH + "/all")
-                            .param("accountId", accountId.toString()))
+            mockMvc.perform(MockMvcRequestBuilders.get(PATH + "/all/{accountId}", accountId))
                     .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$",Matchers.hasSize(4)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionId",Matchers.is(1)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionAmount",Matchers.is(100.00)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionDate",Matchers.is(LocalDate.now().toString())))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionMethodEnum",Matchers.is("WITHDRAWAL")))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionId",Matchers.is(2)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionAmount",Matchers.is(200.00)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionDate",Matchers.is(LocalDate.now().toString())))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionMethodEnum",Matchers.is("DEPOSIT")))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[2].transactionId",Matchers.is(3)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[2].transactionAmount",Matchers.is(300.00)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[2].transactionDate",Matchers.is(LocalDate.now().toString())))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[2].transactionMethodEnum",Matchers.is("WITHDRAWAL")))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[3].transactionId",Matchers.is(4)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[3].transactionAmount",Matchers.is(400.00)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[3].transactionDate",Matchers.is(LocalDate.now().toString())))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[3].transactionMethodEnum",Matchers.is("DEPOSIT")));;
+                    .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(4)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionId", Matchers.is(1)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionAmount", Matchers.is(100.00)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionDate", Matchers.is(LocalDate.now().toString())))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionMethodEnum", Matchers.is("WITHDRAWAL")))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionId", Matchers.is(2)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionAmount", Matchers.is(200.00)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionDate", Matchers.is(LocalDate.now().toString())))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionMethodEnum", Matchers.is("DEPOSIT")))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[2].transactionId", Matchers.is(3)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[2].transactionAmount", Matchers.is(300.00)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[2].transactionDate", Matchers.is(LocalDate.now().toString())))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[2].transactionMethodEnum", Matchers.is("WITHDRAWAL")))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[3].transactionId", Matchers.is(4)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[3].transactionAmount", Matchers.is(400.00)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[3].transactionDate", Matchers.is(LocalDate.now().toString())))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[3].transactionMethodEnum", Matchers.is("DEPOSIT")));
+            ;
         }
     }
 
@@ -133,8 +132,7 @@ class TransactionControllerTest {
             Long accountId = 0L;
 
             // when & then
-            mockMvc.perform(MockMvcRequestBuilders.get(PATH + "/find")
-                            .param("accountId", accountId.toString()))
+            mockMvc.perform(MockMvcRequestBuilders.get(PATH + "/find/{accountId}", accountId))
                     .andExpect(MockMvcResultMatchers.status().isBadRequest());
         }
 
@@ -148,23 +146,22 @@ class TransactionControllerTest {
             TransactionMethodEnum method = TransactionMethodEnum.WITHDRAWAL;
 
             when(transactionServiceFacade
-                    .getAllTransactionsByMethod(method,accountId))
+                    .getAllTransactionsByMethod(method, accountId))
                     .thenReturn(transactionResponseDTOList);
 
             // when & then
-            mockMvc.perform(MockMvcRequestBuilders.get(PATH + "/find")
-                            .param("method", method.toString())
-                            .param("accountId", accountId.toString()))
+            mockMvc.perform(MockMvcRequestBuilders.get(PATH + "/find/{accountId}", accountId)
+                            .param("method","WITHDRAWAL"))
                     .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$",Matchers.hasSize(2)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionId",Matchers.is(1)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionAmount",Matchers.is(100.00)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionDate",Matchers.is(LocalDate.now().toString())))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionMethodEnum",Matchers.is("WITHDRAWAL")))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionId",Matchers.is(2)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionAmount",Matchers.is(200.00)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionDate",Matchers.is(LocalDate.now().toString())))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionMethodEnum",Matchers.is("WITHDRAWAL")));
+                    .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionId", Matchers.is(1)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionAmount", Matchers.is(100.00)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionDate", Matchers.is(LocalDate.now().toString())))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].transactionMethodEnum", Matchers.is("WITHDRAWAL")))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionId", Matchers.is(2)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionAmount", Matchers.is(200.00)))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionDate", Matchers.is(LocalDate.now().toString())))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[1].transactionMethodEnum", Matchers.is("WITHDRAWAL")));
         }
     }
 }

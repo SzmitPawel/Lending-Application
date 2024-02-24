@@ -4,7 +4,6 @@ import com.lending.application.domain.client.Client;
 import com.lending.application.domain.credit.rating.CreditRating;
 import com.lending.application.domain.credit.rating.CreditRatingEnum;
 import com.lending.application.domain.loan.Loan;
-import com.lending.application.domain.loan.LoanResponseDTO;
 import com.lending.application.exception.ClientNotFoundException;
 import com.lending.application.exception.InvalidLoanAmountOfCreditException;
 import com.lending.application.exception.InvalidLoanMonthsException;
@@ -24,9 +23,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LoanServiceFacadeTest {
@@ -91,29 +91,32 @@ class LoanServiceFacadeTest {
             LowCreditRatingException {
 
         // given
-        Client client = prepareClient();
-        LoanCalculationDto loanCalculationDto = prepareLoanCalculationDTO();
-        Loan loan = prepareLoan();
-
         int months = 12;
         BigDecimal amountOfCredit = BigDecimal.valueOf(1000.00);
 
+        Client client = prepareClient();
         when(clientService.getClientById(anyLong())).thenReturn(client);
+
+        LoanCalculationDto loanCalculationDto = prepareLoanCalculationDTO();
         when(loanCalculatorService.calculateLoan(any(BigDecimal.class), anyInt())).thenReturn(loanCalculationDto);
+
+        Loan loan = prepareLoan();
         when(loanService.saveLoan(any(Loan.class))).thenReturn(loan);
-        when(loanResponseMapper.mapToLoanDTO(any(Loan.class))).thenCallRealMethod();
 
         // when
-        LoanResponseDTO retrievedLoanResponseDTO = loanServiceFacade
-                .createNewLoan(client.getClientId(), amountOfCredit, months);
+        loanServiceFacade.createNewLoan(client.getClientId(), amountOfCredit, months);
 
         // then
-        assertNotNull(retrievedLoanResponseDTO);
-        assertEquals(loan.getLoanId(), retrievedLoanResponseDTO.getLoanId());
-        assertEquals(loan.getLoanAmount(), retrievedLoanResponseDTO.getLoanAmount());
-        assertEquals(loan.getInterest(), retrievedLoanResponseDTO.getInterest());
-        assertEquals(loan.getRepaymentPeriod(), retrievedLoanResponseDTO.getRepaymentPeriod());
-        assertEquals(loan.getMonthlyPayment(), retrievedLoanResponseDTO.getMonthlyPayment());
+        verify(loanResponseMapper, times(1)).mapToLoanDTO(any(Loan.class));
+        verify(loanService, times(1)).saveLoan(any(Loan.class));
+
+        assertEquals(1, client.getLoanList().size());
+
+        assertEquals(loanCalculationDto.getAmountOfCredit(), client.getLoanList().get(0).getLoanAmount());
+        assertEquals(loanCalculationDto.getNumberOfMonths(), client.getLoanList().get(0).getRepaymentPeriod());
+        assertEquals(loanCalculationDto.getInterestRate(), new BigDecimal(client.getLoanList().get(0).getInterest()));
+        assertEquals(loanCalculationDto.getMonthlyPayment(), client.getLoanList().get(0).getMonthlyPayment());
+        assertEquals(LocalDate.now(), client.getLoanList().get(0).getLoanStartDate());
     }
 
     @Test
