@@ -5,19 +5,23 @@ import com.lending.application.domain.credit.rating.CreditRating;
 import com.lending.application.domain.credit.rating.CreditRatingEnum;
 import com.lending.application.domain.credit.rating.CreditRatingResponseDTO;
 import com.lending.application.exception.ClientNotFoundException;
-import com.lending.application.mapper.CreditRatingMapper;
+import com.lending.application.mapper.credit.rating.CreditRatingResponseMapper;
 import com.lending.application.service.client.ClientService;
 import com.lending.application.service.credit.rating.calculate.rating.CreditRatingEvaluator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import rating.CreditRatingResponseMapperImpl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +30,7 @@ class CreditRatingFacadeTest {
     @InjectMocks
     private CreditRatingFacade creditRatingFacade;
     @Mock
-    private CreditRatingMapper creditRatingMapper;
+    private CreditRatingResponseMapper responseMapper = new CreditRatingResponseMapperImpl();
     @Mock
     private CreditRatingEvaluator creditRatingEvaluator;
     @Mock
@@ -42,28 +46,27 @@ class CreditRatingFacadeTest {
     }
 
     @Test
-    void testCreateNewCreditRating_shouldCreateNewCreditRating() throws ClientNotFoundException {
+    void create_new_credit_rating_should_create_new_credit_rating_for_client()
+            throws ClientNotFoundException {
         // given
-        Client client = prepareClient();
-        CreditRatingEnum creditRatingEnum = CreditRatingEnum.ONE;
-
         BigDecimal customerMonthlyIncome = BigDecimal.valueOf(1500.00);
         BigDecimal customerMonthlyExpenses = BigDecimal.valueOf(150.33);
 
-        when(creditRatingEvaluator
-                .getCreditRatingEnum(any(),any(BigDecimal.class),any(BigDecimal.class)))
+        CreditRatingEnum creditRatingEnum = CreditRatingEnum.THREE;
+        when(creditRatingEvaluator.getCreditRatingEnum(anyLong(), any(BigDecimal.class), any(BigDecimal.class)))
                 .thenReturn(creditRatingEnum);
-        when(clientService.getClientById(any())).thenReturn(client);
-        when(creditRatingMapper.mapToCreditRatingDto(any(CreditRating.class))).thenCallRealMethod();
+
+        Client client = prepareClient();
+        when(clientService.getClientById(anyLong())).thenReturn(client);
 
         // when
-        CreditRatingResponseDTO creditRatingResponseDto = creditRatingFacade
-                .createNewCreditRating(client.getClientId(),customerMonthlyIncome,customerMonthlyExpenses);
+        creditRatingFacade.createNewCreditRating(client.getClientId(), customerMonthlyIncome, customerMonthlyExpenses);
 
         // then
         verify(clientService, times(1)).saveClient(any(Client.class));
+        verify(responseMapper, times(1)).mapToCreditRatingDTO(any(CreditRating.class));
 
-        assertEquals(CreditRatingEnum.ONE, creditRatingResponseDto.getCreditRating());
-        assertEquals(LocalDate.now(), creditRatingResponseDto.getDateOfRating());
+        assertEquals(creditRatingEnum, client.getCreditRating().getCreditRating());
+        assertEquals(LocalDate.now(), client.getCreditRating().getDateOfRating());
     }
 }
