@@ -1,7 +1,7 @@
 package com.lending.application.domain;
 
+import com.lending.application.domain.penalty.Penalty;
 import com.lending.application.repository.PenaltyRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,4 +1,4 @@
-package com.lending.application.domain.dto;
+package com.lending.application.domain.penalty;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,7 @@
 package com.lending.application.domain;
 
 import com.lending.application.domain.loan.Loan;
+import com.lending.application.domain.penalty.Penalty;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

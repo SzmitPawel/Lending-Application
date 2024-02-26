@@ -1,7 +1,7 @@
 package com.lending.application.mapper;
 
-import com.lending.application.domain.Penalty;
-import com.lending.application.domain.dto.PenaltyDto;
+import com.lending.application.domain.penalty.Penalty;
+import com.lending.application.domain.penalty.PenaltyDto;
 import org.springframework.stereotype.Component;
 
 @Component

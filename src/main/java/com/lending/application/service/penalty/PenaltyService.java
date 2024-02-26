@@ -1,6 +1,6 @@
 package com.lending.application.service.penalty;
 
-import com.lending.application.domain.Penalty;
+import com.lending.application.domain.penalty.Penalty;
 import com.lending.application.exception.PenaltyNotFoundException;
 import com.lending.application.repository.PenaltyRepository;
 import lombok.RequiredArgsConstructor;
