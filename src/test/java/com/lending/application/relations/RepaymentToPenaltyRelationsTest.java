@@ -1,6 +1,6 @@
 package com.lending.application.relations;
 
-import com.lending.application.domain.Penalty;
+import com.lending.application.domain.penalty.Penalty;
 import com.lending.application.domain.Repayment;
 import com.lending.application.repository.PenaltyRepository;
 import com.lending.application.repository.RepaymentRepository;
